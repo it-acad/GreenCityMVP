@@ -1,4 +1,4 @@
-package greencity.validator;
+package greencity.enums.validator;
 
 import greencity.annotations.LanguageTranslationConstraint;
 import greencity.dto.language.LanguageDTO;

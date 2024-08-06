@@ -1,4 +1,4 @@
-package greencity.validator;
+package greencity.enums.validator;
 
 import greencity.constant.ErrorMessage;
 import greencity.exception.exceptions.InvalidURLException;

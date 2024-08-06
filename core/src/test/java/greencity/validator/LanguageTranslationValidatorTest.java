@@ -2,6 +2,7 @@ package greencity.validator;
 
 import greencity.dto.language.LanguageDTO;
 import greencity.dto.language.LanguageTranslationDTO;
+import greencity.enums.validator.LanguageTranslationValidator;
 import greencity.service.LanguageService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
