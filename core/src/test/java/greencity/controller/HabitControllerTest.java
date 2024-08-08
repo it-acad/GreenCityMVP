@@ -128,12 +128,6 @@ public class HabitControllerTest {
                 .locale(Locale.ENGLISH)
                         .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk())
-                .andExpect(result -> {
-                    String responseBody = result.getResponse().getContentAsString();
-                    String contentType = result.getResponse().getContentType();
-                    System.out.println("Response Content-Type: " + contentType);
-                    System.out.println("Response Body: " + responseBody);
-                })
                 .andDo(print());
 
         //then
