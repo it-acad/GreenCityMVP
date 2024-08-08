@@ -44,7 +44,7 @@ public class LanguageControllerTest {
     }
 
     @Test
-    void getAllLanguageCodes() throws Exception {
+    void getAllLanguageCodes_WithValidRequest_StatusOk() throws Exception {
 
         when(languageService.findAllLanguageCodes())
                 .thenReturn(List.of());
