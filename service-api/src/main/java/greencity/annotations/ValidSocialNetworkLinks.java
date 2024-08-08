@@ -1,6 +1,6 @@
 package greencity.annotations;
 
-import greencity.enums.validator.SocialNetworkLinksValidator;
+import greencity.validator.SocialNetworkLinksValidator;
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
 import java.lang.annotation.ElementType;

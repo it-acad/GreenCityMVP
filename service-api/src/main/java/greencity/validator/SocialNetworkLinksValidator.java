@@ -1,4 +1,4 @@
-package greencity.enums.validator;
+package greencity.validator;
 
 import greencity.annotations.ValidSocialNetworkLinks;
 import greencity.constant.ErrorMessage;

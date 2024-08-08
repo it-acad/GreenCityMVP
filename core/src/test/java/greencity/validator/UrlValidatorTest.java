@@ -1,6 +1,5 @@
 package greencity.validator;
 
-import greencity.enums.validator.UrlValidator;
 import greencity.exception.exceptions.InvalidURLException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
