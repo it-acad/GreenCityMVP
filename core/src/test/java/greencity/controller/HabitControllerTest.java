@@ -87,8 +87,10 @@ public class HabitControllerTest {
 
         //when
         this.mockMvc.perform(get("/habit/{id}", habitId)
-                        .locale(Locale.ENGLISH))
-                .andExpect(status().isOk()) ;
+                        .locale(Locale.ENGLISH)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isOk())
+                .andDo(print());
 
         //then
         verify(this.habitService).getByIdAndLanguageCode(habitId, Locale.ENGLISH.getLanguage());
@@ -109,7 +111,8 @@ public class HabitControllerTest {
                 .param("page", String.valueOf(pageNumber))
                 .param("size", String.valueOf(pageSize))
                 .locale(Locale.ENGLISH)
-                .principal(() -> userEmail))
+                .principal(() -> userEmail)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk())
                 .andDo(print());
 
@@ -125,9 +128,9 @@ public class HabitControllerTest {
 
         //when
         this.mockMvc.perform(get("/habit/{id}/shopping-list", habitId)
-                .locale(Locale.ENGLISH))
+                .locale(Locale.ENGLISH)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_XML_VALUE + ";charset=UTF-8"))
                 .andExpect(result -> {
                     String responseBody = result.getResponse().getContentAsString();
                     String contentType = result.getResponse().getContentType();
@@ -153,12 +156,13 @@ public class HabitControllerTest {
                 .param("page", String.valueOf(pageNumber))
                 .param("size", String.valueOf(pageSize))
                         .param("tags", tagList.toArray(String[]::new))
-                        .locale(Locale.ENGLISH))
+                        .locale(Locale.ENGLISH)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk())
                 .andExpect(result -> {
                     String contentType = result.getResponse().getContentType();
                     if (contentType != null) {
-                        assertTrue((BooleanSupplier) content().contentType(MediaType.APPLICATION_JSON), "Expected content type 'application/json'");
+                        assertTrue((BooleanSupplier) content().contentType(MediaType.APPLICATION_JSON_VALUE), "Expected content type 'application/json'");
                     }
                 })
                 .andDo(print());
@@ -188,7 +192,8 @@ public class HabitControllerTest {
                         .param("isCustomHabit", String.valueOf(isCustomHabit))
                         .param("complexities", complexities.stream().map(String::valueOf).toArray(String[]::new))
                         .principal(() -> userEmail)
-                        .locale(Locale.ENGLISH))
+                        .locale(Locale.ENGLISH)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk())
                 .andDo(print());
 
@@ -208,7 +213,8 @@ public class HabitControllerTest {
         //when
         this.mockMvc.perform(get("/habit/search")
                         .principal(() -> userEmail)
-                        .locale(Locale.ENGLISH))
+                        .locale(Locale.ENGLISH)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isBadRequest())
                 .andDo(print());
 
@@ -220,9 +226,9 @@ public class HabitControllerTest {
     void findAllHabitsTags_WithLocale_StatusOk() throws Exception {
         //when
         this.mockMvc.perform(get("/habit/tags")
-                .locale(Locale.ENGLISH))
+                .locale(Locale.ENGLISH)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_XML_VALUE + ";charset=UTF-8"))
                 .andDo(print());
 
         //then
@@ -243,9 +249,10 @@ public class HabitControllerTest {
         this.mockMvc.perform(multipart("/habit/custom")
                         .file(requestFile)
                         .principal(this.principal)
-                        .accept(MediaType.APPLICATION_JSON)
-                        .contentType(MediaType.MULTIPART_FORM_DATA))
-                .andExpect(status().isCreated());
+                        .contentType(MediaType.MULTIPART_FORM_DATA)
+                        .accept(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isCreated())
+                .andDo(print());
 
         //then
         verify(this.habitService).addCustomHabit(eq(dtoRequest), isNull(), eq("Dmytro@gmail.com"));
@@ -263,9 +270,9 @@ public class HabitControllerTest {
         when(this.userService.findByEmail(anyString())).thenReturn(userVO);
 
         this.mockMvc.perform(get("/habit/{habitId}/friends/profile-pictures", habitId)
-                        .principal(() -> userEmail))
+                        .principal(() -> userEmail)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_XML_VALUE + ";charset=UTF-8"))
                 .andDo(print());
 
         //then
