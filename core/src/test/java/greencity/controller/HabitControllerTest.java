@@ -81,7 +81,7 @@ public class HabitControllerTest {
     }
 
     @Test
-    void getHabitByIdTest() throws Exception {
+    void getHabitById_WithValidId_StatusOk() throws Exception {
         //given
         Long habitId = 1L;
 
@@ -95,7 +95,7 @@ public class HabitControllerTest {
     }
 
     @Test
-    void getAllTest() throws Exception {
+    void getAllHabits_WithValidPageAndSize_StatusOk() throws Exception {
         //given
         UserVO userVO = ModelUtils.getUserVO();
         String userEmail = userVO.getEmail();
@@ -119,7 +119,7 @@ public class HabitControllerTest {
     }
 
     @Test
-    void getShoppingListItemsTest() throws Exception {
+    void getShoppingListItems_ByHabitId_StatusOk() throws Exception {
         //given
         Long habitId = 1L;
 
@@ -141,7 +141,7 @@ public class HabitControllerTest {
     }
 
     @Test
-    void getAllByTagsAndLanguageCodeTest() throws Exception {
+    void getAllHabitsByTagsAndLanguage_WithValidParameters_StatusOk() throws Exception {
         //given
         int pageNumber = 1;
         int pageSize = 10;
@@ -168,7 +168,7 @@ public class HabitControllerTest {
     }
 
     @Test
-    void getAllByDifferentParametersTest() throws Exception {
+    void getAllHabitsByDifferentParameters_WithValidInput_StatusOk() throws Exception {
         //given
         UserVO userVO = ModelUtils.getUserVO();
         String userEmail = userVO.getEmail();
@@ -199,7 +199,7 @@ public class HabitControllerTest {
     }
 
     @Test
-    void getAllByDifferentParametersBadRequestTest() throws Exception {
+    void getAllHabitsByDifferentParameters_WithInvalidInput_StatusBadRequest() throws Exception {
         //given
         UserVO userVO = ModelUtils.getUserVO();
         String userEmail = userVO.getEmail();
@@ -217,7 +217,7 @@ public class HabitControllerTest {
     }
 
     @Test
-    void findAllHabitsTest() throws Exception {
+    void findAllHabitsTags_WithLocale_StatusOk() throws Exception {
         //when
         this.mockMvc.perform(get("/habit/tags")
                 .locale(Locale.ENGLISH))
@@ -230,7 +230,7 @@ public class HabitControllerTest {
     }
 
     @Test
-    void addCustomHabitTest() throws Exception {
+    void addCustomHabit_WithValidRequest_StatusCreated() throws Exception {
         //given
         AddCustomHabitDtoRequest dtoRequest = ModelUtils.getAddCustomHabitDtoRequest();
         String jsonRequest = new ObjectMapper().writeValueAsString(dtoRequest);
@@ -252,7 +252,7 @@ public class HabitControllerTest {
     }
 
     @Test
-    void getFriendsAssignedToHabitProfilePicturesTest() throws Exception {
+    void getFriendsAssignedToHabitProfilePictures_WithValidHabitId_StatusOk() throws Exception {
         //given
         Long habitId = 1L;
         UserVO userVO = ModelUtils.getUserVO();
