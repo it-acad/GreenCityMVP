@@ -24,7 +24,7 @@ public class CategoryDtoMapperTest {
                 .build();
 
         // Act
-        Category actual = categoryDtoMapper.convert(categoryDto);
+        Category actual = this.categoryDtoMapper.convert(categoryDto);
 
         // Assert
         assertEquals(expected, actual);

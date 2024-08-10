@@ -32,7 +32,7 @@ public class CustomHabitMapperTest {
                 .build();
 
         // Act
-        Habit actual = customHabitMapper.convert(request);
+        Habit actual = this.customHabitMapper.convert(request);
 
         // Assert
         assertEquals(expected, actual);

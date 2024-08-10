@@ -29,7 +29,7 @@ public class CategoryDtoResponseMapperTest {
                 .build();
 
         // Act
-        CategoryDtoResponse actual = mapper.convert(category);
+        CategoryDtoResponse actual = this.mapper.convert(category);
 
         // Assert
         assertEquals(expected, actual);

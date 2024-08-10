@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class CustomShoppingListMapperTest {
 
     @InjectMocks
-    private CustomShoppingListMapper customShoppingListMapper;
+    private CustomShoppingListMapper mapper;
 
     @Test
     public void convertTest() {
@@ -29,7 +29,9 @@ public class CustomShoppingListMapperTest {
                 .status(dto.getStatus())
                 .build();
 
-        assertEquals(expected, customShoppingListMapper.convert(dto));
+        CustomShoppingListItem actual = this.mapper.convert(dto);
+
+        assertEquals(expected, actual);
     }
 
     @Test
@@ -43,6 +45,8 @@ public class CustomShoppingListMapperTest {
                 .status(dto.getStatus())
                 .build());
 
-        assertEquals(expected, customShoppingListMapper.mapAllToList(dtoList));
+        List<CustomShoppingListItem> actual = this.mapper.mapAllToList(dtoList);
+
+        assertEquals(expected, actual);
     }
 }
