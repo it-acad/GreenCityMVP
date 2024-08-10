@@ -14,7 +14,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
 
 
-
 @ExtendWith(MockitoExtension.class)
 @DisplayName("ImageValidator Unit Tests")
 class ImageValidatorTest {
@@ -28,49 +27,56 @@ class ImageValidatorTest {
     @Mock
     private ConstraintValidatorContext context;
 
-
-    // Test all valid image content types
     @Test
     @DisplayName("Valid image types should return true")
-    void givenValidImageTypes_whenIsValid_thenReturnTrue() {
+    void isValid_ValidImageTypes_ReturnsTrue() {
         String[] validTypes = {"image/jpeg", "image/png", "image/jpg"};
         for (String type : validTypes) {
             when(mockFile.getContentType()).thenReturn(type);
-            boolean result = imageValidator.isValid(mockFile, context);
-            System.out.println("Test with type: " + type + " resulted in: " + result);
 
-            assertTrue(result, "Failed for type: " + type);
+            assertTrue(imageValidator.isValid(mockFile, context), "Failed for type: " + type);
         }
     }
 
     @Test
     @DisplayName("Null image should return true")
-    void givenNullImage_whenIsValid_thenReturnTrue() {
-        boolean result = imageValidator.isValid(null, context);
-        System.out.println("Test with null image resulted in: " + result);
+    void isValid_NullImage_ReturnsTrue() {
 
-        assertTrue(result, "Failed for null image");
+        assertTrue(imageValidator.isValid(null, context), "Expected true for null image");
+    }
+
+    @Test
+    @DisplayName("BMP image type should return false")
+    void isValid_BmpImageType_ReturnsFalse() {
+        when(mockFile.getContentType()).thenReturn("image/bmp");
+
+        assertFalse(imageValidator.isValid(mockFile, context), "Expected false for type: image/bmp");
     }
 
     @Test
     @DisplayName("Invalid image types should return false")
-    void givenInvalidImageType_whenIsValid_thenReturnFalse() {
+    void isValid_InvalidImageType_ReturnsFalse() {
         when(mockFile.getContentType()).thenReturn("application/pdf");
-        boolean result = imageValidator.isValid(mockFile, context);
-        System.out.println("Test with invalid content type resulted in: " + result);
 
-        assertFalse(result, "Expected false for invalid content type");
+        assertFalse(imageValidator.isValid(mockFile, context), "Expected false for invalid content type");
     }
 
     @Test
-    @DisplayName("Image with no content type should return false")
-    void givenNoContentType_whenIsValid_thenReturnFalse() {
-        when(mockFile.getContentType()).thenReturn(null);
-        boolean result = imageValidator.isValid(mockFile, context);
-        System.out.println("Test with no content type resulted in: " + result);
+    @DisplayName("File with an invalid content type should return false")
+    void isValid_FileWithInvalidContentType_ReturnsFalse() {
+        when(mockFile.getContentType()).thenReturn("text/plain");
 
-        assertFalse(result, "Expected false for no content type");
+        assertFalse(imageValidator.isValid(mockFile, context), "Expected false for file with an invalid content type");
+    }
+
+    @Test
+    @DisplayName("File with no content type should return false")
+    void isValid_NoContentType_ReturnsFalse() {
+        when(mockFile.getContentType()).thenReturn(null);
+
+        assertFalse(imageValidator.isValid(mockFile, context), "Expected false for file with no content type");
     }
 
 
 }
+
