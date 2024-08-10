@@ -52,7 +52,7 @@ public class CustomShoppingListResponseDtoMapperTest {
                         .build())
                 .toList();
 
-        List<CustomShoppingListItemResponseDto> actual = mapper.mapAllToList(itemList);
+        List<CustomShoppingListItemResponseDto> actual = this.mapper.mapAllToList(itemList);
 
         // Assert
         assertEquals(expected, actual);

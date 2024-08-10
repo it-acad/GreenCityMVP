@@ -27,7 +27,7 @@ public class EcoNewsAuthorDtoMapperTest {
                 .build();
 
         // Act
-        EcoNewsAuthorDto actual = mapper.convert(author);
+        EcoNewsAuthorDto actual = this.mapper.convert(author);
 
         // Assert
         assertEquals(expected, actual);
