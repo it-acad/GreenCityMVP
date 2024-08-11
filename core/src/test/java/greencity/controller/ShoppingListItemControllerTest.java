@@ -62,19 +62,20 @@ public class ShoppingListItemControllerTest {
     }
 
     @Test
-    void bulkDeleteUserShoppingListItem_StatusOk() throws Exception {
+    void bulkDeleteUserShoppingListItem_StatusIsOk() throws Exception {
 
         when(userService.findByEmail(anyString())).thenReturn(userVO);
 
-        mockMvc.perform(delete(initialUrl)
-                        .param("habitId", "1")
-                        .param("shoppingListItemIds", "1,2")
+        mockMvc.perform(delete(initialUrl + "/user-shopping-list-items")
+                        .param("ids", "1,2")
                         .principal(principal))
                 .andExpect(status().isOk());
+
+        verify(shoppingListItemService).deleteUserShoppingListItems("1,2");
     }
 
     @Test
-    void saveUserShoppingListItemStatusWithoutLanguageParamTest_statusIsCreated() throws Exception {
+    void saveShoppingListItemStatusAssignedToUser_WithoutLanguageParamTest_StatusIsCreated() throws Exception {
         List<UserShoppingListItemResponseDto> listItemResponseDtos = new ArrayList<>();
 
         when(userService.findByEmail(anyString())).thenReturn(userVO);
@@ -87,10 +88,12 @@ public class ShoppingListItemControllerTest {
                         .param("habitId", "1")
                         .principal(principal))
                 .andExpect(status().isCreated());
+
+        verify(shoppingListItemService).saveUserShoppingListItems(userVO.getId(), 1L, new ArrayList<>(), "en");
     }
 
     @Test
-    void updateUserShoppingListItemStatusWithoutLanguageParamTest_statusIsCreated() throws Exception {
+    void updateShoppingListItemStatusAssignedToUser_WithoutLanguageParamTest_StatusIsOk() throws Exception {
         Long userShoppingListItemId = 1L;
         String status = "DONE";
 
@@ -100,10 +103,12 @@ public class ShoppingListItemControllerTest {
                         userShoppingListItemId, status)
                         .principal(principal))
                 .andExpect(status().isOk());
+
+        verify(shoppingListItemService).updateUserShoppingListItemStatus(userVO.getId(), userShoppingListItemId, "en", status);
     }
 
     @Test
-    void updateUserShoppingListItemStatusWithLanguageParamTest_statusIsCreated() throws Exception {
+    void updateShoppingListItemStatusAssignedToUser_WithLanguageParamTest_StatusIsOk() throws Exception {
         Long userShoppingListItemId = 1L;
         String status = "DONE";
         Locale locale = Locale.ENGLISH;
@@ -112,13 +117,16 @@ public class ShoppingListItemControllerTest {
 
         mockMvc.perform(patch(initialUrl + "/{userShoppingListItemId}/status/{status}",
                         userShoppingListItemId, status)
-                        .param("lang", locale.getLanguage())
+                        .locale(locale)
                         .principal(principal))
                 .andExpect(status().isOk());
+
+        verify(shoppingListItemService).updateUserShoppingListItemStatus(userVO.getId(), userShoppingListItemId, locale.getLanguage(), status);
     }
 
+
     @Test
-    void getUserShoppingListItemsWithLanguageParamTest_statusIsOk() throws Exception {
+    void getShoppingListItemsAssignedToUser_WithLanguageParam_StatusIsOk() throws Exception {
         Long habitId = 1L;
         Locale locale = Locale.ENGLISH;
 
@@ -133,7 +141,7 @@ public class ShoppingListItemControllerTest {
     }
 
     @Test
-    void getUserShoppingListItemWithoutLanguageParamTest_statusIsOk() throws Exception {
+    void geShoppingListItemAssignedToUser_WithoutLanguageParamTest_StatusIsOk() throws Exception {
         Long habitId = 1L;
 
         when(userService.findByEmail(anyString())).thenReturn(userVO);
@@ -142,10 +150,11 @@ public class ShoppingListItemControllerTest {
                         .principal(principal))
                 .andExpect(status().isOk());
 
+        verify(shoppingListItemService).getUserShoppingList(userVO.getId(), habitId, "en");
     }
 
     @Test
-    void deleteShoppingListItem_statusOk() throws Exception {
+    void deleteShoppingListItem_StatusIsOk() throws Exception {
 
         when(userService.findByEmail(anyString())).thenReturn(userVO);
 
@@ -159,7 +168,7 @@ public class ShoppingListItemControllerTest {
     }
 
     @Test
-    void findInProgressByUserId_StatusOk() throws Exception {
+    void findInProgressByUserId_StatusIsOk() throws Exception {
         Long userId = 1L;
         String languageCode = "en";
         List<ShoppingListItemDto> responseDtoList = List.of(new ShoppingListItemDto());
@@ -173,5 +182,21 @@ public class ShoppingListItemControllerTest {
                 .andExpect(status().isOk());
 
         verify(shoppingListItemService, times(1)).findInProgressByUserIdAndLanguageCode(userId, languageCode);
+    }
+
+    @Test
+    void updateShoppingListItemStatusAssignedToUser_StatusIsCreated() throws Exception {
+        Long userShoppingListItemId = 1L;
+        Locale locale = Locale.ENGLISH;
+
+        when(userService.findByEmail(anyString())).thenReturn(userVO);
+
+        mockMvc.perform(patch(initialUrl + "/{userShoppingListItemId}",
+                        userShoppingListItemId)
+                        .locale(locale)
+                        .principal(principal))
+                .andExpect(status().isCreated());
+
+        verify(shoppingListItemService).updateUserShopingListItemStatus(userVO.getId(), userShoppingListItemId, locale.getLanguage());
     }
 }
