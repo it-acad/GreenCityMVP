@@ -28,6 +28,7 @@ public class EcoNewsVOMapperTest {
 
     @Test
     void convertTest() {
+        // Arrange
         EcoNews news = ModelUtils.getEcoNews()
                 .setUsersLikedNews(new HashSet<>(List.of(ModelUtils.getUser())))
                 .setUsersDislikedNews(new HashSet<>(List.of(ModelUtils.getUser())))
@@ -89,8 +90,10 @@ public class EcoNewsVOMapperTest {
                         .collect(Collectors.toList()))
                 .build();
 
+        // Act
         EcoNewsVO actual = mapper.convert(news);
 
+        // Assert
         assertEquals(expected, actual);
     }
 }

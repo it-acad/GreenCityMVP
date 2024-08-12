@@ -19,6 +19,7 @@ public class FilterDtoResponseMapperTest {
 
     @Test
     void convertTest() {
+        // Arrange
         Filter filter = ModelUtils.getFilter();
         String values = filter.getValues();
         String[] criterias = values.split(";");
@@ -31,8 +32,10 @@ public class FilterDtoResponseMapperTest {
                 .userStatus(criterias[2])
                 .build();
 
+        // Act
         UserFilterDtoResponse actual = mapper.convert(filter);
 
+        // Assert
         assertEquals(expected, actual);
     }
 }
