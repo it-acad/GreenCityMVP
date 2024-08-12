@@ -41,6 +41,7 @@ public class HabitStatisticControllerTest {
     private static final String habitStatisticControllerLink = "/habit/statistic";
     private final ErrorAttributes errorAttributes = new DefaultErrorAttributes();
     private final ObjectMapper objectMapper = new ObjectMapper();
+    private final UserVO userVO = ModelUtils.getUserVO();
 
     @Mock
     private HabitStatisticService habitStatisticService;
@@ -110,7 +111,6 @@ public class HabitStatisticControllerTest {
     @Test
     public void saveHabitStatistic_AddHabitStatisticDtoIsValid_ReturnStatusCode201() throws Exception {
         AddHabitStatisticDto addHabitStatisticDto = ModelUtils.addHabitStatisticDto();
-        UserVO userVO = ModelUtils.getUserVO();
         String addHabitStatisticDtoAsJSON = objectMapper.writeValueAsString(addHabitStatisticDto);
         when(habitStatisticService.saveByHabitIdAndUserId(any(Long.class), any(Long.class), any(AddHabitStatisticDto.class))).thenReturn(new HabitStatisticDto());
 
@@ -126,7 +126,6 @@ public class HabitStatisticControllerTest {
     @Test
     public void saveHabitStatistic_AddHabitStatisticDtoIsNotValid_ReturnStatusCode400() throws Exception {
         AddHabitStatisticDto alreadyExistsAddHabitStatisticDto = ModelUtils.addHabitStatisticDto();
-        UserVO userVO = ModelUtils.getUserVO();
         String addHabitStatisticDtoAsJSON = objectMapper.writeValueAsString(alreadyExistsAddHabitStatisticDto);
         when(habitStatisticService.saveByHabitIdAndUserId(any(Long.class), any(Long.class), any(AddHabitStatisticDto.class))).thenThrow(NotSavedException.class);
 
@@ -143,7 +142,6 @@ public class HabitStatisticControllerTest {
     @Test
     public void updateStatistic_UpdateHabitStatisticDtoIsValid_ReturnStatusCode200() throws Exception {
         UpdateHabitStatisticDto updateHabitStatisticDto = ModelUtils.updateHabitStatisticDto();
-        UserVO userVO = ModelUtils.getUserVO();
         String addHabitStatisticDtoAsJSON = objectMapper.writeValueAsString(updateHabitStatisticDto);
         when(habitStatisticService.update(any(Long.class), any(Long.class), any(UpdateHabitStatisticDto.class))).thenReturn(updateHabitStatisticDto);
 
@@ -160,7 +158,6 @@ public class HabitStatisticControllerTest {
     public void updateStatistic_UpdateHabitStatisticDtoIsNotValid_ReturnStatusCode400() throws Exception {
         UpdateHabitStatisticDto notValidUpdateHabitStatisticDto = ModelUtils.updateHabitStatisticDto();
         notValidUpdateHabitStatisticDto.setHabitRate(null);
-        UserVO userVO = ModelUtils.getUserVO();
         String addHabitStatisticDtoAsJSON = objectMapper.writeValueAsString(notValidUpdateHabitStatisticDto);
 
         mockMvc.perform(put(habitStatisticControllerLink + "/{id}", 1L)
@@ -173,6 +170,7 @@ public class HabitStatisticControllerTest {
     @Test
     public void getTodayStatisticsForAllHabitItems_withValidLocale_ReturnStatusCode200() throws Exception {
         Locale locale = Locale.ENGLISH;
+
         mockMvc.perform(get(habitStatisticControllerLink + "/todayStatisticsForAllHabitItems")
                         .contentType(MediaType.TEXT_PLAIN)
                         .locale(locale))
@@ -185,6 +183,7 @@ public class HabitStatisticControllerTest {
     public void getTodayStatisticsForAllHabitItems_withNotValidLocale_ReturnStatusCode400() throws Exception {
         Locale locale = Locale.of("NOT_EXISTS", "NOT_EXISTS");
         when(habitStatisticService.getTodayStatisticsForAllHabitItems(locale.getLanguage())).thenThrow(NotSavedException.class);
+
         mockMvc.perform(get(habitStatisticControllerLink + "/todayStatisticsForAllHabitItems")
                         .contentType(MediaType.APPLICATION_JSON)
                         .locale(locale))
@@ -194,6 +193,7 @@ public class HabitStatisticControllerTest {
     @Test
     public void findAmountOfAcquiredHabits_withExistsUserId_ReturnStatusCode200() throws Exception {
         final long existsUserId = 1L;
+
         mockMvc.perform(get(habitStatisticControllerLink + "/acquired/count")
                         .contentType(MediaType.APPLICATION_JSON)
                         .param("userId", String.valueOf(existsUserId)))
