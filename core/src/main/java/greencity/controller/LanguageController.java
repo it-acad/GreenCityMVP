@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
 import java.util.List;
 
 @RestController
@@ -26,11 +27,11 @@ public class LanguageController {
      */
     @Operation(summary = "Get all language code")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = HttpStatuses.OK)
+            @ApiResponse(responseCode = "200", description = HttpStatuses.OK)
     })
     @GetMapping("")
     public ResponseEntity<List<String>> getAllLanguageCodes() {
         return ResponseEntity.status(HttpStatus.OK).body(
-            languageService.findAllLanguageCodes());
+                languageService.findAllLanguageCodes());
     }
 }
