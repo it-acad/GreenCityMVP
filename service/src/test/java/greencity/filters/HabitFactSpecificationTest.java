@@ -3,51 +3,77 @@ package greencity.filters;
 import greencity.dto.habitfact.HabitFactViewDto;
 import greencity.entity.*;
 import jakarta.persistence.criteria.*;
-import jakarta.persistence.metamodel.ListAttribute;
 import jakarta.persistence.metamodel.SingularAttribute;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.hibernate.validator.internal.util.Contracts.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 class HabitFactSpecificationTest {
+    @Mock
+    private Root<HabitFact> root;
+
+    @Mock
+    private CriteriaQuery<?> criteriaQuery;
+
+    @Mock
+    private CriteriaBuilder criteriaBuilder;
+
+    @Mock
+    private Path<Long> pathLong;
+
+    @Mock
+    private Path<HabitFact> habitFactPath;
+
+    @Mock
+    private Predicate predicate;
+
+    @Mock
+    private Root<HabitFactTranslation> habitFactTranslationRoot;
 
     @Mock
     private CriteriaBuilder criteriaBuilderMock;
 
     @Mock
-    private CriteriaQuery<?> criteriaQueryMock;
+    private CriteriaQuery criteriaQueryMock;
 
     @Mock
     private Root<HabitFact> habitFactRootMock;
 
     @Mock
-    private Root<HabitFactTranslation> habitFactTranslationRootMock;
-
-    @Mock
-    private Join<HabitFact, Habit> habitJoinMock;
-
-    @Mock
     private Predicate predicateMock;
 
     @Mock
-    private Predicate andHabitIdPredicate;
+    private Predicate andIdPredicate;
 
     @Mock
-    private Predicate andContentPredicate;
+    private Path<Object> pathHabitFactIdMock;
 
     @Mock
-    private SingularAttribute<Translation, String> contentAttributeMock;
+    private SingularAttribute<HabitFact, Habit> habit;
 
     @Mock
-    private Path<String> pathTranslationContentMock;
+    private SingularAttribute<HabitFact, Long> habitFactId;
+
+    @Mock
+    private SingularAttribute<Habit, Long> habitId;
+
+    @Mock
+    private SingularAttribute<HabitFactTranslation, HabitFact> habitFact;
 
     private HabitFactSpecification habitFactSpecification;
 
@@ -68,51 +94,93 @@ class HabitFactSpecificationTest {
                 .value(habitFactViewDto.getId())
                 .build());
         criteriaList.add(SearchCriteria.builder()
-                .key(Habit_.ID)
-                .type(Habit_.ID)
+                .key(HabitFact_.HABIT)
+                .type(HabitFact_.HABIT)
                 .value(habitFactViewDto.getHabitId())
                 .build());
         criteriaList.add(SearchCriteria.builder()
-                .key(HabitFactTranslation_.CONTENT)
-                .type(HabitFactTranslation_.CONTENT)
+                .key(HabitFact_.TRANSLATIONS)
+                .type(HabitFact_.TRANSLATIONS)
                 .value(habitFactViewDto.getContent())
                 .build());
 
-        HabitFact_.translations = mock(ListAttribute.class);
-        HabitFactTranslation_.content = contentAttributeMock;
-        HabitFactTranslation_.habitFact = mock(SingularAttribute.class);
+        HabitFact_.id = habitFactId;
+        HabitFact_.habit = habit;
+        HabitFactTranslation_.habitFact = habitFact;
+        Habit_.id = habitId;
 
         habitFactSpecification = new HabitFactSpecification(criteriaList);
     }
 
     @Test
-    void toPredicate() {
+    void toPredicate_id() {
         when(criteriaBuilderMock.conjunction()).thenReturn(predicateMock);
+        when(habitFactRootMock.get(HabitFact_.ID)).thenReturn(pathHabitFactIdMock);
+        when(criteriaBuilderMock.equal(pathHabitFactIdMock, criteriaList.get(0).getValue().toString()))
+                .thenReturn(andIdPredicate);
+        when(criteriaBuilderMock.and(predicateMock, andIdPredicate)).thenReturn(andIdPredicate);
 
-        when(habitFactRootMock.join(HabitFact_.habit)).thenReturn(habitJoinMock);
+        Predicate result = habitFactSpecification.toPredicate(habitFactRootMock, criteriaQueryMock, criteriaBuilderMock);
 
-        when(criteriaBuilderMock.equal(habitJoinMock.get(Habit_.id), criteriaList.get(1).getValue()))
-                .thenReturn(andHabitIdPredicate);
+        assertNotNull(result, "Predicate shouldn't be null");
+        verify(criteriaBuilderMock).equal(pathHabitFactIdMock, "1");
+        verify(criteriaBuilderMock).and(predicateMock, andIdPredicate);
+        assertSame(andIdPredicate, result);
+    }
 
-        when(criteriaBuilderMock.and(predicateMock, andHabitIdPredicate)).thenReturn(andHabitIdPredicate);
+    private HabitFactSpecification createSpecification(String key, String type) {
+        SearchCriteria searchCriteria = new SearchCriteria(key, "1", type);
+        List<SearchCriteria> criteriaList = List.of(searchCriteria);
+        return new HabitFactSpecification(criteriaList);
+    }
 
-        when(criteriaQueryMock.from(HabitFactTranslation.class)).thenReturn(habitFactTranslationRootMock);
+    @Test
+    void toPredicate_habitId(){
+        HabitFactSpecification specification = createSpecification("1", "habitId");
 
-        when(habitFactTranslationRootMock.get(contentAttributeMock)).thenReturn(pathTranslationContentMock);
+        Join<HabitFact, Habit> habitJoin = mock(Join.class);
+        when(root.join(HabitFact_.habit)).thenReturn(habitJoin);
+        when(criteriaBuilder.equal(habitJoin.get(Habit_.id), "1")).thenReturn(predicate);
+        when(criteriaBuilder.conjunction()).thenReturn(predicate);
+        when(criteriaBuilder.and(predicate, predicate)).thenReturn(predicate);
 
-        when(criteriaBuilderMock.like(pathTranslationContentMock, "%" + criteriaList.get(2).getValue() + "%"))
-                .thenReturn(andContentPredicate);
+        Predicate result = specification.toPredicate(root, criteriaQuery, criteriaBuilder);
 
-        when(criteriaBuilderMock.equal(habitFactTranslationRootMock.get(HabitFactTranslation_.habitFact).get(HabitFact_.id),
-                habitFactRootMock.get(HabitFact_.id)))
-                .thenReturn(andContentPredicate);
+        assertNotNull(result, "Predicate shouldn't be null");
+        verify(criteriaBuilder).equal(habitJoin.get(Habit_.id), "1");
+    }
 
-        when(criteriaBuilderMock.and(andHabitIdPredicate, andContentPredicate)).thenReturn(andContentPredicate);
+    @Test
+    void toPredicate_content(){
+        HabitFactSpecification specification = createSpecification("test", "content");
 
-        habitFactSpecification.toPredicate(habitFactRootMock, criteriaQueryMock, criteriaBuilderMock);
+        when(criteriaQuery.from(HabitFactTranslation.class)).thenReturn(habitFactTranslationRoot);
 
-        verify(habitFactRootMock, never()).get(HabitFact_.translations);
-        verify(criteriaBuilderMock).and(predicateMock, andHabitIdPredicate);
-        verify(criteriaBuilderMock).and(andHabitIdPredicate, andContentPredicate);
+        Path<String> contentPath = mock(Path.class);
+        when(habitFactTranslationRoot.get(HabitFactTranslation_.content)).thenReturn(contentPath);
+
+        when(criteriaBuilder.like(contentPath, "%test%")).thenReturn(predicate);
+        when(root.get(HabitFact_.id)).thenReturn(pathLong);
+        when(habitFactTranslationRoot.get(HabitFactTranslation_.habitFact)).thenReturn(habitFactPath);
+        when(habitFactPath.get(HabitFact_.id)).thenReturn(pathLong);
+        when(criteriaBuilder.equal(pathLong, pathLong)).thenReturn(predicate);
+        when(criteriaBuilder.conjunction()).thenReturn(predicate);
+        when(criteriaBuilder.and(predicate, predicate)).thenReturn(predicate);
+
+        Predicate result = specification.toPredicate(root, criteriaQuery, criteriaBuilder);
+
+        assertNotNull(result, "Predicate should not be null");
+        verify(criteriaBuilder).like(contentPath, "%test%");
+        verify(criteriaBuilder).equal(pathLong, pathLong);
+    }
+
+    @Test
+    void toPredicate_withEmptyCriteriaList() {
+        when(criteriaBuilderMock.conjunction()).thenReturn(predicateMock);
+        habitFactSpecification = new HabitFactSpecification(new ArrayList<>());
+        Predicate result = habitFactSpecification.toPredicate(habitFactRootMock, criteriaQueryMock, criteriaBuilderMock);
+
+        verify(criteriaBuilderMock).conjunction();
+        assertSame(predicateMock, result);
     }
 }
