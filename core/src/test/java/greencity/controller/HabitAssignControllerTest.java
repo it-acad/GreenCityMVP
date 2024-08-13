@@ -40,9 +40,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ExtendWith(MockitoExtension.class)
 public class HabitAssignControllerTest {
     final long habitId = 1L;
-    final long notExistsHabitId = 666L;
+    final long notExistsHabitId = 999L;
     final long habitAssignId = 1L;
-    final long notExistsHabitAssignId = 666L;
+    final long notExistsHabitAssignId = 999L;
     private MockMvc mockMvc;
     private static final String habitAssignControllerLink = "/habit/assign";
     private final UserVO userVO = ModelUtils.getUserVO();
