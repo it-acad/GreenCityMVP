@@ -89,7 +89,7 @@ public class EcoNewsController {
     @ApiResponses(value = {
         @ApiResponse(responseCode = "201", description = HttpStatuses.CREATED,
                     content = @Content(schema = @Schema(implementation = String.class))),
-        @ApiResponse(responseCode = "303", description = HttpStatuses.SEE_OTHER),
+        @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST),
         @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN)
     })
     @PostMapping(path = "/uploadImage", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
@@ -110,7 +110,8 @@ public class EcoNewsController {
     @ApiResponses(value = {
         @ApiResponse(responseCode = "201", description = HttpStatuses.CREATED),
         @ApiResponse(responseCode = "303", description = HttpStatuses.SEE_OTHER),
-        @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN)
+        @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN),
+        @ApiResponse(responseCode = "415", description = HttpStatuses.UNSUPPORTED_MEDIA_TYPE)
     })
     @PostMapping(path = "/uploadImages", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<String[]> uploadImages(
@@ -126,7 +127,7 @@ public class EcoNewsController {
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
         @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED),
-        @ApiResponse(responseCode = "403", description = HttpStatuses.BAD_REQUEST),
+        @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN),
         @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND)
     })
     @DeleteMapping("/deleteImage")
@@ -371,7 +372,10 @@ public class EcoNewsController {
     @GetMapping("/isLikedByUser")
     public ResponseEntity<Boolean> checkNewsIsLikedByUser(@RequestParam("econewsId") Long econewsId,
                                                           @Parameter(hidden = true) @CurrentUser UserVO user) {
-        return ResponseEntity.status(HttpStatus.OK).body(ecoNewsService.checkNewsIsLikedByUser(econewsId, user));
+        if (user != null) {
+            return ResponseEntity.status(HttpStatus.OK).body(ecoNewsService.checkNewsIsLikedByUser(econewsId, user));
+        }
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 
     /**
@@ -383,7 +387,7 @@ public class EcoNewsController {
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
         @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST),
-        @ApiResponse(responseCode = "401", description = HttpStatuses.FORBIDDEN),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED),
         @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND,
                     content = @Content(schema = @Schema(implementation = NotFoundException.class)))
     })

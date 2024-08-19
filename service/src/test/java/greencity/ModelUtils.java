@@ -1,5 +1,6 @@
 package greencity;
 
+import greencity.annotations.RatingCalculationEnum;
 import greencity.constant.AppConstant;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.econews.*;
@@ -10,6 +11,7 @@ import greencity.dto.language.LanguageDTO;
 import greencity.dto.language.LanguageTranslationDTO;
 import greencity.dto.language.LanguageVO;
 import greencity.dto.ownsecurity.OwnSecurityVO;
+import greencity.dto.ratingstatistics.RatingStatisticsViewDto;
 import greencity.dto.search.SearchNewsDto;
 import greencity.dto.shoppinglistitem.CustomShoppingListItemResponseDto;
 import greencity.dto.shoppinglistitem.CustomShoppingListItemVO;
@@ -668,4 +670,18 @@ public class ModelUtils {
             .status(ShoppingListItemStatus.INPROGRESS)
             .build();
     }
+
+    public static RatingStatisticsViewDto getRatingStatisticsViewDto() {
+        return new RatingStatisticsViewDto(
+                "1",
+                RatingCalculationEnum.ADD_COMMENT.name(),
+                "1",
+                "andriy123@example.com",
+                LocalDate.now().minusDays(3).toString(),
+                LocalDate.now().plusDays(3).toString(),
+                "10",
+                "50"
+        );
+    }
+
 }

@@ -32,8 +32,8 @@ public class HabitStatisticDtoMapperTest {
 
         // Act
         HabitStatisticDto actual = mapper.convert(habitStatistic);
-
-        // Act
+      
+        // Assert
         assertEquals(expected, actual);
     }
 }
