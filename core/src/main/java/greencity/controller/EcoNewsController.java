@@ -9,6 +9,7 @@ import greencity.dto.tag.TagDto;
 import greencity.dto.tag.TagVO;
 import greencity.dto.user.UserVO;
 import greencity.exception.exceptions.NotFoundException;
+import greencity.exception.handler.ExceptionResponse;
 import greencity.service.EcoNewsService;
 import greencity.service.FileService;
 import greencity.service.TagsService;
@@ -18,6 +19,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -26,7 +28,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import jakarta.validation.Valid;
+
 import java.security.Principal;
 import java.util.List;
 import java.util.Locale;
@@ -147,8 +149,7 @@ public class EcoNewsController {
         @ApiResponse(responseCode = "303", description = HttpStatuses.SEE_OTHER),
         @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN)
     })
-    @PutMapping(path = "/update", consumes = {MediaType.APPLICATION_JSON_VALUE,
-        MediaType.MULTIPART_FORM_DATA_VALUE})
+    @PutMapping(path = "/update", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<EcoNewsGenericDto> update(
             @Parameter(description = SwaggerExampleModel.UPDATE_ECO_NEWS,
                     required = true) @Valid @RequestPart UpdateEcoNewsDto updateEcoNewsDto,
