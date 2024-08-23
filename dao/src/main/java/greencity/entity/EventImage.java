@@ -12,7 +12,6 @@ import java.util.Set;
 @Setter
 @Builder
 @EqualsAndHashCode
-@ToString
 @Table(name = "event_images")
 public class EventImage {
     @Id

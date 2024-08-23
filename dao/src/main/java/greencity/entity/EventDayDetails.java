@@ -13,7 +13,6 @@ import java.time.LocalTime;
 @Setter
 @Builder
 @EqualsAndHashCode
-@ToString
 @Table(name = "event_day_details")
 public class EventDayDetails {
     @Id

@@ -1,9 +1,10 @@
 package greencity.service;
 
+import greencity.dto.event.EventCreationDto;
 import greencity.dto.event.EventDto;
-import greencity.dto.event.EventVO;
+import org.springframework.web.multipart.MultipartFile;
 
 public interface EventService {
 
-      EventVO save(EventDto event);
+      EventDto save(MultipartFile[] images, EventCreationDto event, Long userId);
 }

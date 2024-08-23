@@ -3,6 +3,10 @@ package greencity.entity;
 import greencity.enums.EventType;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.Cascade;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -11,8 +15,7 @@ import java.util.Set;
 @Getter
 @Setter
 @Builder
-@EqualsAndHashCode
-@ToString
+@EqualsAndHashCode(exclude ={"images", "eventDayDetailsList"})
 @Table(name = "events")
 public class Event {
     @Id
@@ -30,14 +33,15 @@ public class Event {
     private EventType eventType = EventType.OPEN;
 
     @OneToMany(mappedBy="event", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private Set<EventDayDetails> durationAndLocationList;
+    private Set<EventDayDetails> eventDayDetailsList;
 
     @ManyToMany
     @JoinTable(
             name = "events_event_images",
             joinColumns = @JoinColumn(name = "event_id"),
-            inverseJoinColumns = @JoinColumn(name = "event_image_id"))
-    private Set<EventImage> images;
+            inverseJoinColumns = @JoinColumn(name = "image_id"))
+    @Cascade(org.hibernate.annotations.CascadeType.ALL)
+    private List<EventImage> images = new ArrayList<>();
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)

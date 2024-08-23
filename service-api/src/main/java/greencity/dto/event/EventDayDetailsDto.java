@@ -4,10 +4,17 @@ import greencity.constant.ServiceValidationConstants;
 import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PastOrPresent;
+import lombok.*;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Setter
+@Builder
+@EqualsAndHashCode
 public class EventDayDetailsDto {
     private Long id;
     @NotNull
