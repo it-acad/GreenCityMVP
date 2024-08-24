@@ -22,17 +22,17 @@ public class NotificationServiceImpl implements NotificationService {
     @Override
     @Transactional
     public NotificationDto save(NotificationDto notificationDto) {
-       Notification mappedNotification = mapper.toEntity(notificationDto);
-         Notification savedNotification = notificationRepo.save(mappedNotification);
-            return mapper.toDto(savedNotification);
+        Notification mappedNotification = mapper.toEntity(notificationDto);
+        Notification savedNotification = notificationRepo.save(mappedNotification);
+        return mapper.toDto(savedNotification);
     }
 
     @Override
     public List<NotificationDto> findAllByUserId(Long userId) {
-       List<Notification> notifications = notificationRepo.findAllByUserId(userId);
-       return notifications.stream()
-               .map(mapper::toDto)
-               .toList();
+        List<Notification> notifications = notificationRepo.findAllByUserId(userId);
+        return notifications.stream()
+                .map(mapper::toDto)
+                .toList();
     }
 
     @Override
@@ -52,7 +52,7 @@ public class NotificationServiceImpl implements NotificationService {
             notificationEntity.setRead(true);
             notificationEntity.setReceivedTime(LocalDateTime.now());
             notificationRepo.save(notificationEntity);
-        }else {
+        } else {
             throw new NotificationNotFoundException("Notification with ID " + id + " not found");
         }
     }
