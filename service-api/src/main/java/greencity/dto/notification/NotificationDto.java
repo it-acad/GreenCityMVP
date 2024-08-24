@@ -11,6 +11,7 @@ import lombok.*;
 public class NotificationDto {
     private Long id;
     private String section;
+    private String sectionType;
     private String text;
     private boolean isRead;
     private String receivedTime;

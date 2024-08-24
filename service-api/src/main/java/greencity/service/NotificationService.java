@@ -12,5 +12,5 @@ public interface NotificationService {
 
     List<NotificationDto> findAllByUserIdAndIsReadFalse(Long userId);
 
-    void markAsRead(Long id);
+    void markAsReadNotification(Long id);
 }
