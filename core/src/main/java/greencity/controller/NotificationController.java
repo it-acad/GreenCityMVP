@@ -4,6 +4,7 @@ import greencity.annotations.CurrentUser;
 import greencity.dto.notification.NotificationDto;
 import greencity.dto.user.UserVO;
 import greencity.service.NotificationService;
+import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,13 +18,15 @@ public class NotificationController {
     private final NotificationService notificationService;
 
     @GetMapping("/unread")
-    public ResponseEntity<List<NotificationDto>> getUnreadNotifications(@CurrentUser UserVO currentUser) {
+    public ResponseEntity<List<NotificationDto>> getUnreadNotifications(
+            @Parameter(hidden = true) @CurrentUser UserVO currentUser) {
         List<NotificationDto> notifications = notificationService.findAllByUserIdAndIsReadFalse(currentUser.getId());
         return ResponseEntity.ok(notifications);
     }
 
     @GetMapping("/all")
-    public ResponseEntity<List<NotificationDto>> getAllNotifications(@CurrentUser UserVO currentUser) {
+    public ResponseEntity<List<NotificationDto>> getAllNotifications(
+            @Parameter(hidden = true) @CurrentUser UserVO currentUser) {
         List<NotificationDto> notifications = notificationService.findAllByUserId(currentUser.getId());
         return ResponseEntity.ok(notifications);
     }
@@ -35,14 +38,16 @@ public class NotificationController {
     }
 
     @GetMapping()
-    public ResponseEntity<List<NotificationDto>> getFirstThreeNotifications(@CurrentUser UserVO currentUser) {
+    public ResponseEntity<List<NotificationDto>> getFirstThreeNotifications(
+            @Parameter(hidden = true) @CurrentUser UserVO currentUser) {
         List<NotificationDto> notifications = notificationService.getFirstThreeNotifications(currentUser.getId());
         return ResponseEntity.ok(notifications);
     }
 
     @GetMapping("/sorted")
-    public ResponseEntity<List<NotificationDto>> getNotificationsSortedByReceivedTime(@CurrentUser UserVO currentUser,
-                                                                                      @RequestParam boolean ascending) {
+    public ResponseEntity<List<NotificationDto>> getNotificationsSortedByReceivedTime(
+            @Parameter(hidden = true) @CurrentUser UserVO currentUser,
+            @RequestParam boolean ascending) {
         List<NotificationDto> notifications = notificationService.getNotificationsSortedByReceivedTime(currentUser.getId(), ascending);
         return ResponseEntity.ok(notifications);
     }
