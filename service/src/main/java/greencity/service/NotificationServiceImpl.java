@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -55,5 +56,27 @@ public class NotificationServiceImpl implements NotificationService {
         } else {
             throw new NotificationNotFoundException("Notification with ID " + id + " not found");
         }
+    }
+
+    @Override
+    public List<NotificationDto> getFirstThreeNotifications(Long userId) {
+        List<Notification> notifications = notificationRepo.findFirstThreeByUserIdOrderByReceivedTimeDesc(userId);
+        return notifications.stream()
+                .map(mapper::toDto)
+                .toList();
+    }
+
+    @Override
+    public List<NotificationDto> getNotificationsSortedByReceivedTime(Long userId, boolean ascending) {
+        List<Notification> notifications = notificationRepo.findAllByUserIdOrderByReceivedTimeDesc(userId);
+        Comparator<Notification> comparator = Comparator.comparing(Notification::getReceivedTime);
+
+        if (!ascending) {
+            comparator = comparator.reversed();
+        }
+        return notifications.stream()
+                .sorted(comparator)
+                .map(mapper::toDto)
+                .toList();
     }
 }

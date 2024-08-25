@@ -34,4 +34,16 @@ public class NotificationController {
         return ResponseEntity.ok().build();
     }
 
+    @GetMapping()
+    public ResponseEntity<List<NotificationDto>> getFirstThreeNotifications(@CurrentUser UserVO currentUser) {
+        List<NotificationDto> notifications = notificationService.getFirstThreeNotifications(currentUser.getId());
+        return ResponseEntity.ok(notifications);
+    }
+
+    @GetMapping("/sorted")
+    public ResponseEntity<List<NotificationDto>> getNotificationsSortedByReceivedTime(@CurrentUser UserVO currentUser,
+                                                                                      @RequestParam boolean ascending) {
+        List<NotificationDto> notifications = notificationService.getNotificationsSortedByReceivedTime(currentUser.getId(), ascending);
+        return ResponseEntity.ok(notifications);
+    }
 }

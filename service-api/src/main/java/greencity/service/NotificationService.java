@@ -13,4 +13,8 @@ public interface NotificationService {
     List<NotificationDto> findAllByUserIdAndIsReadFalse(Long userId);
 
     void markAsReadNotification(Long id);
+
+    List<NotificationDto> getFirstThreeNotifications(Long userId);
+
+    List<NotificationDto> getNotificationsSortedByReceivedTime(Long userId, boolean ascending);
 }
