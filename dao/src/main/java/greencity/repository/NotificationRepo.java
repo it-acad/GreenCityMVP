@@ -14,7 +14,7 @@ public interface NotificationRepo extends JpaRepository<Notification, Long> {
     @Query("SELECT n FROM Notification n WHERE n.user.id = :userId AND n.isRead = false")
     List<Notification> findAllByUserIdAndIsReadFalse(@Param("userId") Long userId);
 
-    @Query("SELECT n FROM Notification n WHERE n.user.id = :userId ORDER BY n.receivedTime DESC")
+    @Query("SELECT n FROM Notification n WHERE n.user.id = :userId ORDER BY n.receivedTime DESC LIMIT 3")
     List<Notification> findFirstThreeByUserIdOrderByReceivedTimeDesc(@Param("userId") Long userId);
 
     @Query("SELECT n FROM Notification n WHERE n.user.id = :userId ORDER BY n.receivedTime DESC")

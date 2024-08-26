@@ -404,4 +404,11 @@ public class ModelUtils {
             .build();
     }
 
+    public static Notification getNotification() {
+        return Notification.builder()
+                .user(getUser())
+                .receivedTime(LocalDateTime.now())
+                .isRead(false)
+                .build();
+    }
 }

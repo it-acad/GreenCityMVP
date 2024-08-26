@@ -2,6 +2,7 @@ package greencity.service;
 
 import greencity.dto.notification.NotificationDto;
 import greencity.entity.Notification;
+import greencity.exception.exceptions.InvalidUserIdException;
 import greencity.exception.exceptions.NotificationNotFoundException;
 import greencity.mapping.NotificationMapper;
 import greencity.repository.NotificationRepo;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -38,7 +40,13 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     public List<NotificationDto> findAllByUserIdAndIsReadFalse(Long userId) {
+        if (userId == null) {
+            throw new InvalidUserIdException("User ID cannot be null");
+        }
         List<Notification> notifications = notificationRepo.findAllByUserIdAndIsReadFalse(userId);
+        if (notifications.isEmpty()){
+            return Collections.emptyList();
+        }
         return notifications.stream()
                 .map(mapper::toDto)
                 .toList();
