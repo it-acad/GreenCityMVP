@@ -1,5 +1,6 @@
 package greencity.dto.event;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import greencity.constant.ServiceValidationConstants;
 import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.NotNull;
@@ -15,9 +16,7 @@ import java.time.LocalTime;
 @Setter
 @Builder
 @EqualsAndHashCode
-public class EventDayDetailsDto {
-
-    private Long id;
+public class EventDayDetailsCreatingDto {
 
     @NotNull
     @Future(message = ServiceValidationConstants.EVENT_DAY_RESTRICTION)
@@ -29,10 +28,13 @@ public class EventDayDetailsDto {
 
     private LocalTime eventEndTime;
 
+    @JsonProperty("isAllDateDuration")
     private boolean isAllDateDuration;
 
+    @JsonProperty("isOnline")
     private boolean isOnline;
 
+    @JsonProperty("isOffline")
     private boolean isOffline;
 
     private String offlinePlace;

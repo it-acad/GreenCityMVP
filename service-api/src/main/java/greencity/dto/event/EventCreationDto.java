@@ -20,7 +20,7 @@ public class EventCreationDto {
     private String description;
 
     @Size(min = 1, max = 7, message = ServiceValidationConstants.EVENT_AMOUNT_OF_DAYS)
-    private Set<EventDayDetailsDto> eventDayDetailsList;
+    private Set<EventDayDetailsCreatingDto> eventDayDetailsList;
 
     private String eventType;
 

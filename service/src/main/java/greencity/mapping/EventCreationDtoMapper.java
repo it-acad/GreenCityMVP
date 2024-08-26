@@ -23,7 +23,6 @@ public class EventCreationDtoMapper extends AbstractConverter<EventCreationDto, 
 
          event.setEventDayDetailsList(eventCreationDto.getEventDayDetailsList().stream()
                 .map(day -> EventDayDetails.builder()
-                        .id(day.getId())
                         .eventDate(day.getEventDate())
                         .eventStartTime(day.getEventStartTime())
                         .eventEndTime(day.getEventEndTime())
