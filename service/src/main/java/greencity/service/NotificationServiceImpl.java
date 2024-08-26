@@ -14,7 +14,6 @@ import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -55,15 +54,11 @@ public class NotificationServiceImpl implements NotificationService {
     @Override
     @Transactional
     public void markAsReadNotification(Long id) {
-        Optional<Notification> notification = notificationRepo.findById(id);
-        if (notification.isPresent()) {
-            Notification notificationEntity = notification.get();
-            notificationEntity.setRead(true);
-            notificationEntity.setReceivedTime(LocalDateTime.now());
-            notificationRepo.save(notificationEntity);
-        } else {
-            throw new NotificationNotFoundException("Notification with ID " + id + " not found");
-        }
+        Notification notification = notificationRepo.findById(id)
+                .orElseThrow(() -> new NotificationNotFoundException("Notification with ID " + id + " not found"));
+
+            notification.setRead(true);
+            notification.setReceivedTime(LocalDateTime.now());
     }
 
     @Override
