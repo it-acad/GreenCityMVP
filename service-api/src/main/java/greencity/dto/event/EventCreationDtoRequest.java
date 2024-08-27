@@ -12,7 +12,7 @@ import java.util.Set;
 @Setter
 @Builder
 @EqualsAndHashCode
-public class EventCreationDto {
+public class EventCreationDtoRequest {
     @Size(min = 1, max = 70, message = ServiceValidationConstants.EVENT_TITLE_LENGTH)
     private String eventTitle;
 

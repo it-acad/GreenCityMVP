@@ -43,6 +43,12 @@ public class EventDayDetails {
     @Column(name = "link")
     private String onlinePlace;
 
+    @Column(name = "latitude")
+    private double latitude;
+
+    @Column(name = "longitude")
+    private double longitude;
+
     @ManyToOne
     @JoinColumn(name = "event_id", nullable = false)
     private Event event;
