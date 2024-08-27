@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 
 @Component
 public class EventDtoMapper extends AbstractConverter<Event, EventDto> {
+
     @Override
     protected EventDto convert(Event event) {
         return EventDto.builder()

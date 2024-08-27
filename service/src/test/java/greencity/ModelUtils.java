@@ -5,6 +5,9 @@ import greencity.constant.AppConstant;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.econews.*;
 import greencity.dto.econewscomment.*;
+import greencity.dto.event.EventCreationDto;
+import greencity.dto.event.EventDayDetailsCreatingDto;
+import greencity.dto.event.EventDayDetailsDto;
 import greencity.dto.habit.*;
 import greencity.dto.habitfact.*;
 import greencity.dto.language.LanguageDTO;
@@ -684,4 +687,68 @@ public class ModelUtils {
         );
     }
 
+    public static Event getEvent() {
+        return new Event(
+                1L,
+                "Some event title",
+                "This is a description of the event. It can be quite long, but not too long.",
+                EventType.OPEN,
+                new HashSet<>(Set.of(getEventDayDetails())),
+                new ArrayList<>(List.of(
+                        EventImage.builder().id(1L).imagePath("https://someimageurl1.net").build(),
+                        EventImage.builder().id(2L).imagePath("https://someimageurl2.net").build(),
+                        EventImage.builder().id(3L).imagePath("https://someimageurl3.net").build()
+                )),
+                getUser());
+    }
+
+    public static EventCreationDto getEventCreationDto() {
+        return new EventCreationDto(
+                "Some event title",
+                "This is a description of the event. It can be quite long, but not too long.",
+                new HashSet<>(Set.of(eventDayDetailsCreatingDto())),
+               "OPEN",
+                AuthorDto.builder().id(1L).name("Some Author").build());
+    }
+
+    public static EventDayDetails getEventDayDetails() {
+        return EventDayDetails.builder()
+                .id(1L)
+                .eventDate(LocalDate.now())
+                .eventStartTime(LocalTime.of(10, 10))
+                .eventEndTime(LocalTime.of(12, 10))
+                .isAllDateDuration(false)
+                .isOnline(true)
+                .isOffline(true)
+                .onlinePlace("https://example.org")
+                .offlinePlace("Ukraine, Kyiv, somestreet 99")
+                .build();
+    }
+
+    public static EventDayDetailsDto getEventDayDetailsDto() {
+        return EventDayDetailsDto.builder()
+                .id(1L)
+                .eventDate(LocalDate.now())
+                .eventStartTime(LocalTime.of(10, 10))
+                .eventEndTime(LocalTime.of(12, 10))
+                .isAllDateDuration(false)
+                .isOnline(true)
+                .isOffline(true)
+                .onlinePlace("https://example.org")
+                .offlinePlace("Ukraine, Kyiv, somestreet 99")
+                .build();
+    }
+
+    public static EventDayDetailsCreatingDto eventDayDetailsCreatingDto() {
+        return EventDayDetailsCreatingDto.builder()
+                .eventDate(LocalDate.now())
+                .eventStartTime(LocalTime.of(10, 10))
+                .eventEndTime(LocalTime.of(12, 10))
+                .isAllDateDuration(false)
+                .isOnline(true)
+                .isOffline(true)
+                .onlinePlace("https://example.org")
+                .offlinePlace("Ukraine, Kyiv, somestreet 99")
+                .build();
+    }
 }
