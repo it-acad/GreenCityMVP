@@ -643,7 +643,7 @@
     </changeSet>
     <changeSet id="1724587009318-38" author="keega">
         <!-- Modified to include locale -->
-        <addColumn tableName="uc_shopping_list_item_translations_content">
+        <addColumn tableName="shopping_list_item_translations">
             <column name="locale" type="VARCHAR(10)"/>
         </addColumn>
 
