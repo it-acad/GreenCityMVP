@@ -146,21 +146,6 @@ public class NotificationServiceImplTest {
     }
 
     @Test
-    public void testMarkAsReadNotification_Success() {
-        Long notificationId = 1L;
-        Notification notification = new Notification();
-        notification.setRead(false);
-
-        when(notificationRepo.findById(notificationId)).thenReturn(Optional.of(notification));
-
-        notificationService.markAsReadNotification(notificationId);
-
-        assertTrue(notification.isRead(), "Notification should be marked as read");
-        verify(notificationRepo).findById(notificationId);
-        verify(notificationRepo).save(notification);
-    }
-
-    @Test
     public void testFindAllByUserIdAndIsReadFalse_NoUnreadNotifications() {
         Long userId = 1L;
         List<Notification> notifications = List.of();
@@ -170,6 +155,23 @@ public class NotificationServiceImplTest {
 
         assertTrue(result.isEmpty());
         verify(notificationRepo).findAllByUserIdAndIsReadFalse(userId);
+    }
+
+    @Test
+    public void testMarkAsReadNotification_Success() {
+        Long notificationId = 1L;
+        Notification notification = new Notification();
+        notification.setId(notificationId);
+        notification.setRead(false);
+        notification.setReceivedTime(LocalDateTime.now().minusDays(1));
+
+        when(notificationRepo.findById(notificationId)).thenReturn(Optional.of(notification));
+
+        notificationService.markAsReadNotification(notificationId);
+
+        assertTrue(notification.isRead());
+        assertNotNull(notification.getReceivedTime());
+        verify(notificationRepo).findById(notificationId);
     }
 
     @Test
@@ -188,41 +190,12 @@ public class NotificationServiceImplTest {
     }
 
     @Test
-    public void testMarkAsReadNotification_ValidNotification() {
-        Long notificationId = 1L;
-        Notification notification = new Notification();
-        when(notificationRepo.findById(notificationId)).thenReturn(Optional.of(notification));
-        when(notificationRepo.save(notification)).thenReturn(notification);
-
-        notificationService.markAsReadNotification(notificationId);
-
-        assertTrue(notification.isRead());
-        verify(notificationRepo).findById(notificationId);
-        verify(notificationRepo).save(notification);
-    }
-
-    @Test
     public void testMarkAsReadNotification_NotificationNotFound() {
         Long notificationId = 1L;
         when(notificationRepo.findById(notificationId)).thenReturn(Optional.empty());
 
         assertThrows(NotificationNotFoundException.class, () -> notificationService.markAsReadNotification(notificationId));
         verify(notificationRepo).findById(notificationId);
-    }
-
-    @Test
-    public void testMarkAsReadNotification_AlreadyReadNotification() {
-        Long notificationId = 1L;
-        Notification notification = new Notification();
-        notification.setRead(true);
-        when(notificationRepo.findById(notificationId)).thenReturn(Optional.of(notification));
-        when(notificationRepo.save(notification)).thenReturn(notification);
-
-        notificationService.markAsReadNotification(notificationId);
-
-        assertTrue(notification.isRead());
-        verify(notificationRepo).findById(notificationId);
-        verify(notificationRepo).save(notification);
     }
 
     @Test

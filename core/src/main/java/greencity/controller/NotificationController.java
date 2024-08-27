@@ -90,7 +90,7 @@ public class NotificationController {
             @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED),
             @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND)
     })
-    @GetMapping()
+    @GetMapping("/topThree")
     public ResponseEntity<List<NotificationDto>> getFirstThreeNotifications(
             @Parameter(hidden = true) @CurrentUser UserVO currentUser) {
         List<NotificationDto> notifications = notificationService.getFirstThreeNotifications(currentUser.getId());
