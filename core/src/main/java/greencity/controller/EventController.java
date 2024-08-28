@@ -1,6 +1,7 @@
 package greencity.controller;
 
 import greencity.annotations.CurrentUser;
+import greencity.annotations.ImageListSizeValidation;
 import greencity.annotations.ImageSizeValidation;
 import greencity.annotations.ImageValidation;
 import greencity.constant.HttpStatuses;
@@ -38,13 +39,14 @@ public class EventController {
     })
     @PostMapping(path = "/create", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<EventDto> save(
-            @RequestPart @ImageValidation @ImageSizeValidation(maxSizeMB = 10) List<MultipartFile> images,
+            @RequestPart(required = false) @ImageListSizeValidation(maxSize = 5) List<
+                    @ImageSizeValidation(maxSizeMB = 10)
+                    @ImageValidation MultipartFile> images,
             @RequestPart @Valid EventCreationDtoRequest eventCreationDtoRequest,
             @CurrentUser UserVO currentUser) {
 
         EventDto savedEvent = eventService.saveEvent(eventCreationDtoRequest, images, currentUser.getEmail());
         return ResponseEntity.status(HttpStatus.CREATED).body(savedEvent);
     }
-
 
 }
