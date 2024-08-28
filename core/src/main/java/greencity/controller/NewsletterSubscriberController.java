@@ -2,10 +2,10 @@ package greencity.controller;
 
 import greencity.dto.newslettersubscriber.NewsletterSubscriberDto;
 import greencity.service.NewsletterSubscriberService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,7 +21,7 @@ public class NewsletterSubscriberController {
     private final NewsletterSubscriberService newsletterSubscriberService;
 
     @PostMapping("/subscribe")
-    public ResponseEntity<NewsletterSubscriberDto> subscribe(@Validated NewsletterSubscriberDto newsletterSubscriberDto) {
+    public ResponseEntity<NewsletterSubscriberDto> subscribe(@Valid NewsletterSubscriberDto newsletterSubscriberDto) {
         return ResponseEntity.ok(newsletterSubscriberService.subscribe(newsletterSubscriberDto));
     }
 

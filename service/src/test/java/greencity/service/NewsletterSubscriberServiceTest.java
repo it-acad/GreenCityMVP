@@ -39,7 +39,7 @@ public class NewsletterSubscriberServiceTest {
     }
 
     @Test
-    void NewsletterSubscriberService_subscribe() {
+    void newsletterSubscriberService_subscribe() {
 
         when(modelMapper.map(newsletterSubscriberDto, NewsletterSubscriber.class)).thenReturn(newsletterSubscriber);
         when(newsletterSubscriberRepo.save(newsletterSubscriber)).thenReturn(newsletterSubscriber);
@@ -52,7 +52,7 @@ public class NewsletterSubscriberServiceTest {
     }
 
     @Test
-    void NewsletterSubscriberService_findByEmail() {
+    void newsletterSubscriberService_findByEmail() {
         when(newsletterSubscriberRepo.findByEmail(newsletterSubscriberDto.getEmail())).thenReturn(newsletterSubscriber);
         when(modelMapper.map(newsletterSubscriber, NewsletterSubscriberDto.class)).thenReturn(newsletterSubscriberDto);
 
