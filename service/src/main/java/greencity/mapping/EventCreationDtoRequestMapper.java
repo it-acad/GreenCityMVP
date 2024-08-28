@@ -11,17 +11,17 @@ import java.util.ArrayList;
 import java.util.stream.Collectors;
 
 @Component
-public class EventCreationDtoMapper extends AbstractConverter<EventCreationDtoRequest, Event> {
+public class EventCreationDtoRequestMapper extends AbstractConverter<EventCreationDtoRequest, Event> {
     @Override
     protected Event convert(EventCreationDtoRequest eventCreationDtoRequest) {
-         Event event =  Event.builder()
+        Event event = Event.builder()
                 .eventTitle(eventCreationDtoRequest.getEventTitle())
                 .description(eventCreationDtoRequest.getDescription())
-                .eventType(EventType.valueOf(eventCreationDtoRequest.getEventType()))
+                .eventType(EventType.valueOf(eventCreationDtoRequest.getEventType().toUpperCase()))  // EventType is set here
                 .images(new ArrayList<>())
                 .build();
 
-         event.setEventDayDetailsList(eventCreationDtoRequest.getEventDayDetailsList().stream()
+        event.setEventDayDetailsList(eventCreationDtoRequest.getEventDayDetailsList().stream()
                 .map(day -> EventDayDetails.builder()
                         .eventDate(day.getEventDate())
                         .eventStartTime(day.getEventStartTime())
@@ -37,6 +37,7 @@ public class EventCreationDtoMapper extends AbstractConverter<EventCreationDtoRe
                         .build())
                 .collect(Collectors.toSet()));
 
-         return event;
+        return event;
     }
+
 }
