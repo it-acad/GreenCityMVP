@@ -1,7 +1,9 @@
 package greencity.service;
 
+import greencity.constant.ErrorMessage;
 import greencity.dto.notification.NotificationDto;
 import greencity.entity.Notification;
+import greencity.exception.exceptions.BadRequestException;
 import greencity.exception.exceptions.InvalidUserIdException;
 import greencity.exception.exceptions.NotificationNotFoundException;
 import greencity.mapping.NotificationMapper;
@@ -57,6 +59,9 @@ public class NotificationServiceImpl implements NotificationService {
         Notification notification = notificationRepo.findById(id)
                 .orElseThrow(() -> new NotificationNotFoundException("Notification with ID " + id + " not found"));
 
+        if (notification.isRead()){
+            throw new BadRequestException(ErrorMessage.NOTIFICATION_ALREADY_READ);
+        }
             notification.setRead(true);
             notification.setReceivedTime(LocalDateTime.now());
     }
