@@ -10,6 +10,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode
+@ToString
 @Entity
 @Table(name = "newsletter_subscribers")
 public class NewsletterSubscriber {
@@ -19,6 +20,6 @@ public class NewsletterSubscriber {
     private Long id;
 
     @Email
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String email;
 }

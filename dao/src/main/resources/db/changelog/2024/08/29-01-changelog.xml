@@ -1,0 +1,1107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.25.xsd"
+        objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
+    <changeSet id="1724945434777-1" author="keega">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="categories"/>
+            </not>
+        </preConditions>
+        <createTable tableName="categories">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_categories"/>
+            </column>
+            <column name="name" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="name_ua" type="VARCHAR(100)"/>
+            <column name="parent_category_id" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1724945434777-2" author="keega">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="comments"/>
+            </not>
+        </preConditions>
+        <createTable tableName="comments">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_comments"/>
+            </column>
+            <column name="text" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="user_id" type="BIGINT"/>
+            <column name="parent_comment_id" type="BIGINT"/>
+            <column name="created_date" type="DATETIME">
+                <constraints nullable="false"/>
+            </column>
+            <column name="modified_date" type="DATETIME">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="1724945434777-3" author="keega">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="custom_shopping_list_items"/>
+            </not>
+        </preConditions>
+        <createTable tableName="custom_shopping_list_items">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_custom_shopping_list_items"/>
+            </column>
+            <column name="text" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="user_id" type="BIGINT"/>
+            <column name="habit_id" type="BIGINT"/>
+            <column name="status" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="date_completed" type="DATETIME"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1724945434777-4" author="keega">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="eco_news"/>
+            </not>
+        </preConditions>
+        <createTable tableName="eco_news">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_eco_news"/>
+            </column>
+            <column name="creation_date" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="image_path" type="VARCHAR(255)"/>
+            <column name="source" type="VARCHAR(255)"/>
+            <column name="short_info" type="VARCHAR(255)"/>
+            <column name="author_id" type="BIGINT"/>
+            <column name="title" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="text" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="1724945434777-5" author="keega">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="eco_news_tags"/>
+            </not>
+        </preConditions>
+        <createTable tableName="eco_news_tags">
+            <column name="eco_news_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="tags_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="1724945434777-6" author="keega">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="eco_news_users_dislikes"/>
+            </not>
+        </preConditions>
+        <createTable tableName="eco_news_users_dislikes">
+            <column name="eco_news_id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_eco_news_users_dislikes"/>
+            </column>
+            <column name="users_id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_eco_news_users_dislikes"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="1724945434777-7" author="keega">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="eco_news_users_likes"/>
+            </not>
+        </preConditions>
+        <createTable tableName="eco_news_users_likes">
+            <column name="eco_news_id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_eco_news_users_likes"/>
+            </column>
+            <column name="users_id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_eco_news_users_likes"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="1724945434777-8" author="keega">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="econews_comment"/>
+            </not>
+        </preConditions>
+        <createTable tableName="econews_comment">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_econews_comment"/>
+            </column>
+            <column name="text" type="VARCHAR(8000)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_date" type="DATETIME">
+                <constraints nullable="false"/>
+            </column>
+            <column name="modified_date" type="DATETIME">
+                <constraints nullable="false"/>
+            </column>
+            <column name="parent_comment_id" type="BIGINT"/>
+            <column name="user_id" type="BIGINT"/>
+            <column name="eco_news_id" type="BIGINT"/>
+            <column name="deleted" type="BOOLEAN"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1724945434777-9" author="keega">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="econews_comment_users_liked"/>
+            </not>
+        </preConditions>
+        <createTable tableName="econews_comment_users_liked">
+            <column name="econews_comment_id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_econews_comment_users_liked"/>
+            </column>
+            <column name="users_liked_id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_econews_comment_users_liked"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="1724945434777-10" author="keega">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="filters"/>
+            </not>
+        </preConditions>
+        <createTable tableName="filters">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_filters"/>
+            </column>
+            <column name="user_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="name" type="VARCHAR(255)"/>
+            <column name="type" type="VARCHAR(255)"/>
+            <column name="values" type="text"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1724945434777-11" author="keega">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="habit_assign"/>
+            </not>
+        </preConditions>
+        <createTable tableName="habit_assign">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_habit_assign"/>
+            </column>
+            <column name="create_date" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="status" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="duration" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="working_days" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="habit_streak" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_enrollment" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="progress_notification_has_displayed" type="BOOLEAN">
+                <constraints nullable="false"/>
+            </column>
+            <column name="habit_id" type="BIGINT"/>
+            <column name="user_id" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1724945434777-12" author="keega">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="habit_fact_translations"/>
+            </not>
+        </preConditions>
+        <createTable tableName="habit_fact_translations">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_habit_fact_translations"/>
+            </column>
+            <column name="language_id" type="BIGINT"/>
+            <column name="content" type="VARCHAR(4000)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="fact_of_day_status" type="INT"/>
+            <column name="habit_fact_id" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1724945434777-13" author="keega">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="habit_facts"/>
+            </not>
+        </preConditions>
+        <createTable tableName="habit_facts">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_habit_facts"/>
+            </column>
+            <column name="habit_id" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1724945434777-14" author="keega">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="habit_shopping_list_items"/>
+            </not>
+        </preConditions>
+        <createTable tableName="habit_shopping_list_items">
+            <column name="habit_id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_habit_shopping_list_items"/>
+            </column>
+            <column name="shopping_list_item_id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_habit_shopping_list_items"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="1724945434777-15" author="keega">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="habit_statistics"/>
+            </not>
+        </preConditions>
+        <createTable tableName="habit_statistics">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_habit_statistics"/>
+            </column>
+            <column name="rate" type="VARCHAR(255)"/>
+            <column name="create_date" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="amount_of_items" type="INT"/>
+            <column name="habit_assign_id" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1724945434777-16" author="keega">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="habit_status_calendar"/>
+            </not>
+        </preConditions>
+        <createTable tableName="habit_status_calendar">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_habit_status_calendar"/>
+            </column>
+            <column name="enroll_date" type="DATE"/>
+            <column name="habit_assign_id" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1724945434777-17" author="keega">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="habit_translation"/>
+            </not>
+        </preConditions>
+        <createTable tableName="habit_translation">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_habit_translation"/>
+            </column>
+            <column name="name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="habit_item" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="language_id" type="BIGINT"/>
+            <column name="habit_id" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1724945434777-18" author="keega">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="habits"/>
+            </not>
+        </preConditions>
+        <createTable tableName="habits">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_habits"/>
+            </column>
+            <column name="image" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="complexity" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="default_duration" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="is_custom_habit" type="BOOLEAN">
+                <constraints nullable="false"/>
+            </column>
+            <column name="user_id" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1724945434777-19" author="keega">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="habits_tags"/>
+            </not>
+        </preConditions>
+        <createTable tableName="habits_tags">
+            <column name="habit_id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_habits_tags"/>
+            </column>
+            <column name="tag_id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_habits_tags"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="1724945434777-20" author="keega">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="languages"/>
+            </not>
+        </preConditions>
+        <createTable tableName="languages">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_languages"/>
+            </column>
+            <column name="code" type="VARCHAR(35)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="1724945434777-21" author="keega">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="newsletter_subscribers"/>
+            </not>
+        </preConditions>
+        <createTable tableName="newsletter_subscribers">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_newsletter_subscribers"/>
+            </column>
+            <column name="email" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="1724945434777-22" author="keega">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="own_security"/>
+            </not>
+        </preConditions>
+        <createTable tableName="own_security">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_own_security"/>
+            </column>
+            <column name="password" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="user_id" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1724945434777-23" author="keega">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="rating_statistics"/>
+            </not>
+        </preConditions>
+        <createTable tableName="rating_statistics">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_rating_statistics"/>
+            </column>
+            <column name="create_date" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="event" type="VARCHAR(255)"/>
+            <column name="points_changed" type="DOUBLE"/>
+            <column name="current_rating" type="DOUBLE"/>
+            <column name="user_id" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1724945434777-24" author="keega">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="restore_password_email"/>
+            </not>
+        </preConditions>
+        <createTable tableName="restore_password_email">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_restore_password_email"/>
+            </column>
+            <column name="user_id" type="BIGINT"/>
+            <column name="token" type="VARCHAR(255)"/>
+            <column name="expiry_date" type="DATETIME"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1724945434777-25" author="keega">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="shopping_list_item_translations"/>
+            </not>
+        </preConditions>
+        <createTable tableName="shopping_list_item_translations">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_shopping_list_item_translations"/>
+            </column>
+            <column name="language_id" type="BIGINT"/>
+            <column name="content" type="VARCHAR(4000)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="shopping_list_item_id" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1724945434777-26" author="keega">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="shopping_list_items"/>
+            </not>
+        </preConditions>
+        <createTable tableName="shopping_list_items">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_shopping_list_items"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="1724945434777-27" author="keega">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="specifications"/>
+            </not>
+        </preConditions>
+        <createTable tableName="specifications">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_specifications"/>
+            </column>
+            <column name="name" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="1724945434777-28" author="keega">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="tag_translations"/>
+            </not>
+        </preConditions>
+        <createTable tableName="tag_translations">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_tag_translations"/>
+            </column>
+            <column name="name" type="VARCHAR(20)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="tag_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="language_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="1724945434777-29" author="keega">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="tags"/>
+            </not>
+        </preConditions>
+        <createTable tableName="tags">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_tags"/>
+            </column>
+            <column name="type" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="1724945434777-30" author="keega">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="user_shopping_list"/>
+            </not>
+        </preConditions>
+        <createTable tableName="user_shopping_list">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_user_shopping_list"/>
+            </column>
+            <column name="habit_assign_id" type="BIGINT"/>
+            <column name="shopping_list_item_id" type="BIGINT"/>
+            <column name="status" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="date_completed" type="DATETIME"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1724945434777-31" author="keega">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="users"/>
+            </not>
+        </preConditions>
+        <createTable tableName="users">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_users"/>
+            </column>
+            <column name="name" type="VARCHAR(30)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="email" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="role" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="user_status" type="INT"/>
+            <column name="date_of_registration" type="DATETIME">
+                <constraints nullable="false"/>
+            </column>
+            <column name="email_notification" type="INT"/>
+            <column name="refresh_token_key" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="profile_picture" type="VARCHAR(255)"/>
+            <column name="rating" type="DOUBLE"/>
+            <column name="first_name" type="VARCHAR(255)"/>
+            <column name="city" type="VARCHAR(255)"/>
+            <column name="user_credo" type="VARCHAR(255)"/>
+            <column name="show_location" type="BOOLEAN"/>
+            <column name="show_eco_place" type="BOOLEAN"/>
+            <column name="show_shopping_list" type="BOOLEAN"/>
+            <column name="last_activity_time" type="DATETIME"/>
+            <column name="event_organizer_rating" type="DOUBLE"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1724945434777-32" author="keega">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="verify_emails"/>
+            </not>
+        </preConditions>
+        <createTable tableName="verify_emails">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_verify_emails"/>
+            </column>
+            <column name="user_id" type="BIGINT"/>
+            <column name="token" type="VARCHAR(255)"/>
+            <column name="expiry_date" type="DATETIME"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1724945434777-33" author="keega">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="web_pages"/>
+            </not>
+        </preConditions>
+        <createTable tableName="web_pages">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_web_pages"/>
+            </column>
+            <column name="web_page" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="1724945434777-34" author="keega">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <indexExists indexName="uc_categories_name" tableName="categories"/>
+            </not>
+        </preConditions>
+        <addUniqueConstraint columnNames="name" constraintName="uc_categories_name" tableName="categories"/>
+    </changeSet>
+    <changeSet id="1724945434777-35" author="keega">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <indexExists indexName="uc_categories_nameua" tableName="categories"/>
+            </not>
+        </preConditions>
+        <addUniqueConstraint columnNames="name_ua" constraintName="uc_categories_nameua" tableName="categories"/>
+    </changeSet>
+    <changeSet id="1724945434777-36" author="keega">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <indexExists indexName="uc_habit_fact_translations_content" tableName="habit_fact_translations"/>
+            </not>
+        </preConditions>
+        <addUniqueConstraint columnNames="content" constraintName="uc_habit_fact_translations_content" tableName="habit_fact_translations"/>
+    </changeSet>
+    <changeSet id="1724945434777-37" author="keega">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <indexExists indexName="uc_languages_code" tableName="languages"/>
+            </not>
+        </preConditions>
+        <addUniqueConstraint columnNames="code" constraintName="uc_languages_code" tableName="languages"/>
+    </changeSet>
+    <changeSet id="1724945434777-38" author="keega">
+        <addUniqueConstraint columnNames="email" constraintName="uc_newsletter_subscribers_email"
+                             tableName="newsletter_subscribers"/>
+    </changeSet>
+    <changeSet id="1724945434777-39" author="keega">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*)
+                FROM (
+                         SELECT content, COUNT(*)
+                         FROM shopping_list_item_translations
+                         GROUP BY content
+                         HAVING COUNT(*) > 1
+                     ) AS duplicates
+            </sqlCheck>
+        </preConditions>
+        <addUniqueConstraint columnNames="content" constraintName="uc_shopping_list_item_translations_content"
+                             tableName="shopping_list_item_translations"/>
+    </changeSet>
+    <changeSet id="1724945434777-40" author="keega">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*)
+                FROM information_schema.table_constraints
+                WHERE table_name = 'specifications'
+                  AND constraint_name = 'uc_specifications_name';
+            </sqlCheck>
+        </preConditions>
+        <addUniqueConstraint columnNames="name" constraintName="uc_specifications_name" tableName="specifications"/>
+    </changeSet>
+    <changeSet id="1724945434777-41" author="keega">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*)
+                FROM information_schema.table_constraints
+                WHERE table_name = 'tag_translations'
+                  AND constraint_name = 'uc_tag_translations_language';
+            </sqlCheck>
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*)
+                FROM (
+                         SELECT language_id
+                         FROM tag_translations
+                         GROUP BY language_id
+                         HAVING COUNT(*) > 1
+                     ) AS duplicates;
+            </sqlCheck>
+        </preConditions>
+        <addUniqueConstraint columnNames="language_id" constraintName="uc_tag_translations_language" tableName="tag_translations"/>
+    </changeSet>
+    <changeSet id="1724945434777-42" author="keega">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <uniqueConstraintExists tableName="users" constraintName="uc_users_email"/>
+            </not>
+        </preConditions>
+        <addUniqueConstraint columnNames="email" constraintName="uc_users_email" tableName="users"/>
+    </changeSet>
+    <changeSet id="1724945434777-43" author="keega">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <uniqueConstraintExists tableName="web_pages" constraintName="uc_web_pages_web_page"/>
+            </not>
+        </preConditions>
+        <addUniqueConstraint columnNames="web_page" constraintName="uc_web_pages_web_page" tableName="web_pages"/>
+    </changeSet>
+    <changeSet id="1724945434777-44" author="keega">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <foreignKeyConstraintExists foreignKeyName="fk_categories_on_parentcategory" />
+            </not>
+        </preConditions>
+        <addForeignKeyConstraint baseColumnNames="parent_category_id" baseTableName="categories"
+                                 constraintName="FK_CATEGORIES_ON_PARENTCATEGORY" referencedColumnNames="id"
+                                 referencedTableName="categories"/>
+    </changeSet>
+    <changeSet id="1724945434777-45" author="keega">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <foreignKeyConstraintExists foreignKeyName="fk_comments_on_parentcomment" />
+            </not>
+        </preConditions>
+        <addForeignKeyConstraint baseColumnNames="parent_comment_id" baseTableName="comments"
+                                 constraintName="FK_COMMENTS_ON_PARENTCOMMENT" referencedColumnNames="id"
+                                 referencedTableName="comments"/>
+    </changeSet>
+    <changeSet id="1724945434777-47" author="keega">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <foreignKeyConstraintExists foreignKeyName="FK_CUSTOM_SHOPPING_LIST_ITEMS_ON_HABIT" />
+            </not>
+        </preConditions>
+        <addForeignKeyConstraint baseColumnNames="habit_id" baseTableName="custom_shopping_list_items"
+                                 constraintName="FK_CUSTOM_SHOPPING_LIST_ITEMS_ON_HABIT" referencedColumnNames="id"
+                                 referencedTableName="habits"/>
+    </changeSet>
+    <changeSet id="1724945434777-48" author="keega">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <foreignKeyConstraintExists foreignKeyName="FK_CUSTOM_SHOPPING_LIST_ITEMS_ON_USER" />
+            </not>
+        </preConditions>
+        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="custom_shopping_list_items"
+                                 constraintName="FK_CUSTOM_SHOPPING_LIST_ITEMS_ON_USER" referencedColumnNames="id"
+                                 referencedTableName="users"/>
+    </changeSet>
+    <changeSet id="1724945434777-49" author="keega">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <foreignKeyConstraintExists foreignKeyName="FK_ECONEWS_COMMENT_ON_ECONEWS" />
+            </not>
+        </preConditions>
+        <addForeignKeyConstraint baseColumnNames="eco_news_id" baseTableName="econews_comment"
+                                 constraintName="FK_ECONEWS_COMMENT_ON_ECONEWS" referencedColumnNames="id"
+                                 referencedTableName="eco_news"/>
+    </changeSet>
+    <changeSet id="1724945434777-50" author="keega">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <foreignKeyConstraintExists foreignKeyName="FK_ECONEWS_COMMENT_ON_PARENTCOMMENT" />
+            </not>
+        </preConditions>
+        <addForeignKeyConstraint baseColumnNames="parent_comment_id" baseTableName="econews_comment"
+                                 constraintName="FK_ECONEWS_COMMENT_ON_PARENTCOMMENT" referencedColumnNames="id"
+                                 referencedTableName="econews_comment"/>
+    </changeSet>
+    <changeSet id="1724945434777-51" author="keega">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <foreignKeyConstraintExists foreignKeyName="FK_ECONEWS_COMMENT_ON_USER" />
+            </not>
+        </preConditions>
+        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="econews_comment"
+                                 constraintName="FK_ECONEWS_COMMENT_ON_USER" referencedColumnNames="id"
+                                 referencedTableName="users"/>
+    </changeSet>
+    <changeSet id="1724945434777-52" author="keega">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <foreignKeyConstraintExists foreignKeyName="fk_comments_on_user" />
+            </not>
+        </preConditions>
+        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="comments"
+                                 constraintName="FK_COMMENTS_ON_USER" referencedColumnNames="id"
+                                 referencedTableName="users"/>
+    </changeSet>
+    <changeSet id="1724945434777-53" author="keega">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <foreignKeyConstraintExists foreignKeyName="FK_FILTERS_ON_USER" />
+            </not>
+        </preConditions>
+        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="filters" constraintName="FK_FILTERS_ON_USER"
+                                 referencedColumnNames="id" referencedTableName="users"/>
+    </changeSet>
+    <changeSet id="1724945434777-55" author="keega">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <foreignKeyConstraintExists foreignKeyName="FK_HABIT_ASSIGN_ON_USER" />
+            </not>
+        </preConditions>
+        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="habit_assign"
+                                 constraintName="FK_HABIT_ASSIGN_ON_USER" referencedColumnNames="id"
+                                 referencedTableName="users"/>
+    </changeSet>
+    <changeSet id="1724945434777-56" author="keega">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <foreignKeyConstraintExists foreignKeyName="FK_HABIT_FACTS_ON_HABIT" />
+            </not>
+        </preConditions>
+        <addForeignKeyConstraint baseColumnNames="habit_id" baseTableName="habit_facts"
+                                 constraintName="FK_HABIT_FACTS_ON_HABIT" referencedColumnNames="id"
+                                 referencedTableName="habits"/>
+    </changeSet>
+    <changeSet id="1724945434777-57" author="keega">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <foreignKeyConstraintExists foreignKeyName="FK_HABIT_FACT_TRANSLATIONS_ON_HABITFACT" />
+            </not>
+        </preConditions>
+        <addForeignKeyConstraint baseColumnNames="habit_fact_id" baseTableName="habit_fact_translations"
+                                 constraintName="FK_HABIT_FACT_TRANSLATIONS_ON_HABITFACT" referencedColumnNames="id"
+                                 referencedTableName="habit_facts"/>
+    </changeSet>
+    <changeSet id="1724945434777-58" author="keega">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <foreignKeyConstraintExists foreignKeyName="FK_HABIT_FACT_TRANSLATIONS_ON_LANGUAGE" />
+            </not>
+        </preConditions>
+        <addForeignKeyConstraint baseColumnNames="language_id" baseTableName="habit_fact_translations"
+                                 constraintName="FK_HABIT_FACT_TRANSLATIONS_ON_LANGUAGE" referencedColumnNames="id"
+                                 referencedTableName="languages"/>
+    </changeSet>
+    <changeSet id="1724945434777-59" author="keega">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <foreignKeyConstraintExists foreignKeyName="FK_HABIT_STATISTICS_ON_HABITASSIGN" />
+            </not>
+        </preConditions>
+        <addForeignKeyConstraint baseColumnNames="habit_assign_id" baseTableName="habit_statistics"
+                                 constraintName="FK_HABIT_STATISTICS_ON_HABITASSIGN" referencedColumnNames="id"
+                                 referencedTableName="habit_assign"/>
+    </changeSet>
+    <changeSet id="1724945434777-60" author="keega">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <foreignKeyConstraintExists foreignKeyName="FK_HABIT_STATUS_CALENDAR_ON_HABITASSIGN" />
+            </not>
+        </preConditions>
+        <addForeignKeyConstraint baseColumnNames="habit_assign_id" baseTableName="habit_status_calendar"
+                                 constraintName="FK_HABIT_STATUS_CALENDAR_ON_HABITASSIGN" referencedColumnNames="id"
+                                 referencedTableName="habit_assign"/>
+    </changeSet>
+    <changeSet id="1724945434777-61" author="keega">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <foreignKeyConstraintExists foreignKeyName="FK_HABIT_TRANSLATION_ON_HABIT" />
+            </not>
+        </preConditions>
+        <addForeignKeyConstraint baseColumnNames="habit_id" baseTableName="habit_translation"
+                                 constraintName="FK_HABIT_TRANSLATION_ON_HABIT" referencedColumnNames="id"
+                                 referencedTableName="habits"/>
+    </changeSet>
+    <changeSet id="1724945434777-62" author="keega">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <foreignKeyConstraintExists foreignKeyName="FK_HABIT_TRANSLATION_ON_LANGUAGE" />
+            </not>
+        </preConditions>
+        <addForeignKeyConstraint baseColumnNames="language_id" baseTableName="habit_translation"
+                                 constraintName="FK_HABIT_TRANSLATION_ON_LANGUAGE" referencedColumnNames="id"
+                                 referencedTableName="languages"/>
+    </changeSet>
+    <changeSet id="1724945434777-63" author="keega">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <foreignKeyConstraintExists foreignKeyName="FK_OWN_SECURITY_ON_USER" />
+            </not>
+        </preConditions>
+        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="own_security"
+                                 constraintName="FK_OWN_SECURITY_ON_USER" referencedColumnNames="id"
+                                 referencedTableName="users"/>
+    </changeSet>
+    <changeSet id="1724945434777-64" author="keega">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <foreignKeyConstraintExists foreignKeyName="FK_RATING_STATISTICS_ON_USER" />
+            </not>
+        </preConditions>
+        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="rating_statistics"
+                                 constraintName="FK_RATING_STATISTICS_ON_USER" referencedColumnNames="id"
+                                 referencedTableName="users"/>
+    </changeSet>
+    <changeSet id="1724945434777-65" author="keega">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <foreignKeyConstraintExists foreignKeyName="FK_RESTORE_PASSWORD_EMAIL_ON_USER" />
+            </not>
+        </preConditions>
+        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="restore_password_email"
+                                 constraintName="FK_RESTORE_PASSWORD_EMAIL_ON_USER" referencedColumnNames="id"
+                                 referencedTableName="users"/>
+    </changeSet>
+    <changeSet id="1724945434777-66" author="keega">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <foreignKeyConstraintExists foreignKeyName="FK_SHOPPING_LIST_ITEM_TRANSLATIONS_ON_LANGUAGE" />
+            </not>
+        </preConditions>
+        <addForeignKeyConstraint baseColumnNames="language_id" baseTableName="shopping_list_item_translations"
+                                 constraintName="FK_SHOPPING_LIST_ITEM_TRANSLATIONS_ON_LANGUAGE"
+                                 referencedColumnNames="id" referencedTableName="languages"/>
+    </changeSet>
+    <changeSet id="1724945434777-67" author="keega">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <foreignKeyConstraintExists foreignKeyName="FK_SHOPPING_LIST_ITEM_TRANSLATIONS_ON_SHOPPINGLISTITEM" />
+            </not>
+        </preConditions>
+        <addForeignKeyConstraint baseColumnNames="shopping_list_item_id" baseTableName="shopping_list_item_translations"
+                                 constraintName="FK_SHOPPING_LIST_ITEM_TRANSLATIONS_ON_SHOPPINGLISTITEM"
+                                 referencedColumnNames="id" referencedTableName="shopping_list_items"/>
+    </changeSet>
+    <changeSet id="1724945434777-68" author="keega">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <foreignKeyConstraintExists foreignKeyName="FK_TAG_TRANSLATIONS_ON_LANGUAGE" />
+            </not>
+        </preConditions>
+        <addForeignKeyConstraint baseColumnNames="language_id" baseTableName="tag_translations"
+                                 constraintName="FK_TAG_TRANSLATIONS_ON_LANGUAGE" referencedColumnNames="id"
+                                 referencedTableName="languages"/>
+    </changeSet>
+    <changeSet id="1724945434777-69" author="keega">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <foreignKeyConstraintExists foreignKeyName="FK_TAG_TRANSLATIONS_ON_TAG" />
+            </not>
+        </preConditions>
+        <addForeignKeyConstraint baseColumnNames="tag_id" baseTableName="tag_translations"
+                                 constraintName="FK_TAG_TRANSLATIONS_ON_TAG" referencedColumnNames="id"
+                                 referencedTableName="tags"/>
+    </changeSet>
+    <changeSet id="1724945434777-70" author="keega">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <foreignKeyConstraintExists foreignKeyName="FK_USER_SHOPPING_LIST_ON_HABITASSIGN" />
+            </not>
+        </preConditions>
+        <addForeignKeyConstraint baseColumnNames="habit_assign_id" baseTableName="user_shopping_list"
+                                 constraintName="FK_USER_SHOPPING_LIST_ON_HABITASSIGN" referencedColumnNames="id"
+                                 referencedTableName="habit_assign"/>
+    </changeSet>
+    <changeSet id="1724945434777-71" author="keega">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <foreignKeyConstraintExists foreignKeyName="FK_USER_SHOPPING_LIST_ON_SHOPPINGLISTITEM" />
+            </not>
+        </preConditions>
+        <addForeignKeyConstraint baseColumnNames="shopping_list_item_id" baseTableName="user_shopping_list"
+                                 constraintName="FK_USER_SHOPPING_LIST_ON_SHOPPINGLISTITEM" referencedColumnNames="id"
+                                 referencedTableName="shopping_list_items"/>
+    </changeSet>
+    <changeSet id="1724945434777-72" author="keega">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <foreignKeyConstraintExists foreignKeyName="FK_VERIFY_EMAILS_ON_USER" />
+            </not>
+        </preConditions>
+        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="verify_emails"
+                                 constraintName="FK_VERIFY_EMAILS_ON_USER" referencedColumnNames="id"
+                                 referencedTableName="users"/>
+    </changeSet>
+    <changeSet id="1724945434777-73" author="keega">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <foreignKeyConstraintExists foreignKeyName="fk_ecocomuselik_on_eco_news_comment" />
+            </not>
+        </preConditions>
+        <addForeignKeyConstraint baseColumnNames="econews_comment_id" baseTableName="econews_comment_users_liked"
+                                 constraintName="fk_ecocomuselik_on_eco_news_comment" referencedColumnNames="id"
+                                 referencedTableName="econews_comment"/>
+    </changeSet>
+    <changeSet id="1724945434777-74" author="keega">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <foreignKeyConstraintExists foreignKeyName="fk_ecocomuselik_on_user" />
+            </not>
+        </preConditions>
+        <addForeignKeyConstraint baseColumnNames="users_liked_id" baseTableName="econews_comment_users_liked"
+                                 constraintName="fk_ecocomuselik_on_user" referencedColumnNames="id"
+                                 referencedTableName="users"/>
+    </changeSet>
+    <changeSet id="1724945434777-75" author="keega">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <foreignKeyConstraintExists foreignKeyName="fk_econewtag_on_eco_news" />
+            </not>
+        </preConditions>
+        <addForeignKeyConstraint baseColumnNames="eco_news_id" baseTableName="eco_news_tags"
+                                 constraintName="fk_econewtag_on_eco_news" referencedColumnNames="id"
+                                 referencedTableName="eco_news"/>
+    </changeSet>
+    <changeSet id="1724945434777-76" author="keega">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <foreignKeyConstraintExists foreignKeyName="fk_econewtag_on_tag" />
+            </not>
+        </preConditions>
+        <addForeignKeyConstraint baseColumnNames="tags_id" baseTableName="eco_news_tags"
+                                 constraintName="fk_econewtag_on_tag" referencedColumnNames="id"
+                                 referencedTableName="tags"/>
+    </changeSet>
+    <changeSet id="1724945434777-77" author="keega">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <foreignKeyConstraintExists foreignKeyName="fk_econewusedis_on_eco_news" />
+            </not>
+        </preConditions>
+        <addForeignKeyConstraint baseColumnNames="eco_news_id" baseTableName="eco_news_users_dislikes"
+                                 constraintName="fk_econewusedis_on_eco_news" referencedColumnNames="id"
+                                 referencedTableName="eco_news"/>
+    </changeSet>
+    <changeSet id="1724945434777-78" author="keega">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <foreignKeyConstraintExists foreignKeyName="fk_econewusedis_on_user" />
+            </not>
+        </preConditions>
+        <addForeignKeyConstraint baseColumnNames="users_id" baseTableName="eco_news_users_dislikes"
+                                 constraintName="fk_econewusedis_on_user" referencedColumnNames="id"
+                                 referencedTableName="users"/>
+    </changeSet>
+    <changeSet id="1724945434777-79" author="keega">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <foreignKeyConstraintExists foreignKeyName="fk_econewuselik_on_eco_news" />
+            </not>
+        </preConditions>
+        <addForeignKeyConstraint baseColumnNames="eco_news_id" baseTableName="eco_news_users_likes"
+                                 constraintName="fk_econewuselik_on_eco_news" referencedColumnNames="id"
+                                 referencedTableName="eco_news"/>
+    </changeSet>
+    <changeSet id="1724945434777-80" author="keega">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <foreignKeyConstraintExists foreignKeyName="fk_econewuselik_on_user" />
+            </not>
+        </preConditions>
+        <addForeignKeyConstraint baseColumnNames="users_id" baseTableName="eco_news_users_likes"
+                                 constraintName="fk_econewuselik_on_user" referencedColumnNames="id"
+                                 referencedTableName="users"/>
+    </changeSet>
+    <changeSet id="1724945434777-81" author="keega">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <foreignKeyConstraintExists foreignKeyName="fk_habsholisite_on_habit" />
+            </not>
+        </preConditions>
+        <addForeignKeyConstraint baseColumnNames="habit_id" baseTableName="habit_shopping_list_items"
+                                 constraintName="fk_habsholisite_on_habit" referencedColumnNames="id"
+                                 referencedTableName="habits"/>
+    </changeSet>
+    <changeSet id="1724945434777-82" author="keega">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <foreignKeyConstraintExists foreignKeyName="fk_habsholisite_on_shopping_list_item" />
+            </not>
+        </preConditions>
+        <addForeignKeyConstraint baseColumnNames="shopping_list_item_id" baseTableName="habit_shopping_list_items"
+                                 constraintName="fk_habsholisite_on_shopping_list_item" referencedColumnNames="id"
+                                 referencedTableName="shopping_list_items"/>
+    </changeSet>
+    <changeSet id="1724945434777-83" author="keega">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <foreignKeyConstraintExists foreignKeyName="fk_habtag_on_habit" />
+            </not>
+        </preConditions>
+        <addForeignKeyConstraint baseColumnNames="habit_id" baseTableName="habits_tags"
+                                 constraintName="fk_habtag_on_habit" referencedColumnNames="id"
+                                 referencedTableName="habits"/>
+    </changeSet>
+    <changeSet id="1724945434777-84" author="keega">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <foreignKeyConstraintExists foreignKeyName="fk_habtag_on_tag" />
+            </not>
+        </preConditions>
+        <addForeignKeyConstraint baseColumnNames="tag_id" baseTableName="habits_tags" constraintName="fk_habtag_on_tag"
+                                 referencedColumnNames="id" referencedTableName="tags"/>
+    </changeSet>
+
+</databaseChangeLog>

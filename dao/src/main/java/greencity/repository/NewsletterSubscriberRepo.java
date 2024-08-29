@@ -10,4 +10,5 @@ public interface NewsletterSubscriberRepo extends JpaRepository<NewsletterSubscr
     @Query("SELECT n FROM NewsletterSubscriber n WHERE n.email = ?1")
     NewsletterSubscriber findByEmail(String email);
 
+    Boolean existsByEmail(String email);
 }

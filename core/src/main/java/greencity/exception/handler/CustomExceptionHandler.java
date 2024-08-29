@@ -595,6 +595,13 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
     }
 
+    @ExceptionHandler(EmailNotFoundException.class)
+    public final ResponseEntity<Object> handleEmailNotFoundException(EmailNotFoundException ex, WebRequest request) {
+        log.info(ex.getMessage());
+        ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
+    }
+
     protected ResponseEntity<Object> handleMethodArgumentNotValid(
         MethodArgumentNotValidException ex) {
         List<ValidationExceptionDto> collect =

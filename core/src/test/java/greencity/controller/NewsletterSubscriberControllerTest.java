@@ -61,5 +61,4 @@ public class NewsletterSubscriberControllerTest {
 
         verify(newsletterSubscriberService).subscribe(any(NewsletterSubscriberDto.class));
     }
-
 }
