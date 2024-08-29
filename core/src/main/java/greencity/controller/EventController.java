@@ -5,6 +5,7 @@ import greencity.dto.event.EventCreationDto;
 import greencity.dto.event.EventDto;
 import greencity.dto.user.UserVO;
 import greencity.service.EventService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -22,7 +23,7 @@ public class EventController {
 
     @PostMapping(path = "/create", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<EventDto> save(@RequestPart MultipartFile[] images,
-                                         @RequestPart EventCreationDto eventCreationDto,
+                                         @RequestPart @Valid EventCreationDto eventCreationDto,
                                          @CurrentUser UserVO currentUser) {
         return ResponseEntity.status(HttpStatus.CREATED).body(eventService.save(images, eventCreationDto, currentUser.getId()));
     }

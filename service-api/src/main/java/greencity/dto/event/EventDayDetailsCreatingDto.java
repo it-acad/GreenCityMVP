@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import greencity.constant.ServiceValidationConstants;
 import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.PastOrPresent;
 import lombok.*;
 
 import java.time.LocalDate;
@@ -22,7 +21,6 @@ public class EventDayDetailsCreatingDto {
     @Future(message = ServiceValidationConstants.EVENT_DAY_RESTRICTION)
     private LocalDate eventDate;
 
-    @PastOrPresent(message = ServiceValidationConstants.EVENT_TIME_RESTRICTION)
     @Future(message = ServiceValidationConstants.EVENT_TIME_RESTRICTION)
     private LocalTime eventStartTime;
 
