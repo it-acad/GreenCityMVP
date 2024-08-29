@@ -3,6 +3,7 @@ package greencity.dto.event;
 import greencity.constant.ServiceValidationConstants;
 import jakarta.validation.constraints.*;
 import lombok.*;
+import org.hibernate.validator.constraints.URL;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -31,11 +32,12 @@ public class EventDayDetailsDto {
 
     private boolean isOnline;
 
+    @URL
+    private String onlinePlace;
+
     private boolean isOffline;
 
     private String offlinePlace;
-
-    private String onlinePlace;
 
     @Min(value = -90, message = "Latitude must be between -90 and 90 degrees")
     @Max(value = 90, message = "Latitude must be between -90 and 90 degrees")
