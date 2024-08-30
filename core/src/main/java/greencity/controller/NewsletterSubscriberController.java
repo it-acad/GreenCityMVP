@@ -7,7 +7,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.Email;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -26,7 +25,7 @@ public class NewsletterSubscriberController {
         @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST)
     })
     @PostMapping("/subscribe")
-    public ResponseEntity<NewsletterSubscriberDto> subscribe(@Valid NewsletterSubscriberDto newsletterSubscriberDto) {
+    public ResponseEntity<NewsletterSubscriberDto> subscribe(@Valid @RequestBody NewsletterSubscriberDto newsletterSubscriberDto) {
         return ResponseEntity.ok(newsletterSubscriberService.subscribe(newsletterSubscriberDto));
     }
 }
