@@ -8,6 +8,7 @@ import greencity.dto.econewscomment.*;
 import greencity.dto.event.EventCreationDto;
 import greencity.dto.event.EventDayDetailsCreatingDto;
 import greencity.dto.event.EventDayDetailsDto;
+import greencity.dto.event.EventDto;
 import greencity.dto.habit.*;
 import greencity.dto.habitfact.*;
 import greencity.dto.language.LanguageDTO;
@@ -750,5 +751,21 @@ public class ModelUtils {
                 .onlinePlace("https://example.org")
                 .offlinePlace("Ukraine, Kyiv, somestreet 99")
                 .build();
+    }
+
+    public static EventDto getEventDto() {
+    return EventDto.builder()
+            .id(1L)
+            .eventTitle("Some event tittle")
+            .description("This is a description of the event. It can be quite long, but not too long.")
+            .eventType(EventType.OPEN.toString())
+            .eventDayDetailsList(Set.of(getEventDayDetailsDto()))
+            .imagePathList(new ArrayList<>(List.of(
+                    "https://someimageurl1.net",
+                    "https://someimageurl2.net",
+                    "https://someimageurl3.net"
+            )))
+            .author(AuthorDto.builder().id(1L).name("Some Author").build())
+            .build();
     }
 }
