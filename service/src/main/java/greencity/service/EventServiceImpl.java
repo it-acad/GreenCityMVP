@@ -7,7 +7,9 @@ import greencity.dto.event.EventDayDetailsDto;
 import greencity.dto.event.EventDto;
 import greencity.dto.event.EventSendEmailDto;
 import greencity.dto.user.AuthorDto;
+import greencity.dto.user.PlaceAuthorDto;
 import greencity.entity.Event;
+import greencity.entity.EventDayDetails;
 import greencity.entity.EventImage;
 import greencity.entity.User;
 import greencity.exception.exceptions.NotFoundException;
@@ -22,8 +24,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static greencity.constant.AppConstant.AUTHORIZATION;
@@ -55,16 +60,19 @@ public class EventServiceImpl implements EventService {
         Event eventToSave = modelMapper.map(eventCreationDtoRequest, Event.class);
         eventToSave.setAuthor(user);
 
-        // Handle images
-        List<EventImage> eventImages = uploadImages(images);
-        eventToSave.setImages(eventImages);
-
         // Attempt to save the event
         try {
             Event savedEvent = eventRepo.save(eventToSave);
 
+            // Handle images after event is saved
+            List<EventImage> eventImages = uploadImages(images);
+            savedEvent.setImages(eventImages);
+
+            // Re-save the event with images
+            eventRepo.save(savedEvent);
+
             // Send email
-            //sendEmailDto(savedEvent);
+            sendEmailDto(savedEvent);
 
             // Convert the saved event to EventDto and return
             return modelMapper.map(savedEvent, EventDto.class);
@@ -98,23 +106,41 @@ public class EventServiceImpl implements EventService {
         String accessToken = httpServletRequest.getHeader(AUTHORIZATION);
 
         // Map the User entity to an AuthorDto object
-        AuthorDto authorDto = modelMapper.map(savedEvent.getAuthor(), AuthorDto.class);
+        PlaceAuthorDto placeAuthorDto = modelMapper.map(savedEvent.getAuthor(), PlaceAuthorDto.class);
+
+        // Get the list of event dates
+        List<String> eventDayList = savedEvent.getEventDayDetailsList().stream()
+                .map(eventDayDetail -> eventDayDetail.getEventDate().toString())
+                .collect(Collectors.toList());
+
+        // Calculate the duration in days
+        int durationInDays = savedEvent.getEventDayDetailsList().size();
+
+        Optional<EventDayDetails> firstDayDetail = savedEvent.getEventDayDetailsList().stream().findFirst();
+        LocalTime eventStartTime = firstDayDetail.map(EventDayDetails::getEventStartTime).orElse(null);
+        LocalTime eventEndTime = firstDayDetail.map(EventDayDetails::getEventEndTime).orElse(null);
+        String onlinePlace = firstDayDetail.map(EventDayDetails::getOnlinePlace).orElse(null);
+        String offlinePlace = firstDayDetail.map(EventDayDetails::getOfflinePlace).orElse(null);
 
         // Build the EventSendEmailDto object
         EventSendEmailDto eventSendEmailDto = EventSendEmailDto.builder()
                 .eventTitle(savedEvent.getEventTitle())
                 .description(savedEvent.getDescription())
-                .author(authorDto)
-                .unsubscribeToken(accessToken)
-                .eventDayDetailsList(savedEvent.getEventDayDetailsList().stream()
-                        .map(day -> modelMapper.map(day, EventDayDetailsDto.class))
-                        .collect(Collectors.toSet()))
-                .imagePathList(savedEvent.getImages().stream()
+                .eventType(savedEvent.getEventType().toString())
+                .eventDayList(eventDayList) // Event dates list
+                .durationInDays(durationInDays) // Duration in days
+                .eventStartTime(eventStartTime)
+                .eventEndTime(eventEndTime)
+                .onlinePlace(onlinePlace)
+                .offlinePlace(offlinePlace)
+                .imagePath(savedEvent.getImages().stream()
                         .map(EventImage::getImagePath)
                         .collect(Collectors.toList()))
+                .author(placeAuthorDto)
+                .secureToken(accessToken)
                 .build();
 
-        // Send the event details to the email service via the RestClient
+        // Send the event details
         restClient.addEvent(eventSendEmailDto);
     }
 
