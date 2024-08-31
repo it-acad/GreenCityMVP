@@ -1,10 +1,14 @@
 package greencity.dto.event;
 
+import greencity.annotations.ValidEventDayDetails;
 import greencity.constant.ServiceValidationConstants;
 import greencity.dto.user.AuthorDto;
+
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 import java.util.Set;
+
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -20,9 +24,10 @@ public class EventCreationDtoRequest {
     private String description;
 
     @Size(min = 1, max = 7, message = ServiceValidationConstants.EVENT_AMOUNT_OF_DAYS)
-    private Set<EventDayDetailsCreatingDto> eventDayDetailsList;
+    private Set<@ValidEventDayDetails EventDayDetailsCreatingDto> eventDayDetailsList;
 
     private String eventType;
 
     private AuthorDto author;
+
 }

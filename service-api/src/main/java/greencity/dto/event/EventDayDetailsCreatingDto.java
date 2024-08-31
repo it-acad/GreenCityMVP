@@ -4,9 +4,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import greencity.constant.ServiceValidationConstants;
 import jakarta.validation.constraints.*;
 import lombok.*;
+import org.hibernate.validator.constraints.URL;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -37,6 +39,7 @@ public class EventDayDetailsCreatingDto {
 
     private String offlinePlace;
 
+    @URL
     private String onlinePlace;
 
     @Min(value = -90, message = "Latitude must be between -90 and 90 degrees")

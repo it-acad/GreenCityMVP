@@ -1,10 +1,10 @@
 package greencity.dto.event;
 
-import greencity.dto.user.AuthorDto;
+import greencity.dto.user.PlaceAuthorDto;
 import lombok.*;
 
+import java.time.LocalTime;
 import java.util.List;
-import java.util.Set;
 
 @Builder
 @Getter
@@ -19,12 +19,24 @@ public class EventSendEmailDto {
 
     private String description;
 
-    private Set<EventDayDetailsDto> eventDayDetailsList;
+    private String eventType;
 
-    private List<String> imagePathList;
+    private List<String> eventDayList;
 
-    private AuthorDto author;
+    private int durationInDays; // duration of the event
 
-    private String unsubscribeToken;
+    private LocalTime eventStartTime;
+
+    private LocalTime eventEndTime;
+
+    private String onlinePlace;
+
+    private String offlinePlace;
+
+    private List<String> imagePath;
+
+    private PlaceAuthorDto author;
+
+    private String secureToken;
 
 }
