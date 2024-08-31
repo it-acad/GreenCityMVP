@@ -28,7 +28,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/events")
-@Validated
 @RequiredArgsConstructor
 public class EventController {
     private final EventService eventService;
@@ -40,25 +39,21 @@ public class EventController {
             @ApiResponse(responseCode = "401", description = "Unauthorized"),
             @ApiResponse(responseCode = "403", description = "Bad Request")
     })
-    @PostMapping(path = "/create", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<?> save(
+    @PostMapping(consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_JSON_VALUE})
+    public ResponseEntity<EventDto> save(
             @Parameter(description = SwaggerExampleModel.ADD_EVENT, required = true)
             @RequestPart @Valid EventCreationDtoRequest eventCreationDtoRequest,
             @Parameter(description = "Images of the event")
             @RequestPart(required = false) @ImageListSizeValidation(maxSize = 5) List<
                     @ImageSizeValidation(maxSizeMB = 10)
                     @ImageValidation MultipartFile> images,
-            BindingResult result,
             @Parameter(description = "Current User")
             @CurrentUser UserVO currentUser) {
-
-        // Check for validation errors
-        if (result.hasErrors()) {
-            return ResponseEntity.badRequest().body(result.getAllErrors());
-        }
 
         // Save the event
         EventDto savedEvent = eventService.saveEvent(eventCreationDtoRequest, images, currentUser.getEmail());
         return ResponseEntity.status(HttpStatus.CREATED).body(savedEvent);
     }
+
+
 }
