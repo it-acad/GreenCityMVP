@@ -10,7 +10,7 @@ import greencity.dto.event.EventEditDto;
 import greencity.dto.user.UserVO;
 import greencity.exception.exceptions.EventNotFoundException;
 import greencity.exception.handler.CustomExceptionHandler;
-import greencity.service.EventServiceImp;
+import greencity.service.EventServiceImpl;
 import greencity.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -38,7 +38,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class EventControllerTest {
 
     @Mock
-    private EventServiceImp eventService;
+    private EventServiceImpl eventService;
     @Mock
     private UserService userService;
     @Mock

@@ -29,7 +29,7 @@ class EventServiceImplTest {
     @Mock
     private ModelMapper modelMapper;
     @InjectMocks
-    private EventServiceImp eventService;
+    private EventServiceImpl eventService;
     private static final Long EVENT_ID = 1L;
     private static final Long USER_ID = 1L;
 
