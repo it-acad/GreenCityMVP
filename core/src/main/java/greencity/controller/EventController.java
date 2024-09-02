@@ -1,12 +1,15 @@
 package greencity.controller;
 
 import greencity.annotations.CurrentUser;
+import greencity.constant.AppConstant;
+import greencity.dto.event.EventDto;
 import greencity.annotations.ImageListSizeValidation;
 import greencity.annotations.ImageSizeValidation;
 import greencity.annotations.ImageValidation;
 import greencity.constant.HttpStatuses;
-import greencity.dto.event.EventDto;
+import greencity.dto.event.EventEditDto;
 import greencity.dto.user.UserVO;
+import greencity.exception.handler.MessageResponse;
 import greencity.service.EventService;
 import greencity.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -22,7 +25,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import java.util.Set;
@@ -32,7 +34,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/events")
 @RequiredArgsConstructor
-@Validated
 public class EventController {
     private final EventService eventService;
     private final UserService userService;
@@ -99,5 +100,21 @@ public class EventController {
         String email = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         UserVO user = userService.findByEmail(email);
         return user.getId() == userId;
+    }
+
+    @DeleteMapping("/{eventId}")
+    public ResponseEntity<Object> delete(@PathVariable Long eventId,
+                                         @CurrentUser UserVO currentUser) {
+        eventService.delete(eventId, currentUser.getId());
+        return ResponseEntity.status(HttpStatus.OK).body(MessageResponse.builder()
+                .message(AppConstant.DELETED).success(true).build());
+    }
+
+    @PutMapping("/{eventId}")
+    public ResponseEntity<EventDto> update(@PathVariable Long eventId,
+                                           @RequestPart EventEditDto eventEditDto,
+                                           @RequestPart MultipartFile[] images,
+                                           @CurrentUser UserVO currentUser) {
+        return ResponseEntity.status(HttpStatus.OK).body(eventService.update(eventEditDto, currentUser.getId(), eventId, images));
     }
 }

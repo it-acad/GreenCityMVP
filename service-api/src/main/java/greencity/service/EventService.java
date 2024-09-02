@@ -2,10 +2,10 @@ package greencity.service;
 
 import greencity.dto.event.EventCreationDtoRequest;
 import greencity.dto.event.EventDto;
+import greencity.dto.event.EventEditDto;
 import org.springframework.web.multipart.MultipartFile;
-import java.util.Set;
-
 import java.util.List;
+import java.util.Set;
 
 public interface EventService {
 
@@ -33,4 +33,9 @@ public interface EventService {
        * @return set of {@link EventDto} instances.
        */
       Set<EventDto> findAll();
+
+      void delete(Long eventId, Long userId);
+
+      EventDto update(EventEditDto event, Long userId, Long eventId, MultipartFile[] images);
 }
+

@@ -12,7 +12,6 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.authentication.configuration.EnableGlobalAuthentication;
-import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -38,7 +37,6 @@ import static org.springframework.security.config.http.SessionCreationPolicy.STA
 @Configuration
 @EnableWebSecurity
 @EnableGlobalAuthentication
-@EnableMethodSecurity
 public class SecurityConfig {
     private static final String ECONEWS_COMMENTS = "/econews/comments";
     private static final String USER_CUSTOM_SHOPPING_LIST_ITEMS = "/user/{userId}/custom-shopping-list-items";
@@ -115,8 +113,6 @@ public class SecurityConfig {
                         .permitAll()
                         .requestMatchers(HttpMethod.GET, ECONEWS_COMMENTS)
                         .hasAnyRole(ADMIN)
-                        .requestMatchers("/error")
-                        .permitAll()
                         .requestMatchers(HttpMethod.GET,
                                 "/ownSecurity/verifyEmail",
                                 "/ownSecurity/updateAccessToken",
@@ -148,7 +144,6 @@ public class SecurityConfig {
                                 "/econews/comments/count/likes",
                                 "/econews/comments/replies/active/{parentCommentId}",
                                 "/econews/comments/active",
-                                "/events",
                                 "/language",
                                 "/search",
                                 "/search/econews",
@@ -209,8 +204,6 @@ public class SecurityConfig {
                                 "/econews/dislike",
                                 "/econews/comments/{econewsId}",
                                 "/econews/comments/like",
-                                "/events",
-                                "/events/create",
                                 CUSTOM_SHOPPING_LIST_ITEMS,
                                 "/files/image",
                                 "/files/convert",
@@ -228,6 +221,7 @@ public class SecurityConfig {
                         .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
                         .requestMatchers(HttpMethod.PUT,
                                 "/habit/statistic/{id}",
+                                "/events/{eventId}",
                                 "/econews/update",
                                 "/ownSecurity",
                                 "/user/profile",
@@ -252,6 +246,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.DELETE,
                                 ECONEWS_COMMENTS,
                                 "/events/comments/{eventCommentId}",
+                                "/events/{eventId}",
                                 "/econews/{econewsId}",
                                 CUSTOM_SHOPPING_LIST_ITEMS,
                                 CUSTOM_SHOPPING_LIST_URL,
@@ -293,7 +288,9 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET,
                                 "/events/{userID}")
                         .hasAnyRole(ADMIN, USER)
-                        .anyRequest().hasAnyRole(ADMIN))
+                        .anyRequest().hasAnyRole(ADMIN)
+                        .anyRequest().hasAnyRole(ADMIN)
+                )
                 .logout(logout -> logout.logoutUrl("/logout")
                         .logoutRequestMatcher(new AntPathRequestMatcher("/management/logout", "GET"))
                         .clearAuthentication(true)
