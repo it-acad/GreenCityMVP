@@ -1,13 +1,18 @@
 package greencity.controller;
 
 import greencity.annotations.CurrentUser;
+import greencity.annotations.ImageListSizeValidation;
+import greencity.annotations.ImageSizeValidation;
+import greencity.annotations.ImageValidation;
 import greencity.constant.HttpStatuses;
-import greencity.dto.event.EventCreationDto;
 import greencity.dto.event.EventDto;
 import greencity.dto.user.UserVO;
 import greencity.service.EventService;
 import greencity.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
+import greencity.constant.SwaggerExampleModel;
+import greencity.dto.event.EventCreationDtoRequest;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
@@ -17,24 +22,42 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import java.util.Set;
+import java.util.List;
 
 
 @RestController
 @RequestMapping("/events")
 @RequiredArgsConstructor
+@Validated
 public class EventController {
     private final EventService eventService;
     private final UserService userService;
 
-
+    @Operation(summary = "Create new event.")
+    @ResponseStatus(value = HttpStatus.CREATED)
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Event created successfully"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized"),
+            @ApiResponse(responseCode = "403", description = "Bad Request")
+    })
     @PostMapping(consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<EventDto> save(@RequestPart MultipartFile[] images,
-                                         @RequestPart @Valid EventCreationDto eventCreationDto,
-                                         @CurrentUser UserVO currentUser) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(eventService.save(images, eventCreationDto, currentUser.getId()));
+    public ResponseEntity<EventDto> save(
+            @Parameter(description = SwaggerExampleModel.ADD_EVENT, required = true)
+            @RequestPart @Valid EventCreationDtoRequest eventCreationDtoRequest,
+            @Parameter(description = "Images of the event")
+            @RequestPart(required = false) @ImageListSizeValidation(maxSize = 5) List<
+                    @ImageSizeValidation(maxSizeMB = 10)
+                    @ImageValidation MultipartFile> images,
+            @Parameter(description = "Current User")
+            @CurrentUser UserVO currentUser) {
+
+        // Save the event
+        EventDto savedEvent = eventService.saveEvent(eventCreationDtoRequest, images, currentUser.getEmail());
+        return ResponseEntity.status(HttpStatus.CREATED).body(savedEvent);
     }
 
     /**
@@ -77,5 +100,4 @@ public class EventController {
         UserVO user = userService.findByEmail(email);
         return user.getId() == userId;
     }
-
 }

@@ -23,4 +23,9 @@ public class EventImage {
 
     @ManyToMany(mappedBy = "images")
     private Set<Event> events;
+
+    public EventImage(String imagePath) {
+        this.imagePath = imagePath;
+    }
+
 }

@@ -1,7 +1,7 @@
 package greencity.mapping;
 
 import greencity.ModelUtils;
-import greencity.dto.event.EventCreationDto;
+import greencity.dto.event.EventCreationDtoRequest;
 import greencity.entity.Event;
 import greencity.entity.EventImage;
 import greencity.enums.EventType;
@@ -21,13 +21,13 @@ public class EventCreationDtoMapperTest {
 
 
     @InjectMocks
-    private EventCreationDtoMapper mapper;
+    private EventCreationDtoRequestMapper mapper;
 
 
     @Test
     void convertTest() {
         // Arrange
-        EventCreationDto eventCreationDto = ModelUtils.getEventCreationDto();
+        EventCreationDtoRequest eventCreationDto = ModelUtils.getEventCreationDto();
 
         Event expected = Event.builder()
                 .eventTitle(eventCreationDto.getEventTitle())

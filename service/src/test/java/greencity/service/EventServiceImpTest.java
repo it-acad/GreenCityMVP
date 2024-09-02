@@ -27,7 +27,7 @@ public class EventServiceImpTest {
     ModelMapper modelMapper;
 
     @InjectMocks
-    private EventServiceImp eventService;
+    private EventServiceImpl eventService;
 
     @Test
     void findAllByUserId_EventsForCurrentUserExists_ReturnListOfEventsDto() {

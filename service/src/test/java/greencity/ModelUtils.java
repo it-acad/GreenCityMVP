@@ -5,7 +5,7 @@ import greencity.constant.AppConstant;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.econews.*;
 import greencity.dto.econewscomment.*;
-import greencity.dto.event.EventCreationDto;
+import greencity.dto.event.EventCreationDtoRequest;
 import greencity.dto.event.EventDayDetailsCreatingDto;
 import greencity.dto.event.EventDayDetailsDto;
 import greencity.dto.event.EventDto;
@@ -703,8 +703,8 @@ public class ModelUtils {
                 getUser());
     }
 
-    public static EventCreationDto getEventCreationDto() {
-        return new EventCreationDto(
+    public static EventCreationDtoRequest getEventCreationDto() {
+        return new EventCreationDtoRequest(
                 "Some event title",
                 "This is a description of the event. It can be quite long, but not too long.",
                 new HashSet<>(Set.of(eventDayDetailsCreatingDto())),

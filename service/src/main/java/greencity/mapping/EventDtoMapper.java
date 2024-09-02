@@ -28,6 +28,8 @@ public class EventDtoMapper extends AbstractConverter<Event, EventDto> {
                                 .isOffline(day.isOffline())
                                 .offlinePlace(day.getOfflinePlace())
                                 .onlinePlace(day.getOnlinePlace())
+                                .latitude(day.getLatitude())
+                                .longitude(day.getLongitude())
                                 .build())
                         .collect(Collectors.toSet()))
                 .eventType(event.getEventType().toString())
