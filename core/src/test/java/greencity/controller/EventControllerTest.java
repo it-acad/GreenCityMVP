@@ -8,6 +8,7 @@ import greencity.converters.UserArgumentResolver;
 import greencity.dto.event.EventDto;
 import greencity.dto.event.EventEditDto;
 import greencity.dto.user.UserVO;
+import greencity.entity.User;
 import greencity.exception.exceptions.EventNotFoundException;
 import greencity.exception.handler.CustomExceptionHandler;
 import greencity.service.EventServiceImpl;
@@ -30,6 +31,9 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.validation.Validator;
 import org.springframework.web.multipart.MultipartFile;
 import java.security.Principal;
+import java.util.HashSet;
+import java.util.Set;
+
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -49,6 +53,7 @@ class EventControllerTest {
     private ModelMapper modelMapper;
     @InjectMocks
     private EventController eventController;
+    private static final String eventLink = "/events";
     private final ErrorAttributes errorAttributes = new DefaultErrorAttributes();
     private MockMvc mockMvc;
     private final Principal principal = ModelUtils.getPrincipal();
@@ -91,11 +96,11 @@ class EventControllerTest {
                 .setValidator(mockValidator)
                 .build();
         objectMapper.registerModule(new JavaTimeModule());
-        when(userService.findByEmail(anyString())).thenReturn(userVO);
     }
 
     @Test
     void testDeleteEvent_StatusIsOk() throws Exception {
+        when(userService.findByEmail(anyString())).thenReturn(userVO);
         doNothing().when(eventService).delete(EVENT_ID, userVO.getId());
         mockMvc.perform(delete("/events/" + EVENT_ID)
                         .principal(principal))
@@ -105,6 +110,7 @@ class EventControllerTest {
 
     @Test
     void testDeleteEvent_Fail_EventNotFound() throws Exception {
+        when(userService.findByEmail(anyString())).thenReturn(userVO);
         doThrow(new EventNotFoundException(ErrorMessage.EVENT_NOT_FOUND)).when(eventService).delete(EVENT_ID, userVO.getId());
         mockMvc.perform(delete("/events/" + EVENT_ID)
                         .principal(principal))
@@ -114,6 +120,7 @@ class EventControllerTest {
 
     @Test
     void testUpdateEvent_success() throws Exception {
+        when(userService.findByEmail(anyString())).thenReturn(userVO);
         when(eventService.update(any(EventEditDto.class), eq(userVO.getId()), eq(EVENT_ID), any(MultipartFile[].class)))
                 .thenReturn(any(EventDto.class));
         mockMvc.perform(multipart(HttpMethod.PUT,"/events/" + EVENT_ID)
@@ -127,6 +134,7 @@ class EventControllerTest {
 
     @Test
     void testUpdateEvent_eventNotFound() throws Exception {
+        when(userService.findByEmail(anyString())).thenReturn(userVO);
         doThrow(new EventNotFoundException(ErrorMessage.EVENT_NOT_FOUND + EVENT_ID))
                 .when(eventService).update(any(EventEditDto.class), anyLong(), anyLong(), any(MultipartFile[].class));
 
@@ -137,6 +145,29 @@ class EventControllerTest {
                         .principal(principal))
                 .andExpect(status().isNotFound());
         verify(eventService).update(any(EventEditDto.class), eq(userVO.getId()), eq(EVENT_ID), any(MultipartFile[].class));
+    }
+
+    @Test
+    public void getAll_ReturnStatusCode200() throws Exception {
+        when(eventService.findAll()).thenReturn(new HashSet<>());
+
+        mockMvc.perform(get(eventLink)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+
+        verify(eventService, times(1)).findAll();
+    }
+
+    @Test
+    public void getAllEventsByUser_EventsExistsForCurrentUser_ReturnStatusCode200() throws Exception {
+        User user = ModelUtils.getUser();
+        when(eventService.findAllByUserId(user.getId())).thenReturn(new HashSet<>(Set.of(ModelUtils.getEventDto())));
+
+        mockMvc.perform(get(eventLink + "/{userId}", user.getId())
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+
+        verify(eventService, times(1)).findAllByUserId(user.getId());
     }
 }
 

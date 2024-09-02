@@ -1,5 +1,6 @@
 package greencity.service;
 
+import greencity.ModelUtils;
 import greencity.dto.event.EventDto;
 import greencity.dto.event.EventEditDto;
 import greencity.dto.user.AuthorDto;
@@ -14,9 +15,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
+
+import java.util.*;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -96,5 +97,47 @@ class EventServiceImplTest {
 
         assertThrows(EventNotFoundException.class,
                 () -> eventService.update(editDto, USER_ID, EVENT_ID, null));
+    }
+
+    @Test
+    void findAllByUserId_EventsForCurrentUserExists_ReturnListOfEventsDto() {
+        long userId = 1L;
+        Set<Event> events = Set.of(ModelUtils.getEvent());
+        when(eventRepo.findAllByAuthorId(1L)).thenReturn(events);
+        when(modelMapper.map(any(Event.class), any())).thenReturn(ModelUtils.getEventDto());
+
+        Set<EventDto> result = eventService.findAllByUserId(userId);
+
+        assertFalse(result.isEmpty());
+    }
+
+    @Test
+    void findAllByUserId_EventsForCurrentUserNotExists_ReturnEmptyList() {
+        long notValidUserId = 999L;
+        doReturn(new HashSet<>()).when(eventRepo).findAllByAuthorId(notValidUserId);
+
+        Set<EventDto> result = eventService.findAllByUserId(notValidUserId);
+
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void findAll_EventsPresentInDb_ReturnListOfEventsDto() {
+        List<Event> events = List.of(ModelUtils.getEvent());
+        when(eventRepo.findAll()).thenReturn(events);
+        when(modelMapper.map(any(Event.class), any())).thenReturn(ModelUtils.getEventDto());
+
+        Set<EventDto> result = eventService.findAll();
+
+        assertFalse(result.isEmpty());
+    }
+
+    @Test
+    void findAll_EventsNotPresentInDb_ReturnEmptyList() {
+        when(eventRepo.findAll()).thenReturn(new ArrayList<>());
+
+        Set<EventDto> result = eventService.findAll();
+
+        assertTrue(result.isEmpty());
     }
 }

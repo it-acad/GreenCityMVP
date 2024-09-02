@@ -23,8 +23,6 @@ public class EventDayDetailsDto {
     @Future(message = ServiceValidationConstants.EVENT_DAY_RESTRICTION)
     private LocalDate eventDate;
 
-    @PastOrPresent(message = ServiceValidationConstants.EVENT_TIME_RESTRICTION)
-    @Future(message = ServiceValidationConstants.EVENT_TIME_RESTRICTION)
     private LocalTime eventStartTime;
 
     private LocalTime eventEndTime;
