@@ -3,7 +3,10 @@ package greencity.service;
 import greencity.dto.PageableDto;
 import greencity.dto.search.SearchNewsDto;
 import greencity.dto.search.SearchResponseDto;
+import greencity.dto.user.friends.FriendCardDtoResponse;
 import org.springframework.data.domain.Pageable;
+
+import java.util.List;
 
 /**
  * Provides the interface to manage search functionality.
@@ -28,4 +31,16 @@ public interface SearchService {
      * @return PageableDto of {@link SearchNewsDto} instances.
      */
     PageableDto<SearchNewsDto> searchAllNews(Pageable pageable, String searchQuery, String languageCode);
+
+    /**
+     * Method that allow you to search users which are not your friend yet
+     * and get result as list of{@link FriendCardDtoResponse}.
+     *
+     * @param userId The ID of the current user.
+     * @param searchQuery The search pattern.
+     * @return list of {@link FriendCardDtoResponse} instances.
+     *
+     * @author Chernenko Vitaliy
+     */
+    List<FriendCardDtoResponse> searchFriends(long userId, String searchQuery);
 }

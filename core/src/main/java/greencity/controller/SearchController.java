@@ -2,21 +2,27 @@ package greencity.controller;
 
 import greencity.annotations.ApiLocale;
 import greencity.annotations.ApiPageableWithLocale;
+import greencity.annotations.CurrentUser;
 import greencity.annotations.ValidLanguage;
 import greencity.constant.HttpStatuses;
 import greencity.dto.PageableDto;
 import greencity.dto.search.SearchNewsDto;
 import greencity.dto.search.SearchResponseDto;
+import greencity.dto.user.UserVO;
+import greencity.dto.user.friends.FriendCardDtoResponse;
 import greencity.service.SearchService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 import java.util.Locale;
 
 @RestController
@@ -65,5 +71,12 @@ public class SearchController {
         @Parameter(hidden = true) @ValidLanguage Locale locale) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(searchService.searchAllNews(pageable, searchQuery, locale.getLanguage()));
+    }
+
+    @GetMapping("/friends")
+    public ResponseEntity<List<FriendCardDtoResponse>> searchFriends(@CurrentUser UserVO currentUser,
+            @RequestParam
+            @Size(min = 1, max = 30, message = "Query should be between 1 and 30 characters") String searchQuery) {
+        return ResponseEntity.status(HttpStatus.OK).body(searchService.searchFriends(currentUser.getId(), searchQuery));
     }
 }

@@ -3,14 +3,23 @@ package greencity.service;
 import greencity.dto.PageableDto;
 import greencity.dto.search.SearchNewsDto;
 import greencity.dto.search.SearchResponseDto;
+import greencity.dto.user.friends.FriendCardDtoResponse;
+import greencity.entity.User;
+import greencity.repository.UserRepo;
 import lombok.AllArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
 public class SearchServiceImpl implements SearchService {
     private final EcoNewsService ecoNewsService;
+    private final UserRepo userRepo;
+    private final ModelMapper modelMapper;
 
     /**
      * Method that allow you to search {@link SearchResponseDto}.
@@ -34,5 +43,18 @@ public class SearchServiceImpl implements SearchService {
     @Override
     public PageableDto<SearchNewsDto> searchAllNews(Pageable pageable, String searchQuery, String languageCode) {
         return ecoNewsService.search(pageable, searchQuery, languageCode);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<FriendCardDtoResponse> searchFriends(long userId, String searchQuery) {
+        List<User> notFriendsUsers = userRepo.getAllUsersExceptMainUserAndFriends(userId, searchQuery.toLowerCase());
+        List<FriendCardDtoResponse> result = notFriendsUsers.stream().map(user -> modelMapper.map(user, FriendCardDtoResponse.class))
+                .collect(Collectors.toList());
+
+        result.forEach(friend -> friend.setMutualFriends(userRepo.getAmountOfMutualFriends(userId, friend.getId())));
+        return result;
     }
 }

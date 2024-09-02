@@ -140,4 +140,83 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
         + "(SELECT user_id FROM users_friends WHERE friend_id = :userId and status = 'FRIEND')"
         + "UNION (SELECT friend_id FROM users_friends WHERE user_id = :userId and status = 'FRIEND'));")
     List<User> getAllUserFriends(Long userId);
+
+    /**
+     * Get all user not friends.
+     *
+     * @param userId The ID of the current user.
+     * @param queryName The search pattern.
+     *
+     * @return list of {@link User}.
+     *
+     * @author Chernenko Vitaliy
+     */
+    @Query(nativeQuery = true, value = "SELECT * FROM users WHERE id NOT IN (" +
+            "            (SELECT user_id FROM users_friends WHERE friend_id = :userId)" +
+            "            UNION (SELECT friend_id FROM users_friends WHERE user_id = :userId))" +
+            "            AND users.id != :userId" +
+            "            AND (lower(name) LIKE (CONCAT('%', :queryName, '%')) OR lower(first_name) LIKE (CONCAT('%', :queryName, '%')));")
+    List<User> getAllUsersExceptMainUserAndFriends(Long userId, String queryName);
+
+    /**
+     * Get amount of mutual friends.
+     *
+     * @param userId The ID of the current user.
+     * @param otherUserId The ID of user with whom need amount of mutual friends.
+     *
+     * @return amount as int.
+     *
+     * @author Chernenko Vitaliy
+     */
+    @Query(nativeQuery = true, value = "SELECT count(*)" +
+            "FROM (SELECT friend_id AS user_id" +
+            "      FROM users_friends WHERE user_id = :userId" +
+            "      UNION" +
+            "      SELECT user_id AS user_id FROM users_friends WHERE friend_id = :userId) as friends " +
+            "WHERE user_id IN(SELECT friend_id AS user_id FROM users_friends" +
+            "       WHERE user_id = :otherUserId" +
+            "       UNION" +
+            "       SELECT user_id AS user_id FROM users_friends" +
+            "       WHERE friend_id = :otherUserId);")
+    int getAmountOfMutualFriends(Long userId, Long otherUserId);
+
+    /**
+     * Add user as friend.
+     *
+     * @param userId The ID of the current user.
+     * @param friendId The ID of user who will be added as friend.
+     *
+     * @author Chernenko Vitaliy
+     */
+    @Modifying
+    @Transactional
+    @Query(nativeQuery = true, value = "INSERT INTO users_friends(user_id, friend_id, status) VALUES(:userId, :friendId, 'PENDING');")
+    void addFriend(Long userId, Long friendId);
+
+    /**
+     * Accept friendship invitation.
+     *
+     * @param userId The ID of the current user.
+     * @param friendId The ID of user who invitation will be accepted.
+     *
+     * @author Chernenko Vitaliy
+     */
+    @Modifying
+    @Transactional
+    @Query(nativeQuery = true, value = "UPDATE users_friends SET status = 'FRIENDS' WHERE user_id = :friendId AND friend_id = :userId ;")
+    void acceptFriendshipInvitation(Long userId, Long friendId);
+
+    /**
+     * Remove user from friends.
+     *
+     * @param userId The ID of the current user.
+     * @param friendId The ID of user who will be removed from friends.
+     *
+     * @author Chernenko Vitaliy
+     */
+    @Modifying
+    @Transactional
+    @Query(nativeQuery = true, value = "DELETE FROM users_friends WHERE user_id = :userId AND friend_id = :friendId " +
+            "OR user_id = :friendId AND friend_id = :userId ;")
+    void removeFriend(Long userId, Long friendId);
 }

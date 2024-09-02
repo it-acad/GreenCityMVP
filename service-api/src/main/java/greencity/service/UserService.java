@@ -107,4 +107,44 @@ public interface UserService {
      * @param criteria value which we used to filter users.
      */
     PageableDto<UserManagementVO> getAllUsersByCriteria(String criteria, String role, String status, Pageable pageable);
+
+    /**
+     * Method for adding new friend.
+     *
+     * @param userId The ID of user who add friend.
+     * @param friendId The ID of user who should be added as friend.
+     *
+     * @author Chernenko Vitaliy
+     */
+    void addFriend(Long userId, Long friendId);
+
+    /**
+     * Method for accepting friendship invitation.
+     *
+     * @param userId The ID of current user.
+     * @param friendId The ID of user whose invitation need to accept.
+     *
+     * @author Chernenko Vitaliy
+     */
+    void acceptFriendshipInvitation(Long userId, Long friendId);
+
+    /**
+     * Method for declining friendship invitation.
+     *
+     * @param userId The ID of current user.
+     * @param friendId The ID of user whose invitation need to decline.
+     *
+     * @author Chernenko Vitaliy
+     */
+    void declineFriendshipInvitation(Long userId, Long friendId);
+
+    /**
+     * Method for canceling friendship request.
+     *
+     * @param userId The ID of current user.
+     * @param friendId The ID of user request to who need to cancel.
+     *
+     * @author Chernenko Vitaliy
+     */
+    void cancelFriendshipInvitation(Long userId, Long friendId);
 }

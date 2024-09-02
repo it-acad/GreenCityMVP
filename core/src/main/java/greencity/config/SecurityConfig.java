@@ -283,6 +283,17 @@ public class SecurityConfig {
                                 "/facts/{factId}",
                                 "/comments")
                         .hasAnyRole(ADMIN)
+                        .requestMatchers(HttpMethod.GET,
+                                "/search/friends")
+                        .hasAnyRole(ADMIN, USER)
+                        .requestMatchers(HttpMethod.POST,
+                                "/friends")
+                        .hasAnyRole(ADMIN, USER)
+                        .requestMatchers(HttpMethod.PATCH,
+                                "/friends/accept/{friendId}",
+                                "/friends/decline/{friendId}",
+                                "/friends/cancel/{friendId}")
+                        .hasAnyRole(ADMIN, USER)
                         .anyRequest().hasAnyRole(ADMIN))
                 .logout(logout -> logout.logoutUrl("/logout")
                         .logoutRequestMatcher(new AntPathRequestMatcher("/management/logout", "GET"))

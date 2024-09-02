@@ -217,6 +217,52 @@ public class UserServiceImpl implements UserService {
             listOfUsers.getTotalPages());
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void addFriend(Long userId, Long friendId) {
+        //check if not friend yet
+        if(!userId.equals(friendId)) {
+            userRepo.addFriend(userId, friendId);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void acceptFriendshipInvitation(Long userId, Long friendId) {
+        //find in repo. If exists and status pending, then accept
+        //and owner of request try to accept
+        userRepo.acceptFriendshipInvitation(userId, friendId);
+        //TODO
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void declineFriendshipInvitation(Long userId, Long friendId) {
+        //find in repo. If exists and status pending, then decline
+        //and owner of request try to decline
+
+        userRepo.removeFriend(userId, friendId);
+        //TODO
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void cancelFriendshipInvitation(Long userId, Long friendId) {
+        //find in repo. If exists and status pending, then cancel
+        //and owner of request try to cancel
+
+        userRepo.removeFriend(userId, friendId);
+        //TODO
+    }
+
     private UserFilterDto createUserFilterDto(String criteria, String role, String status) {
         if (status != null) {
             status = status.equals("all") ? null : status;
