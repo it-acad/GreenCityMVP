@@ -6,6 +6,7 @@ import lombok.*;
 import org.hibernate.annotations.Cascade;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -32,8 +33,8 @@ public class Event {
     @Column(name = "event_type", nullable = false)
     private EventType eventType = EventType.OPEN;
 
-    @OneToMany(mappedBy="event", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private Set<EventDayDetails> eventDayDetailsList;
+    @OneToMany(mappedBy="event", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<EventDayDetails> eventDayDetailsList = new HashSet<>();
 
     @ManyToMany
     @JoinTable(
@@ -46,4 +47,9 @@ public class Event {
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User author;
+
+    public void addEventDayDetails(EventDayDetails eventDayDetails){
+        this.eventDayDetailsList.add(eventDayDetails);
+        eventDayDetails.setEvent(this);
+    }
 }
