@@ -89,7 +89,7 @@ public class NotificationControllerTest {
     void getFirstThreeNotifications_StatusIsOk() throws Exception {
         when(userService.findByEmail(anyString())).thenReturn(userVO);
 
-        mockMvc.perform(get(initialUrl)
+        mockMvc.perform(get(initialUrl + "/topThree")
                         .principal(principal))
                 .andExpect(status().isOk());
 
@@ -101,7 +101,7 @@ public class NotificationControllerTest {
         when(userService.findByEmail(anyString())).thenReturn(userVO);
         when(notificationService.getFirstThreeNotifications(userVO.getId())).thenReturn(List.of());
 
-        mockMvc.perform(get(initialUrl)
+        mockMvc.perform(get(initialUrl + "/topThree")
                         .principal(principal))
                 .andExpect(status().isOk());
 
@@ -113,7 +113,7 @@ public class NotificationControllerTest {
         when(userService.findByEmail(anyString())).thenReturn(userVO);
         when(notificationService.getFirstThreeNotifications(userVO.getId())).thenReturn(List.of(new NotificationDto(), new NotificationDto(), new NotificationDto()));
 
-        mockMvc.perform(get(initialUrl)
+        mockMvc.perform(get(initialUrl + "/topThree")
                         .principal(principal))
                 .andExpect(status().isOk());
 
@@ -137,7 +137,7 @@ public class NotificationControllerTest {
         when(userService.findByEmail(anyString())).thenReturn(userVO);
         when(notificationService.getFirstThreeNotifications(userVO.getId())).thenReturn(List.of(new NotificationDto(), new NotificationDto(), new NotificationDto(), new NotificationDto()));
 
-        mockMvc.perform(get(initialUrl)
+        mockMvc.perform(get(initialUrl + "/topThree")
                         .principal(principal))
                 .andExpect(status().isOk());
 
