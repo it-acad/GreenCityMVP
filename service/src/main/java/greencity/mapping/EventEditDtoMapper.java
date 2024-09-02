@@ -1,7 +1,5 @@
 package greencity.mapping;
 
-import greencity.dto.event.EventCreationDto;
-import greencity.dto.event.EventDto;
 import greencity.dto.event.EventEditDto;
 import greencity.entity.Event;
 import greencity.entity.EventDayDetails;

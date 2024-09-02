@@ -3,7 +3,6 @@ package greencity.service;
 import greencity.dto.event.EventCreationDto;
 import greencity.dto.event.EventDto;
 import greencity.dto.event.EventEditDto;
-import greencity.dto.user.UserVO;
 import org.springframework.web.multipart.MultipartFile;
 
 public interface EventService {
