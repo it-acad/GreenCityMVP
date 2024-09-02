@@ -754,18 +754,18 @@ public class ModelUtils {
     }
 
     public static EventDto getEventDto() {
-        return EventDto.builder()
-                .id(1L)
-                .eventTitle("Some event tittle")
-                .description("This is a description of the event. It can be quite long, but not too long.")
-                .eventType(EventType.OPEN.toString())
-                .eventDayDetailsList(Set.of(getEventDayDetailsDto()))
-                .imagePathList(new ArrayList<>(List.of(
-                        "https://someimageurl1.net",
-                        "https://someimageurl2.net",
-                        "https://someimageurl3.net"
-                )))
-                .author(AuthorDto.builder().id(1L).name("Some Author").build())
-                .build();
+    return EventDto.builder()
+            .id(1L)
+            .eventTitle("Some event tittle")
+            .description("This is a description of the event. It can be quite long, but not too long.")
+            .eventType(EventType.OPEN.toString())
+            .eventDayDetailsList(Set.of(getEventDayDetailsDto()))
+            .imagePathList(new ArrayList<>(List.of(
+                    "https://someimageurl1.net",
+                    "https://someimageurl2.net",
+                    "https://someimageurl3.net"
+            )))
+            .author(AuthorDto.builder().id(1L).name("Some Author").build())
+            .build();
     }
 }
