@@ -24,7 +24,6 @@ public class EventDayDetailsCreatingDto {
     @Future(message = ServiceValidationConstants.EVENT_DAY_RESTRICTION)
     private LocalDate eventDate;
 
-    @Future(message = ServiceValidationConstants.EVENT_TIME_RESTRICTION)
     private LocalTime eventStartTime;
 
     private LocalTime eventEndTime;

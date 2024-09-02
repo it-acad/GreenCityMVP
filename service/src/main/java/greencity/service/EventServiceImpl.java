@@ -7,6 +7,7 @@ import greencity.dto.event.EventDto;
 import greencity.dto.event.EventEditDto;
 import greencity.dto.event.EventSendEmailDto;
 import greencity.dto.user.PlaceAuthorDto;
+import greencity.dto.user.UserVO;
 import greencity.entity.Event;
 import greencity.entity.EventDayDetails;
 import greencity.entity.EventImage;
@@ -23,6 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -42,6 +44,7 @@ public class EventServiceImpl implements EventService {
     private final EventRepo eventRepo;
     private final UserRepo userRepo;
     private final FileService fileService;
+    private final UserService userService;
     private final RestClient restClient;
     private final HttpServletRequest httpServletRequest;
     private final ModelMapper modelMapper;
@@ -89,6 +92,7 @@ public class EventServiceImpl implements EventService {
      *
      * @author Chernenko Vitaliy.
      */
+    @PreAuthorize("@eventServiceImpl.isCurrentUserId(#userId)")
     @Override
     public Set<EventDto> findAllByUserId(final Long userId) {
         Set<Event> eventsFromDb = eventRepo.findAllByAuthorId(userId);
@@ -173,7 +177,7 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    @PreAuthorize("hasRole('ROLE_ADMIN') or @eventServiceImp.isEventOwner(#eventId, #userId)")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or @eventServiceImpl.isEventOwner(#eventId, #userId)")
     @Transactional
     public void delete(Long eventId, Long userId) {
         if (eventRepo.existsById(eventId)) {
@@ -185,7 +189,7 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    @PreAuthorize("hasRole('ROLE_ADMIN') or @eventServiceImp.isEventOwner(#eventId, #userId)")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or @eventServiceImpl.isEventOwner(#eventId, #userId)")
     @Transactional
     public EventDto update(EventEditDto eventEditDto, Long userId, Long eventId, MultipartFile[] images) {
 
@@ -223,6 +227,12 @@ public class EventServiceImpl implements EventService {
         return eventRepo.findById(eventId)
                 .map(it -> it.getAuthor().getId().equals(userId))
                 .orElse(false);
+    }
+
+    public boolean isCurrentUserId(long userId) {
+        String email = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        UserVO user = userService.findByEmail(email);
+        return user.getId() == userId;
     }
 
     public void saveOrUpdateEventDayDetails(Set<EventDayDetails> setEventDayDetails) {

@@ -11,7 +11,6 @@ import greencity.dto.event.EventEditDto;
 import greencity.dto.user.UserVO;
 import greencity.exception.handler.MessageResponse;
 import greencity.service.EventService;
-import greencity.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import greencity.constant.SwaggerExampleModel;
 import greencity.dto.event.EventCreationDtoRequest;
@@ -23,8 +22,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import java.util.Set;
@@ -34,9 +32,10 @@ import java.util.List;
 @RestController
 @RequestMapping("/events")
 @RequiredArgsConstructor
+@Validated
 public class EventController {
     private final EventService eventService;
-    private final UserService userService;
+
 
     @Operation(summary = "Create new event.")
     @ResponseStatus(value = HttpStatus.CREATED)
@@ -90,16 +89,9 @@ public class EventController {
             @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED),
             @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN)
     })
-    @PreAuthorize("@eventController.isPermitted(#userId)")
     @GetMapping("/{userId}")
     public ResponseEntity<Set<EventDto>> getAllEventsByUser(@PathVariable Long userId) {
         return ResponseEntity.status(HttpStatus.OK).body(eventService.findAllByUserId(userId));
-    }
-
-    public boolean isPermitted(long userId) {
-        String email = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        UserVO user = userService.findByEmail(email);
-        return user.getId() == userId;
     }
 
     @DeleteMapping("/{eventId}")

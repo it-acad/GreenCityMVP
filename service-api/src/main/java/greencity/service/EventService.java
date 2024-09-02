@@ -24,6 +24,8 @@ public interface EventService {
        *
        * @param userId user id.
        * @return set of {@link EventDto} instances which belong to user.
+       *
+       * @author Chernenko Vitaliy
        */
       Set<EventDto> findAllByUserId(Long userId);
 
@@ -31,6 +33,8 @@ public interface EventService {
        * Method for getting all events.
        *
        * @return set of {@link EventDto} instances.
+       *
+       * @author Chernenko Vitaliy
        */
       Set<EventDto> findAll();
 
