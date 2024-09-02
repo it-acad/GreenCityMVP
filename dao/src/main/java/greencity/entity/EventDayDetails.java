@@ -12,7 +12,7 @@ import java.time.LocalTime;
 @Getter
 @Setter
 @Builder
-@EqualsAndHashCode
+@EqualsAndHashCode(exclude = "event")
 @Table(name = "event_day_details")
 public class EventDayDetails {
     @Id
@@ -42,6 +42,12 @@ public class EventDayDetails {
 
     @Column(name = "link")
     private String onlinePlace;
+
+    @Column(name = "latitude")
+    private double latitude;
+
+    @Column(name = "longitude")
+    private double longitude;
 
     @ManyToOne
     @JoinColumn(name = "event_id", nullable = false)

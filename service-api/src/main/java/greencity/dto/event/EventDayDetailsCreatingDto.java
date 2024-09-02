@@ -1,6 +1,9 @@
 package greencity.dto.event;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import greencity.constant.ServiceValidationConstants;
+import jakarta.validation.constraints.Future;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.*;
 import lombok.*;
 import org.hibernate.validator.constraints.URL;
@@ -15,30 +18,30 @@ import java.time.LocalTime;
 @Setter
 @Builder
 @EqualsAndHashCode
-public class EventDayDetailsDto {
-
-    private Long id;
+public class EventDayDetailsCreatingDto {
 
     @NotNull
     @Future(message = ServiceValidationConstants.EVENT_DAY_RESTRICTION)
     private LocalDate eventDate;
 
-    @PastOrPresent(message = ServiceValidationConstants.EVENT_TIME_RESTRICTION)
     @Future(message = ServiceValidationConstants.EVENT_TIME_RESTRICTION)
     private LocalTime eventStartTime;
 
     private LocalTime eventEndTime;
 
+    @JsonProperty("isAllDateDuration")
     private boolean isAllDateDuration;
 
+    @JsonProperty("isOnline")
     private boolean isOnline;
 
-    @URL
-    private String onlinePlace;
-
+    @JsonProperty("isOffline")
     private boolean isOffline;
 
     private String offlinePlace;
+
+    @URL
+    private String onlinePlace;
 
     @Min(value = -90, message = "Latitude must be between -90 and 90 degrees")
     @Max(value = 90, message = "Latitude must be between -90 and 90 degrees")

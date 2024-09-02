@@ -16,13 +16,19 @@ import java.util.Set;
 @EqualsAndHashCode
 public class EventDto {
     private Long id;
+
     @Size(min = 1, max = 70, message = ServiceValidationConstants.EVENT_TITLE_LENGTH)
     private String eventTitle;
+
     @Size(min = 20, max = 63206, message = ServiceValidationConstants.EVENT_DESCRIPTION_LENGTH)
     private String description;
+
     @Size(min = 1, max = 7, message = ServiceValidationConstants.EVENT_AMOUNT_OF_DAYS)
     private Set<EventDayDetailsDto> eventDayDetailsList;
+
     private String eventType;
+
     private List<String> imagePathList;
+
     private AuthorDto author;
 }

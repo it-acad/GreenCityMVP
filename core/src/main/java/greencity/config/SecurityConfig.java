@@ -12,7 +12,6 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.authentication.configuration.EnableGlobalAuthentication;
-import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -22,10 +21,8 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
-
 import java.util.Arrays;
 import java.util.Collections;
-
 import static greencity.constant.AppConstant.*;
 import static jakarta.servlet.http.HttpServletResponse.SC_FORBIDDEN;
 import static jakarta.servlet.http.HttpServletResponse.SC_UNAUTHORIZED;
@@ -40,7 +37,6 @@ import static org.springframework.security.config.http.SessionCreationPolicy.STA
 @Configuration
 @EnableWebSecurity
 @EnableGlobalAuthentication
-@EnableMethodSecurity
 public class SecurityConfig {
     private static final String ECONEWS_COMMENTS = "/econews/comments";
     private static final String USER_CUSTOM_SHOPPING_LIST_ITEMS = "/user/{userId}/custom-shopping-list-items";
@@ -81,19 +77,19 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain applicationSecurity(HttpSecurity http) throws Exception {
         http.cors(corsCustomizer -> corsCustomizer.configurationSource(request -> {
-                    CorsConfiguration config = new CorsConfiguration();
-                    config.setAllowedOrigins(Collections.singletonList("http://localhost:4200"));
-                    config.setAllowedOrigins(Collections.singletonList("http://localhost:4205"));
-                    config.setAllowedMethods(
+            CorsConfiguration config = new CorsConfiguration();
+            config.setAllowedOrigins(Collections.singletonList("http://localhost:4200"));
+            config.setAllowedOrigins(Collections.singletonList("http://localhost:4205"));
+            config.setAllowedMethods(
                             Arrays.asList("GET", "POST", "OPTIONS", "DELETE", "PUT", "PATCH"));
-                    config.setAllowedHeaders(
+            config.setAllowedHeaders(
                             Arrays.asList("Access-Control-Allow-Origin", "Access-Control-Allow-Headers",
                                     "X-Requested-With", "Origin", "Content-Type", "Accept", "Authorization"));
-                    config.setAllowCredentials(true);
-                    config.setAllowedHeaders(Collections.singletonList("*"));
-                    config.setMaxAge(3600L);
-                    return config;
-                }))
+            config.setAllowCredentials(true);
+            config.setAllowedHeaders(Collections.singletonList("*"));
+            config.setMaxAge(3600L);
+            return config;
+        }))
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(STATELESS))
                 .addFilterBefore(
@@ -225,7 +221,7 @@ public class SecurityConfig {
                         .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
                         .requestMatchers(HttpMethod.PUT,
                                 "/habit/statistic/{id}",
-                                "/events/{eventId}/update",
+                                "/events/{eventId}",
                                 "/econews/update",
                                 "/ownSecurity",
                                 "/user/profile",
@@ -250,7 +246,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.DELETE,
                                 ECONEWS_COMMENTS,
                                 "/events/comments/{eventCommentId}",
-                                "/events/{eventId}/delete",
+                                "/events/{eventId}",
                                 "/econews/{econewsId}",
                                 CUSTOM_SHOPPING_LIST_ITEMS,
                                 CUSTOM_SHOPPING_LIST_URL,
@@ -289,6 +285,10 @@ public class SecurityConfig {
                                 "/facts/{factId}",
                                 "/comments")
                         .hasAnyRole(ADMIN)
+                        .requestMatchers(HttpMethod.GET,
+                                "/events/{userID}")
+                        .hasAnyRole(ADMIN, USER)
+                        .anyRequest().hasAnyRole(ADMIN)
                         .anyRequest().hasAnyRole(ADMIN)
                 )
                 .logout(logout -> logout.logoutUrl("/logout")

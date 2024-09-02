@@ -1,6 +1,6 @@
 package greencity.mapping;
 
-import greencity.dto.event.EventCreationDto;
+import greencity.dto.event.EventCreationDtoRequest;
 import greencity.entity.Event;
 import greencity.entity.EventDayDetails;
 import greencity.enums.EventType;
@@ -11,19 +11,18 @@ import java.util.ArrayList;
 import java.util.stream.Collectors;
 
 @Component
-public class EventCreationDtoMapper extends AbstractConverter<EventCreationDto, Event> {
+public class EventCreationDtoRequestMapper extends AbstractConverter<EventCreationDtoRequest, Event> {
     @Override
-    protected Event convert(EventCreationDto eventCreationDto) {
-         Event event =  Event.builder()
-                .eventTitle(eventCreationDto.getEventTitle())
-                .description(eventCreationDto.getDescription())
-                .eventType(EventType.valueOf(eventCreationDto.getEventType()))
+    protected Event convert(EventCreationDtoRequest eventCreationDtoRequest) {
+        Event event = Event.builder()
+                .eventTitle(eventCreationDtoRequest.getEventTitle())
+                .description(eventCreationDtoRequest.getDescription())
+                .eventType(EventType.valueOf(eventCreationDtoRequest.getEventType().toUpperCase()))  // EventType is set here
                 .images(new ArrayList<>())
                 .build();
 
-         event.setEventDayDetailsList(eventCreationDto.getEventDayDetailsList().stream()
+        event.setEventDayDetailsList(eventCreationDtoRequest.getEventDayDetailsList().stream()
                 .map(day -> EventDayDetails.builder()
-                        .id(day.getId())
                         .eventDate(day.getEventDate())
                         .eventStartTime(day.getEventStartTime())
                         .eventEndTime(day.getEventEndTime())
@@ -32,10 +31,13 @@ public class EventCreationDtoMapper extends AbstractConverter<EventCreationDto, 
                         .isOffline(day.isOffline())
                         .offlinePlace(day.getOfflinePlace())
                         .onlinePlace(day.getOnlinePlace())
+                        .latitude(day.getLatitude())
+                        .longitude(day.getLongitude())
                         .event(event)
                         .build())
                 .collect(Collectors.toSet()));
 
-         return event;
+        return event;
     }
+
 }

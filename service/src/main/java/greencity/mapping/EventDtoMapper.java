@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 
 @Component
 public class EventDtoMapper extends AbstractConverter<Event, EventDto> {
+
     @Override
     protected EventDto convert(Event event) {
         return EventDto.builder()
@@ -27,6 +28,8 @@ public class EventDtoMapper extends AbstractConverter<Event, EventDto> {
                                 .isOffline(day.isOffline())
                                 .offlinePlace(day.getOfflinePlace())
                                 .onlinePlace(day.getOnlinePlace())
+                                .latitude(day.getLatitude())
+                                .longitude(day.getLongitude())
                                 .build())
                         .collect(Collectors.toSet()))
                 .eventType(event.getEventType().toString())
