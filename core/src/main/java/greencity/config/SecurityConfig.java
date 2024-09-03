@@ -288,6 +288,8 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET,
                                 "/events/{userID}")
                         .hasAnyRole(ADMIN, USER)
+                        .anyRequest().hasAnyRole(ADMIN)
+                        .anyRequest().hasAnyRole(ADMIN)
                 )
                 .logout(logout -> logout.logoutUrl("/logout")
                         .logoutRequestMatcher(new AntPathRequestMatcher("/management/logout", "GET"))
