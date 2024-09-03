@@ -96,6 +96,7 @@ public class EventController {
         return ResponseEntity.status(HttpStatus.OK).body(eventService.findAllByUserId(userId));
     }
 
+
     public boolean isPermitted(long userId) {
         String email = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         UserVO user = userService.findByEmail(email);
