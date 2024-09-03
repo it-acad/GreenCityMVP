@@ -18,7 +18,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -29,6 +28,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/events")
 @RequiredArgsConstructor
+@Validated
 public class EventController {
     private final EventService eventService;
 
@@ -47,13 +47,12 @@ public class EventController {
             @RequestPart(required = false) @ImageListSizeValidation(maxSize = 5) List<
                     @ImageSizeValidation(maxSizeMB = 10)
                     @ImageValidation MultipartFile> images,
-            @Parameter(description = "Current User")
+            @Parameter(description = "Current User", hidden = true)
             @CurrentUser UserVO currentUser) {
 
         // Save the event
         EventDto savedEvent = eventService.saveEvent(eventCreationDtoRequest, images, currentUser.getEmail());
         return ResponseEntity.status(HttpStatus.CREATED).body(savedEvent);
     }
-
 
 }
