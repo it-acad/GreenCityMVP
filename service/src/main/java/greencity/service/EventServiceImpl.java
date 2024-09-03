@@ -3,10 +3,8 @@ package greencity.service;
 import greencity.client.RestClient;
 import greencity.constant.ErrorMessage;
 import greencity.dto.event.EventCreationDtoRequest;
-import greencity.dto.event.EventDayDetailsDto;
 import greencity.dto.event.EventDto;
 import greencity.dto.event.EventSendEmailDto;
-import greencity.dto.user.AuthorDto;
 import greencity.dto.user.PlaceAuthorDto;
 import greencity.entity.Event;
 import greencity.entity.EventDayDetails;
@@ -27,7 +25,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
