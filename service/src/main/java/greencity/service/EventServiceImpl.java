@@ -230,25 +230,33 @@ public class EventServiceImpl implements EventService {
             if (details.getId() == null) {
                 eventDayDetailsRepo.saveAndFlush(details);
             } else {
-                EventDayDetails eventDayDetails = eventDayDetailsRepo.findById(details.getId()).get();
-                if (details.getEventDate() != null) {
-                    eventDayDetails.setEventDate(details.getEventDate());
+                Optional<EventDayDetails> optionalEventDayDetails = eventDayDetailsRepo.findById(details.getId());
+                if (optionalEventDayDetails.isEmpty()) {
+                    throw new EventNotFoundException(ErrorMessage.EVENT_DAY_DETAILS_NOT_FOUND + details.getId());
+                } else {
+                    EventDayDetails eventDayDetails = optionalEventDayDetails.get();
+                    if (details.getEventDate() != null) {
+                        eventDayDetails.setEventDate(details.getEventDate());
+                    }
+                    if (details.getEventStartTime() != null) {
+                        eventDayDetails.setEventStartTime(details.getEventStartTime());
+                    }
+                    if (details.getEventEndTime() != null) {
+                        eventDayDetails.setEventEndTime(details.getEventEndTime());
+                    }
+                    if (details.getOfflinePlace() != null) {
+                        eventDayDetails.setOfflinePlace(details.getOfflinePlace());
+                    }
+                    if (details.getOnlinePlace() != null) {
+                        eventDayDetails.setOnlinePlace(details.getOnlinePlace());
+                    }
+                    eventDayDetails.setLatitude(details.getLatitude());
+                    eventDayDetails.setLongitude(details.getLongitude());
+                    eventDayDetails.setAllDateDuration(details.isAllDateDuration());
+                    eventDayDetails.setOnline(details.isOnline());
+                    eventDayDetails.setOffline(details.isOffline());
+                    eventDayDetailsRepo.save(eventDayDetails);
                 }
-                if (details.getEventStartTime() != null) {
-                    eventDayDetails.setEventStartTime(details.getEventStartTime());
-                }
-                if (details.getEventEndTime() != null) {
-                    eventDayDetails.setEventEndTime(details.getEventEndTime());
-                }
-                if (details.getOfflinePlace() != null) {
-                    eventDayDetails.setOfflinePlace(details.getOfflinePlace());
-                }
-                if (details.getOnlinePlace() != null) {
-                    eventDayDetails.setOnlinePlace(details.getOnlinePlace());
-                }
-                eventDayDetails.setAllDateDuration(details.isAllDateDuration());
-                eventDayDetails.setOnline(details.isOnline());
-                eventDayDetails.setOffline(details.isOffline());
             }
         }
     }

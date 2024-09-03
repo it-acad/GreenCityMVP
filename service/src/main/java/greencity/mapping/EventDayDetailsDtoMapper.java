@@ -17,6 +17,8 @@ public class EventDayDetailsDtoMapper extends AbstractConverter<EventDayDetailsD
                 .isAllDateDuration(eventDayDetailsDto.isAllDateDuration())
                 .isOnline(eventDayDetailsDto.isOnline())
                 .isOffline(eventDayDetailsDto.isOffline())
+                .latitude(eventDayDetailsDto.getLatitude())
+                .longitude(eventDayDetailsDto.getLongitude())
                 .offlinePlace(eventDayDetailsDto.getOfflinePlace())
                 .onlinePlace(eventDayDetailsDto.getOnlinePlace())
                 .build();
