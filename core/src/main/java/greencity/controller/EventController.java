@@ -32,7 +32,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/events")
 @RequiredArgsConstructor
-@Validated
 public class EventController {
     private final EventService eventService;
 
@@ -94,6 +93,18 @@ public class EventController {
         return ResponseEntity.status(HttpStatus.OK).body(eventService.findAllByUserId(userId));
     }
 
+    public boolean isPermitted(long userId) {
+        String email = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        UserVO user = userService.findByEmail(email);
+        return user.getId() == userId;
+    }
+
+    @Operation(summary = "Delete event")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+            @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND),
+            @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED)
+    })
     @DeleteMapping("/{eventId}")
     public ResponseEntity<Object> delete(@PathVariable Long eventId,
                                          @CurrentUser UserVO currentUser) {
@@ -102,9 +113,15 @@ public class EventController {
                 .message(AppConstant.DELETED).success(true).build());
     }
 
+    @Operation(summary = "Update event")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+            @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND),
+            @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED)
+    })
     @PutMapping("/{eventId}")
     public ResponseEntity<EventDto> update(@PathVariable Long eventId,
-                                           @RequestPart EventEditDto eventEditDto,
+                                           @RequestPart @Valid EventEditDto eventEditDto,
                                            @RequestPart MultipartFile[] images,
                                            @CurrentUser UserVO currentUser) {
         return ResponseEntity.status(HttpStatus.OK).body(eventService.update(eventEditDto, currentUser.getId(), eventId, images));

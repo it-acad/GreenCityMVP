@@ -30,6 +30,8 @@ public class EventEditDtoMapper extends AbstractConverter<EventEditDto, Event>{
                         .isAllDateDuration(day.isAllDateDuration())
                         .isOnline(day.isOnline())
                         .isOffline(day.isOffline())
+                        .latitude(day.getLatitude())
+                        .longitude(day.getLongitude())
                         .offlinePlace(day.getOfflinePlace())
                         .onlinePlace(day.getOnlinePlace())
                         .event(event)
