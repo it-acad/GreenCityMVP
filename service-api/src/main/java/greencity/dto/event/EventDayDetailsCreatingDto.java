@@ -40,7 +40,7 @@ public class EventDayDetailsCreatingDto {
 
     private String offlinePlace;
 
-    @URL
+    @URL(message = ServiceValidationConstants.EVENT_URL_RESTRICTION)
     private String onlinePlace;
 
     @Min(value = -90, message = "Latitude must be between -90 and 90 degrees")
