@@ -5,6 +5,7 @@ import greencity.dto.replytocomment.ReplyToCommentDto;
 import greencity.entity.Comment;
 import greencity.entity.ReplyToComment;
 import greencity.entity.User;
+import greencity.exception.exceptions.*;
 import greencity.mapping.ReplyToCommentMapper;
 import greencity.repository.CommentRepo;
 import greencity.repository.ReplyToCommentRepo;
@@ -32,10 +33,10 @@ public class ReplyToCommentServiceImpl implements ReplyToCommentService{
     @Transactional
     public ReplyToCommentDto save(ReplyToCommentDto replyToCommentDto, Long commentId, Long authorId) {
         Comment comment = commentRepo.findById(commentId)
-                .orElseThrow(() -> new IllegalArgumentException(ErrorMessage.COMMENT_NOT_FOUND_BY_ID + commentId));
+                .orElseThrow(() -> new CommentNotFoundException(ErrorMessage.COMMENT_NOT_FOUND_BY_ID + commentId));
 
         User author = userRepo.findById(authorId)
-                .orElseThrow(() -> new IllegalArgumentException(ErrorMessage.USER_NOT_FOUND_BY_ID + authorId));
+                .orElseThrow(() -> new UserNotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID + authorId));
 
         checkContent(replyToCommentDto.getContent());
         ReplyToComment replyToComment = mapper.toEntity(replyToCommentDto);
@@ -52,10 +53,10 @@ public class ReplyToCommentServiceImpl implements ReplyToCommentService{
         checkContent(replyToCommentDto.getContent());
 
         ReplyToComment updatedReply = replyToCommentRepo.findById(replyToCommentDto.getId())
-                .orElseThrow(() -> new IllegalArgumentException(ErrorMessage.REPLY_NOT_FOUND_BY_ID + replyToCommentDto.getId()));
+                .orElseThrow(() -> new ReplyNotFoundException(ErrorMessage.REPLY_NOT_FOUND_BY_ID + replyToCommentDto.getId()));
 
         if (!updatedReply.getAuthor().getId().equals(authorId)) {
-            throw new IllegalArgumentException(ErrorMessage.ENABLE_TO_UPDATE_REPLY);
+            throw new UnauthorizedReplyUpdateException(ErrorMessage.ENABLE_TO_UPDATE_REPLY);
         }
 
         updatedReply.setContent(replyToCommentDto.getContent());
@@ -69,10 +70,10 @@ public class ReplyToCommentServiceImpl implements ReplyToCommentService{
     public void deleteById(Long replyToCommentId, Long authorId) {
 
         ReplyToComment replyToComment = replyToCommentRepo.findById(replyToCommentId)
-                .orElseThrow(() -> new IllegalArgumentException(ErrorMessage.REPLY_NOT_FOUND_BY_ID + replyToCommentId));
+                .orElseThrow(() -> new ReplyNotFoundException(ErrorMessage.REPLY_NOT_FOUND_BY_ID + replyToCommentId));
 
         if (!replyToComment.getAuthor().getId().equals(authorId)) {
-            throw new IllegalArgumentException(ErrorMessage.ENABLE_TO_DELETE_REPLY);
+            throw new UnauthorizedReplyDeleteException(ErrorMessage.ENABLE_TO_DELETE_REPLY);
         }
 
         replyToCommentRepo.deleteById(replyToCommentId);
@@ -81,6 +82,10 @@ public class ReplyToCommentServiceImpl implements ReplyToCommentService{
     @Override
     @Transactional(readOnly = true)
     public List<ReplyToCommentDto> findAllByCommentId(Long commentId) {
+        if (commentId == null || commentId < 0) {
+            throw new InvalidCommentIdException(ErrorMessage.INVALID_COMMENT_ID + commentId);
+        }
+
         List<ReplyToComment> replyToComments = replyToCommentRepo.findAllByCommentId(commentId);
 
         return replyToComments.stream()
@@ -90,7 +95,7 @@ public class ReplyToCommentServiceImpl implements ReplyToCommentService{
 
     private void checkContent(String content) {
         if (URL_PATTERN.matcher(content).find()) {
-            throw new IllegalArgumentException(ErrorMessage.ENABLE_TO_CONTAIN_URL);
+            throw new ContentContainsURLException(ErrorMessage.ENABLE_TO_CONTAIN_URL);
         }
     }
 }
