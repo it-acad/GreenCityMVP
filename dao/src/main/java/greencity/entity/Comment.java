@@ -41,4 +41,8 @@ public class Comment {
     @LastModifiedDate
     @Column(nullable = false)
     private LocalDateTime modifiedDate;
+
+    @OneToMany(mappedBy = "comment", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    private List<ReplyToComment> replies = new ArrayList<>();
 }
