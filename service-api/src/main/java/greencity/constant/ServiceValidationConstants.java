@@ -33,6 +33,9 @@ public final class ServiceValidationConstants {
     public static final String EVENT_DESCRIPTION_LENGTH = "{greenCity.validation.event.descriptionLength}";
     public static final String EVENT_AMOUNT_OF_DAYS = "{greenCity.validation.event.amountOfDays}";
     public static final String EVENT_DAY_RESTRICTION = "{greenCity.validation.event.dayRestriction}";
+    public static final String EVENT_TIME_RESTRICTION = "{greenCity.validation.event.timeRestriction}";
+    public static final String EVENT_START_TIME_RESTRICTION = "{greenCity.validation.event.startTimeRestriction}";
+    public static final String EVENT_EQUAL_TIME_RESTRICTION = "{greenCity.validation.event.equalTimeRestriction}";
 
 
     private ServiceValidationConstants() {

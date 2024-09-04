@@ -1,9 +1,13 @@
 package greencity.validator;
 
 import greencity.annotations.ValidEventDayDetails;
+import greencity.constant.ServiceValidationConstants;
 import greencity.dto.event.EventDayDetailsCreatingDto;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
 
 
 public class EventDayDetailsValidator implements ConstraintValidator<ValidEventDayDetails, EventDayDetailsCreatingDto> {
@@ -32,6 +36,36 @@ public class EventDayDetailsValidator implements ConstraintValidator<ValidEventD
 
         // Check if isOffline is true but offlinePlace is empty
         if (isOffline && (offlinePlace == null || offlinePlace.isEmpty())) {
+            return false;
+        }
+
+        //Check if event day end time is before event day start time
+        if (value.getEventEndTime().isBefore(value.getEventStartTime())) {
+            context.disableDefaultConstraintViolation();
+            context.buildConstraintViolationWithTemplate(ServiceValidationConstants.EVENT_TIME_RESTRICTION)
+                    .addPropertyNode("eventEndTime")
+                    .addConstraintViolation();
+            return false;
+        }
+
+        //check if event day start time is before current time
+        if (value.getEventDate().isEqual(LocalDate.now())) {
+            if (value.getEventStartTime().isBefore(LocalTime.now())) {
+                context.disableDefaultConstraintViolation();
+                context.buildConstraintViolationWithTemplate(ServiceValidationConstants.EVENT_START_TIME_RESTRICTION)
+                        .addPropertyNode("eventStartTime")
+                        .addConstraintViolation();
+
+                return false;
+            }
+        }
+
+        //check if event day end time equal to event day start time
+        if (value.getEventEndTime().equals(value.getEventStartTime())) {
+            context.disableDefaultConstraintViolation();
+            context.buildConstraintViolationWithTemplate(ServiceValidationConstants.EVENT_EQUAL_TIME_RESTRICTION)
+                    .addPropertyNode("eventEndTime")
+                    .addConstraintViolation();
             return false;
         }
 

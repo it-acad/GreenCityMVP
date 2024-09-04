@@ -2,9 +2,8 @@ package greencity.dto.event;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import greencity.constant.ServiceValidationConstants;
-import jakarta.validation.constraints.Future;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import org.hibernate.validator.constraints.URL;
 
@@ -21,7 +20,7 @@ import java.time.LocalTime;
 public class EventDayDetailsCreatingDto {
 
     @NotNull
-    @Future(message = ServiceValidationConstants.EVENT_DAY_RESTRICTION)
+    @FutureOrPresent(message = ServiceValidationConstants.EVENT_DAY_RESTRICTION)
     private LocalDate eventDate;
 
     private LocalTime eventStartTime;

@@ -29,6 +29,7 @@ import java.util.Set;
 import java.util.List;
 
 
+@Validated
 @RestController
 @RequestMapping("/events")
 @RequiredArgsConstructor
@@ -91,12 +92,6 @@ public class EventController {
     @GetMapping("/{userId}")
     public ResponseEntity<Set<EventDto>> getAllEventsByUser(@PathVariable Long userId) {
         return ResponseEntity.status(HttpStatus.OK).body(eventService.findAllByUserId(userId));
-    }
-
-    public boolean isPermitted(long userId) {
-        String email = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        UserVO user = userService.findByEmail(email);
-        return user.getId() == userId;
     }
 
     @Operation(summary = "Delete event")
