@@ -33,14 +33,15 @@ public interface SearchService {
     PageableDto<SearchNewsDto> searchAllNews(Pageable pageable, String searchQuery, String languageCode);
 
     /**
-     * Method that allow you to search users which are not your friend yet
+     * Method that allow you to search users which are not your friend yet by login or name.
      * and get result as list of{@link FriendCardDtoResponse}.
      *
      * @param userId The ID of the current user.
-     * @param searchQuery The search pattern.
+     * @param searchQuery The search query pattern for login and name field.
+     * @param city The search query pattern for city field.
      * @return list of {@link FriendCardDtoResponse} instances.
      *
      * @author Chernenko Vitaliy
      */
-    List<FriendCardDtoResponse> searchFriends(long userId, String searchQuery);
+    List<FriendCardDtoResponse> searchFriends(long userId, String searchQuery, String city);
 }

@@ -11,6 +11,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -49,8 +50,14 @@ public class SearchServiceImpl implements SearchService {
      * {@inheritDoc}
      */
     @Override
-    public List<FriendCardDtoResponse> searchFriends(long userId, String searchQuery) {
-        List<User> notFriendsUsers = userRepo.getAllUsersExceptMainUserAndFriends(userId, searchQuery.toLowerCase());
+    public List<FriendCardDtoResponse> searchFriends(long userId, String searchQuery, String city) {
+        List<User> notFriendsUsers;
+        if (city != null && !city.isEmpty()) {
+             notFriendsUsers = userRepo.getAllUsersByNameAndCityExceptMainUserAndFriends(userId, searchQuery.toLowerCase(), city.toLowerCase());
+        } else {
+            notFriendsUsers = userRepo.getAllUsersByNameExceptMainUserAndFriends(userId, searchQuery.toLowerCase());
+        }
+
         List<FriendCardDtoResponse> result = notFriendsUsers.stream().map(user -> modelMapper.map(user, FriendCardDtoResponse.class))
                 .collect(Collectors.toList());
 

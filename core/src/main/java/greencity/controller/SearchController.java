@@ -76,7 +76,8 @@ public class SearchController {
     @GetMapping("/friends")
     public ResponseEntity<List<FriendCardDtoResponse>> searchFriends(@CurrentUser UserVO currentUser,
             @RequestParam
-            @Size(min = 1, max = 30, message = "Query should be between 1 and 30 characters") String searchQuery) {
-        return ResponseEntity.status(HttpStatus.OK).body(searchService.searchFriends(currentUser.getId(), searchQuery));
+            @Size(min = 1, max = 30, message = "Query should be between 1 and 30 characters") String searchQuery,
+            @RequestParam(required = false) String city) {
+        return ResponseEntity.status(HttpStatus.OK).body(searchService.searchFriends(currentUser.getId(), searchQuery, city));
     }
 }

@@ -142,7 +142,7 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
     List<User> getAllUserFriends(Long userId);
 
     /**
-     * Get all user not friends.
+     * Get all user not friends except current user by name.
      *
      * @param userId The ID of the current user.
      * @param queryName The search pattern.
@@ -156,7 +156,27 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
             "            UNION (SELECT friend_id FROM users_friends WHERE user_id = :userId))" +
             "            AND users.id != :userId" +
             "            AND (lower(name) LIKE (CONCAT('%', :queryName, '%')) OR lower(first_name) LIKE (CONCAT('%', :queryName, '%')));")
-    List<User> getAllUsersExceptMainUserAndFriends(Long userId, String queryName);
+    List<User> getAllUsersByNameExceptMainUserAndFriends(Long userId, String queryName);
+
+    /**
+     * Get all user not friends except current user by name and city.
+     *
+     * @param userId The ID of the current user.
+     * @param queryName The search query pattern for login and name field.
+     * @param city The search query pattern for city field.
+     *
+     * @return list of {@link User}.
+     *
+     * @author Chernenko Vitaliy
+     */
+    @Query(nativeQuery = true, value = "SELECT * FROM users WHERE id NOT IN (" +
+            "            (SELECT user_id FROM users_friends WHERE friend_id = :userId)" +
+            "            UNION (SELECT friend_id FROM users_friends WHERE user_id = :userId))" +
+            "            AND users.id != :userId" +
+            "            AND ((lower(name) LIKE (CONCAT('%', :queryName, '%')) OR lower(first_name) LIKE (CONCAT('%', :queryName, '%')))" +
+            "            AND (city IS NOT NULL AND lower(city) = :city));")
+    List<User> getAllUsersByNameAndCityExceptMainUserAndFriends(Long userId, String queryName, String city);
+
 
     /**
      * Get amount of mutual friends.
