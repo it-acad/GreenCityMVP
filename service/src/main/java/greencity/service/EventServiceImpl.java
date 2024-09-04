@@ -108,7 +108,7 @@ public class EventServiceImpl implements EventService {
         // Get the list of event dates
         List<String> eventDayList = savedEvent.getEventDayDetailsList().stream()
                 .map(eventDayDetail -> eventDayDetail.getEventDate().toString())
-                .collect(Collectors.toList());
+                .toList();
 
         // Calculate the duration in days
         int durationInDays = savedEvent.getEventDayDetailsList().size();
@@ -132,7 +132,7 @@ public class EventServiceImpl implements EventService {
                 .offlinePlace(offlinePlace)
                 .imagePath(savedEvent.getImages().stream()
                         .map(EventImage::getImagePath)
-                        .collect(Collectors.toList()))
+                        .toList())
                 .author(placeAuthorDto)
                 .secureToken(accessToken)
                 .build();
