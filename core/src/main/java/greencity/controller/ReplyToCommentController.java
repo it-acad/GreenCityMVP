@@ -18,8 +18,8 @@ public class ReplyToCommentController {
 
     private final ReplyToCommentService replyToCommentService;
 
-    @PostMapping("{comment_id}")
-    public ResponseEntity<ReplyToCommentDto> save(@PathVariable("comment_id") Long commentId,
+    @PostMapping("{commentId}")
+    public ResponseEntity<ReplyToCommentDto> save(@PathVariable("commentId") Long commentId,
                                                   @Valid @RequestBody ReplyToCommentDto replyToCommentDto,
                                                   @Parameter(hidden = true) @CurrentUser UserVO currentUser) {
         ReplyToCommentDto savedReply = replyToCommentService.save(replyToCommentDto, commentId, currentUser.getId());

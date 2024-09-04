@@ -1,5 +1,6 @@
 package greencity.service;
 
+import greencity.constant.ErrorMessage;
 import greencity.dto.replytocomment.ReplyToCommentDto;
 import greencity.entity.Comment;
 import greencity.entity.ReplyToComment;
@@ -30,13 +31,13 @@ public class ReplyToCommentServiceImpl implements ReplyToCommentService{
     public ReplyToCommentDto save(ReplyToCommentDto replyToCommentDto, Long commentId, Long authorId) {
 
         Comment comment = commentRepo.findById(commentId)
-                .orElseThrow(() -> new IllegalArgumentException("Comment with id " + commentId + " not found"));
+                .orElseThrow(() -> new IllegalArgumentException(ErrorMessage.COMMENT_NOT_FOUND_BY_ID + commentId));
 
         checkContent(replyToCommentDto.getContent());
 
         ReplyToComment replyToComment = mapper.map(replyToCommentDto, ReplyToComment.class);
         replyToComment.setAuthor(userRepo.findById(authorId)
-                .orElseThrow(() -> new IllegalArgumentException("User with id " + authorId + " not found")));
+                .orElseThrow(() -> new IllegalArgumentException(ErrorMessage.USER_NOT_FOUND_BY_ID + authorId)));
         replyToComment.setComment(comment);
 
         return mapper.map(replyToCommentRepo.save(replyToComment), ReplyToCommentDto.class);
@@ -48,10 +49,10 @@ public class ReplyToCommentServiceImpl implements ReplyToCommentService{
         checkContent(replyToCommentDto.getContent());
 
         ReplyToComment updatedReply = replyToCommentRepo.findById(replyToCommentDto.getId())
-                .orElseThrow(() -> new IllegalArgumentException("Reply with id " + replyToCommentDto.getId() + " not found"));
+                .orElseThrow(() -> new IllegalArgumentException(ErrorMessage.REPLY_NOT_FOUND_BY_ID + replyToCommentDto.getId()));
 
         if (!updatedReply.getAuthor().getId().equals(authorId)) {
-            throw new IllegalArgumentException("You can't update this reply");
+            throw new IllegalArgumentException(ErrorMessage.ENABLE_TO_UPDATE_REPLY);
         }
 
         updatedReply.setContent(replyToCommentDto.getContent());
@@ -65,10 +66,10 @@ public class ReplyToCommentServiceImpl implements ReplyToCommentService{
     public void deleteById(Long replyToCommentId, Long authorId) {
 
         ReplyToComment replyToComment = replyToCommentRepo.findById(replyToCommentId)
-                .orElseThrow(() -> new IllegalArgumentException("Reply with id " + replyToCommentId + " not found"));
+                .orElseThrow(() -> new IllegalArgumentException(ErrorMessage.REPLY_NOT_FOUND_BY_ID + replyToCommentId));
 
         if (!replyToComment.getAuthor().getId().equals(authorId)) {
-            throw new IllegalArgumentException("You can't delete this reply");
+            throw new IllegalArgumentException(ErrorMessage.ENABLE_TO_DELETE_REPLY);
         }
 
         replyToCommentRepo.deleteById(replyToCommentId);
@@ -86,9 +87,7 @@ public class ReplyToCommentServiceImpl implements ReplyToCommentService{
 
     private void checkContent(String content) {
         if (URL_PATTERN.matcher(content).find()) {
-            throw new IllegalArgumentException("Content can't contain URL");
+            throw new IllegalArgumentException(ErrorMessage.ENABLE_TO_CONTAIN_URL);
         }
     }
-
-
 }
