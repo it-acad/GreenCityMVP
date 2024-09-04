@@ -11,6 +11,7 @@ import greencity.dto.event.EventEditDto;
 import greencity.dto.user.UserVO;
 import greencity.exception.handler.MessageResponse;
 import greencity.service.EventService;
+import greencity.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import greencity.constant.SwaggerExampleModel;
 import greencity.dto.event.EventCreationDtoRequest;
@@ -22,7 +23,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import java.util.Set;
@@ -34,6 +35,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class EventController {
     private final EventService eventService;
+    private final UserService userService;
 
 
     @Operation(summary = "Create new event.")
