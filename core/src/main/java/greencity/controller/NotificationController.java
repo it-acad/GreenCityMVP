@@ -117,4 +117,16 @@ public class NotificationController {
         List<NotificationDto> notifications = notificationService.getNotificationsSortedByReceivedTime(currentUser.getId(), ascending);
         return ResponseEntity.ok(notifications);
     }
+
+    @Operation(summary = "Save a notification.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+            @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST),
+            @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED)
+    })
+    @PostMapping("/save")
+    public ResponseEntity<NotificationDto> saveNotification(@RequestBody NotificationDto notificationDto) {
+        NotificationDto savedNotification = notificationService.save(notificationDto);
+        return ResponseEntity.ok(savedNotification);
+    }
 }
