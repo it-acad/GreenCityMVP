@@ -23,8 +23,10 @@ public class EventDayDetailsCreatingDto {
     @FutureOrPresent(message = ServiceValidationConstants.EVENT_DAY_RESTRICTION)
     private LocalDate eventDate;
 
+    @NotNull
     private LocalTime eventStartTime;
 
+    @NotNull
     private LocalTime eventEndTime;
 
     @JsonProperty("isAllDateDuration")

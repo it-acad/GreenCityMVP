@@ -40,7 +40,8 @@ public class EventDayDetailsValidator implements ConstraintValidator<ValidEventD
         }
 
         //Check if event day end time is before event day start time
-        if (value.getEventEndTime().isBefore(value.getEventStartTime())) {
+        if (value.getEventEndTime() != null && value.getEventStartTime() != null &&
+                value.getEventEndTime().isBefore(value.getEventStartTime())) {
             context.disableDefaultConstraintViolation();
             context.buildConstraintViolationWithTemplate(ServiceValidationConstants.EVENT_TIME_RESTRICTION)
                     .addPropertyNode("eventEndTime")
@@ -49,7 +50,7 @@ public class EventDayDetailsValidator implements ConstraintValidator<ValidEventD
         }
 
         //check if event day start time is before current time
-        if (value.getEventDate().isEqual(LocalDate.now())) {
+        if (value.getEventDate() != null && value.getEventDate().isEqual(LocalDate.now())) {
             if (value.getEventStartTime().isBefore(LocalTime.now())) {
                 context.disableDefaultConstraintViolation();
                 context.buildConstraintViolationWithTemplate(ServiceValidationConstants.EVENT_START_TIME_RESTRICTION)
@@ -61,7 +62,8 @@ public class EventDayDetailsValidator implements ConstraintValidator<ValidEventD
         }
 
         //check if event day end time equal to event day start time
-        if (value.getEventEndTime().equals(value.getEventStartTime())) {
+        if (value.getEventEndTime() != null && value.getEventStartTime() != null &&
+                value.getEventEndTime().equals(value.getEventStartTime())) {
             context.disableDefaultConstraintViolation();
             context.buildConstraintViolationWithTemplate(ServiceValidationConstants.EVENT_EQUAL_TIME_RESTRICTION)
                     .addPropertyNode("eventEndTime")
