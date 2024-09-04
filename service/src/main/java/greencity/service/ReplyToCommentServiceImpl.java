@@ -4,10 +4,12 @@ import greencity.constant.ErrorMessage;
 import greencity.dto.replytocomment.ReplyToCommentDto;
 import greencity.entity.Comment;
 import greencity.entity.ReplyToComment;
+import greencity.entity.User;
+import greencity.mapping.ReplyToCommentMapper;
+import greencity.repository.CommentRepo;
 import greencity.repository.ReplyToCommentRepo;
 import greencity.repository.UserRepo;
 import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,7 +23,7 @@ public class ReplyToCommentServiceImpl implements ReplyToCommentService{
     private final ReplyToCommentRepo replyToCommentRepo;
     private final UserRepo userRepo;
     private final CommentRepo commentRepo;
-    private final ModelMapper mapper;
+    private final ReplyToCommentMapper mapper;
     private static final Pattern URL_PATTERN = Pattern.compile(
             "(http|https|ftp|ftps)://[^\\s/$.?#].\\S*",
             Pattern.CASE_INSENSITIVE);
@@ -29,18 +31,19 @@ public class ReplyToCommentServiceImpl implements ReplyToCommentService{
     @Override
     @Transactional
     public ReplyToCommentDto save(ReplyToCommentDto replyToCommentDto, Long commentId, Long authorId) {
-
         Comment comment = commentRepo.findById(commentId)
                 .orElseThrow(() -> new IllegalArgumentException(ErrorMessage.COMMENT_NOT_FOUND_BY_ID + commentId));
 
+        User author = userRepo.findById(authorId)
+                .orElseThrow(() -> new IllegalArgumentException(ErrorMessage.USER_NOT_FOUND_BY_ID + authorId));
+
         checkContent(replyToCommentDto.getContent());
+        ReplyToComment replyToComment = mapper.toEntity(replyToCommentDto);
 
-        ReplyToComment replyToComment = mapper.map(replyToCommentDto, ReplyToComment.class);
-        replyToComment.setAuthor(userRepo.findById(authorId)
-                .orElseThrow(() -> new IllegalArgumentException(ErrorMessage.USER_NOT_FOUND_BY_ID + authorId)));
         replyToComment.setComment(comment);
+        replyToComment.setAuthor(author);
 
-        return mapper.map(replyToCommentRepo.save(replyToComment), ReplyToCommentDto.class);
+        return mapper.toDto(replyToCommentRepo.save(replyToComment));
     }
 
     @Override
@@ -58,7 +61,7 @@ public class ReplyToCommentServiceImpl implements ReplyToCommentService{
         updatedReply.setContent(replyToCommentDto.getContent());
         updatedReply.setIsEdited(true);
 
-        return mapper.map(replyToCommentRepo.save(updatedReply), ReplyToCommentDto.class);
+        return mapper.toDto(replyToCommentRepo.save(updatedReply));
     }
 
     @Override
@@ -81,7 +84,7 @@ public class ReplyToCommentServiceImpl implements ReplyToCommentService{
         List<ReplyToComment> replyToComments = replyToCommentRepo.findAllByCommentId(commentId);
 
         return replyToComments.stream()
-                .map(replyToComment -> mapper.map(replyToComment, ReplyToCommentDto.class))
+                .map(mapper::toDto)
                 .toList();
     }
 

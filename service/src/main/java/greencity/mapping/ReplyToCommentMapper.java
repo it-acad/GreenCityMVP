@@ -2,16 +2,28 @@ package greencity.mapping;
 
 import greencity.dto.replytocomment.ReplyToCommentDto;
 import greencity.entity.ReplyToComment;
-import org.modelmapper.AbstractConverter;
+import org.springframework.stereotype.Component;
 
-public class ReplyToCommentMapper extends AbstractConverter<ReplyToComment, ReplyToCommentDto> {
+@Component
+public class ReplyToCommentMapper implements GenericCommentMapper<ReplyToCommentDto, ReplyToComment> {
+
     @Override
-    protected ReplyToCommentDto convert(ReplyToComment replyToComment) {
+    public ReplyToComment toEntity(ReplyToCommentDto dto) {
+        return ReplyToComment.builder()
+                .id(dto.getId())
+                .content(dto.getContent())
+                .createdDate(dto.getCreatedDate())
+                .isEdited(dto.getIsEdited())
+                .build();
+    }
+
+    @Override
+    public ReplyToCommentDto toDto(ReplyToComment entity) {
         return ReplyToCommentDto.builder()
-                .id(replyToComment.getId())
-                .content(replyToComment.getContent())
-                .createdDate(replyToComment.getCreatedDate())
-                .isEdited(replyToComment.getIsEdited())
+                .id(entity.getId())
+                .content(entity.getContent())
+                .createdDate(entity.getCreatedDate())
+                .isEdited(entity.getIsEdited())
                 .build();
     }
 }
