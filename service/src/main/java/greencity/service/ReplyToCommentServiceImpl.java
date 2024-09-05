@@ -19,7 +19,7 @@ import java.util.regex.Pattern;
 
 @Service
 @RequiredArgsConstructor
-public class ReplyToCommentServiceImpl implements ReplyToCommentService{
+public class ReplyToCommentServiceImpl implements ReplyToCommentService {
 
     private final ReplyToCommentRepo replyToCommentRepo;
     private final UserRepo userRepo;
@@ -29,6 +29,15 @@ public class ReplyToCommentServiceImpl implements ReplyToCommentService{
             "(http|https|ftp|ftps)://[^\\s/$.?#].\\S*",
             Pattern.CASE_INSENSITIVE);
 
+
+    /**
+     * Method to save {@link greencity.entity.EcoNewsComment} to the database.
+     *
+     * @param replyToCommentDto - dto for {@link greencity.entity.ReplyToComment}.
+     * @param commentId         - id of {@link greencity.entity.Comment}.
+     * @param authorId          - id of {@link greencity.entity.User}.
+     * @return {@link ReplyToCommentDto} - saved {@link greencity.entity.ReplyToComment} as a dto.
+     */
     @Override
     @Transactional
     public ReplyToCommentDto save(ReplyToCommentDto replyToCommentDto, Long commentId, Long authorId) {
@@ -47,6 +56,14 @@ public class ReplyToCommentServiceImpl implements ReplyToCommentService{
         return mapper.toDto(replyToCommentRepo.save(replyToComment));
     }
 
+    /**
+     * Method to update {@link greencity.entity.ReplyToComment} in the database.
+     *
+     * @param replyToCommentDto - dto for {@link greencity.entity.ReplyToComment}.
+     * @param authorId - id of {@link greencity.entity.User}.
+     *
+     * @return {@link ReplyToCommentDto} - updated {@link greencity.entity.ReplyToComment} as a dto.
+     */
     @Override
     @Transactional
     public ReplyToCommentDto update(ReplyToCommentDto replyToCommentDto, Long authorId) {
@@ -65,6 +82,12 @@ public class ReplyToCommentServiceImpl implements ReplyToCommentService{
         return mapper.toDto(replyToCommentRepo.save(updatedReply));
     }
 
+    /**
+     * Method to delete {@link greencity.entity.ReplyToComment} from the database.
+     *
+     * @param replyToCommentId - id of {@link greencity.entity.ReplyToComment}.
+     * @param authorId - id of {@link greencity.entity.User}.
+     */
     @Override
     @Transactional
     public void deleteById(Long replyToCommentId, Long authorId) {
@@ -79,6 +102,13 @@ public class ReplyToCommentServiceImpl implements ReplyToCommentService{
         replyToCommentRepo.deleteById(replyToCommentId);
     }
 
+    /**
+     * Method to find all {@link greencity.entity.ReplyToComment} by {@link greencity.entity.Comment} id.
+     *
+     * @param commentId - id of {@link greencity.entity.Comment}.
+     *
+     * @return list of {@link ReplyToCommentDto}.
+     */
     @Override
     @Transactional(readOnly = true)
     public List<ReplyToCommentDto> findAllByCommentId(Long commentId) {
