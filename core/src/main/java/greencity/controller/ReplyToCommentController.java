@@ -11,6 +11,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/reply-to-comment")
 @RequiredArgsConstructor
@@ -26,7 +28,7 @@ public class ReplyToCommentController {
         return ResponseEntity.status(HttpStatus.CREATED).body(savedReply);
     }
 
-    @PutMapping()
+    @PatchMapping()
     public ResponseEntity<ReplyToCommentDto> update(@Valid @RequestBody ReplyToCommentDto replyToCommentDto,
                                                     @Parameter(hidden = true) @CurrentUser UserVO currentUser) {
         ReplyToCommentDto updatedReply = replyToCommentService.update(replyToCommentDto, currentUser.getId());
@@ -37,5 +39,10 @@ public class ReplyToCommentController {
     public void delete(@RequestParam Long replyToCommentId,
                        @Parameter(hidden = true) @CurrentUser UserVO currentUser) {
         replyToCommentService.deleteById(replyToCommentId, currentUser.getId());
+    }
+
+    @GetMapping("/allReplies/{commentId}")
+    public ResponseEntity<List<ReplyToCommentDto>> getAll(@PathVariable Long commentId) {
+        return ResponseEntity.ok(replyToCommentService.findAllByCommentId(commentId));
     }
 }
