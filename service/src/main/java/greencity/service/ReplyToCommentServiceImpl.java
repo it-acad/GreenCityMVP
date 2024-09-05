@@ -28,6 +28,9 @@ public class ReplyToCommentServiceImpl implements ReplyToCommentService {
     private static final Pattern URL_PATTERN = Pattern.compile(
             "(http|https|ftp|ftps)://[^\\s/$.?#].\\S*",
             Pattern.CASE_INSENSITIVE);
+    private static final Pattern EMOJI_PATTERN = Pattern.compile(
+            "[\\u203C-\\u3299\\uD83C\\uD000-\\uDFFF\\uD83D\\uD000-\\uDFFF\\uD83E\\uD000-\\uDFFF]");
+
 
 
     /**
@@ -126,6 +129,9 @@ public class ReplyToCommentServiceImpl implements ReplyToCommentService {
     private void checkContent(String content) {
         if (URL_PATTERN.matcher(content).find()) {
             throw new ContentContainsURLException(ErrorMessage.ENABLE_TO_CONTAIN_URL);
+        }
+        if (EMOJI_PATTERN.matcher(content).find()) {
+            throw new ContentContainsEmojiException(ErrorMessage.ENABLE_TO_CONTAIN_EMOJI);
         }
     }
 }

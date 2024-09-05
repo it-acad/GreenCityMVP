@@ -138,6 +138,7 @@ public final class ErrorMessage {
     public static final String ENABLE_TO_UPDATE_REPLY = "You can't update this reply";
     public static final String ENABLE_TO_DELETE_REPLY = "You can't delete this reply";
     public static final String ENABLE_TO_CONTAIN_URL = "Content can't contain URL";
+    public static final String ENABLE_TO_CONTAIN_EMOJI = "Content can't contain emoji";
     public static final String INVALID_COMMENT_ID = "Invalid comment id: ";
 
     private ErrorMessage() {
