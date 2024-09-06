@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -73,7 +74,8 @@ public class NotificationController {
             @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND)
     })
     @PostMapping("/markAsViewed/{id}")
-    public ResponseEntity<Void> markAsViewed(@PathVariable Long id) {
+    @PreAuthorize("@notificationServiceImpl.isOwner(#id, #currentUser.id)")
+    public ResponseEntity<Void> markAsViewed(@PathVariable Long id, @Parameter(hidden = true) @CurrentUser UserVO currentUser) {
         notificationService.markAsReadNotification(id);
         return ResponseEntity.ok().build();
     }

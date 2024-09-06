@@ -134,6 +134,14 @@ public final class ErrorMessage {
     public static final String USER_HAS_NO_FRIEND_WITH_ID = "User has no friend with this id: ";
     public static final String INVALID_DURATION = "The duration for such habit is lower than previously set";
     public static final String NOTIFICATION_ALREADY_READ = "This notification is already read";
+    public static final String USER_ID_CANNOT_BE_NULL = "User ID cannot be null";
+    public static final String NOTIFICATION_NOT_FOUND_BY_ID = "Notification with ID not found: ";
+    public static final String NOTIFICATION_DTO_CANNOT_BE_NULL = "Notification DTO cannot be null";
+    public static final String NOTIFICATION_SECTION_CANNOT_BE_NULL_OR_EMPTY = "Notification section cannot be null or empty";
+    public static final String NOTIFICATION_SECTION_TYPE_CANNOT_BE_NULL_OR_EMPTY = "Notification section type cannot be null or empty";
+    public static final String NOTIFICATION_TEXT_CANNOT_BE_NULL_OR_EMPTY = "Notification text cannot be null or empty";
+    public static final String CANNOT_MAP_NULL_TO_DTO = "Cannot map null to DTO";
+    public static final String CANNOT_MAP_NULL_TO_ENTITY = "Cannot map null to entity";
 
     private ErrorMessage() {
     }

@@ -1,5 +1,6 @@
 package greencity.mapping;
 
+import greencity.constant.ErrorMessage;
 import greencity.dto.notification.NotificationDto;
 import greencity.entity.Notification;
 import greencity.entity.User;
@@ -15,7 +16,7 @@ public class NotificationMapper implements GenericNotificationMapper<Notificatio
     @Override
     public Notification toEntity(NotificationDto dto) {
         if (dto == null) {
-            throw new IllegalArgumentException("Cannot map null to entity");
+            throw new IllegalArgumentException(ErrorMessage.CANNOT_MAP_NULL_TO_ENTITY);
         }
         return Notification.builder()
                 .id(dto.getId())
@@ -31,7 +32,7 @@ public class NotificationMapper implements GenericNotificationMapper<Notificatio
     @Override
     public NotificationDto toDto(Notification entity) {
         if (entity == null) {
-            throw new IllegalArgumentException("Cannot map null to dto");
+            throw new IllegalArgumentException(ErrorMessage.CANNOT_MAP_NULL_TO_DTO);
         }
         return NotificationDto.builder()
                 .id(entity.getId())

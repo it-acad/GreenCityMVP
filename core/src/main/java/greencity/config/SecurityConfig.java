@@ -197,7 +197,9 @@ public class SecurityConfig {
                                 "/habit/search",
                                 "/habit/{habitId}/friends/profile-pictures",
                                 "/notifications/unread",
-                                "/notifications/all")
+                                "/notifications/all",
+                                "/notifications/topThree",
+                                "/notifications/sorted")
                         .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
                         .requestMatchers(HttpMethod.POST,
                                 "/category",
