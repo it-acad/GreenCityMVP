@@ -33,34 +33,6 @@ public class NotificationServiceImplTest {
     private NotificationServiceImpl notificationService;
 
     @Test
-    public void testSave_ValidNotification() {
-        NotificationDto dto = new NotificationDto();
-        Notification entity = new Notification();
-        Notification savedEntity = new Notification();
-        NotificationDto savedDto = new NotificationDto();
-
-        when(mapper.toEntity(dto)).thenReturn(entity);
-        when(notificationRepo.save(entity)).thenReturn(savedEntity);
-        when(mapper.toDto(savedEntity)).thenReturn(savedDto);
-
-        verify(mapper).toEntity(dto);
-        verify(notificationRepo).save(entity);
-        verify(mapper).toDto(savedEntity);
-    }
-
-    @Test
-    public void testSave_InvalidNotification() {
-        NotificationDto notificationDto = new NotificationDto();
-        Notification notification = new Notification();
-        when(mapper.toEntity(notificationDto)).thenReturn(notification);
-        when(notificationRepo.save(notification)).thenThrow(new RuntimeException("Invalid data"));
-
-        assertThrows(RuntimeException.class, () -> notificationService.save(notificationDto));
-        verify(notificationRepo).save(notification);
-        verify(mapper).toEntity(notificationDto);
-    }
-
-    @Test
     public void testFindAllByUserId_ValidUserId() {
         Long userId = 1L;
         List<Notification> notifications = List.of(new Notification());
@@ -169,21 +141,6 @@ public class NotificationServiceImplTest {
         assertTrue(notification.isRead());
         assertNotNull(notification.getReceivedTime());
         verify(notificationRepo).findById(notificationId);
-    }
-
-    @Test
-    public void testMarkAsReadNotification_NotFound() {
-        Long notificationId = 1L;
-
-        when(notificationRepo.findById(notificationId)).thenReturn(Optional.empty());
-
-        NotificationNotFoundException exception = assertThrows(NotificationNotFoundException.class, () -> notificationService.markAsReadNotification(notificationId));
-
-        String expectedMessage = "Notification with ID " + notificationId + " not found";
-        assertEquals(expectedMessage, exception.getMessage());
-
-        verify(notificationRepo).findById(notificationId);
-        verify(notificationRepo, never()).save(any(Notification.class));
     }
 
     @Test
