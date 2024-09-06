@@ -19,7 +19,7 @@ import java.util.regex.Pattern;
 
 @Service
 @RequiredArgsConstructor
-public class ReplyToCommentServiceImpl implements ReplyToCommentService{
+public class ReplyToCommentServiceImpl implements ReplyToCommentService {
 
     private final ReplyToCommentRepo replyToCommentRepo;
     private final UserRepo userRepo;
@@ -28,7 +28,19 @@ public class ReplyToCommentServiceImpl implements ReplyToCommentService{
     private static final Pattern URL_PATTERN = Pattern.compile(
             "(http|https|ftp|ftps)://[^\\s/$.?#].\\S*",
             Pattern.CASE_INSENSITIVE);
+    private static final Pattern EMOJI_PATTERN = Pattern.compile(
+            "[\\u203C-\\u3299\\uD83C\\uD000-\\uDFFF\\uD83D\\uD000-\\uDFFF\\uD83E\\uD000-\\uDFFF]");
 
+
+
+    /**
+     * Method to save {@link greencity.entity.EcoNewsComment} to the database.
+     *
+     * @param replyToCommentDto - dto for {@link greencity.entity.ReplyToComment}.
+     * @param commentId         - id of {@link greencity.entity.Comment}.
+     * @param authorId          - id of {@link greencity.entity.User}.
+     * @return {@link ReplyToCommentDto} - saved {@link greencity.entity.ReplyToComment} as a dto.
+     */
     @Override
     @Transactional
     public ReplyToCommentDto save(ReplyToCommentDto replyToCommentDto, Long commentId, Long authorId) {
@@ -47,6 +59,14 @@ public class ReplyToCommentServiceImpl implements ReplyToCommentService{
         return mapper.toDto(replyToCommentRepo.save(replyToComment));
     }
 
+    /**
+     * Method to update {@link greencity.entity.ReplyToComment} in the database.
+     *
+     * @param replyToCommentDto - dto for {@link greencity.entity.ReplyToComment}.
+     * @param authorId - id of {@link greencity.entity.User}.
+     *
+     * @return {@link ReplyToCommentDto} - updated {@link greencity.entity.ReplyToComment} as a dto.
+     */
     @Override
     @Transactional
     public ReplyToCommentDto update(ReplyToCommentDto replyToCommentDto, Long authorId) {
@@ -65,6 +85,12 @@ public class ReplyToCommentServiceImpl implements ReplyToCommentService{
         return mapper.toDto(replyToCommentRepo.save(updatedReply));
     }
 
+    /**
+     * Method to delete {@link greencity.entity.ReplyToComment} from the database.
+     *
+     * @param replyToCommentId - id of {@link greencity.entity.ReplyToComment}.
+     * @param authorId - id of {@link greencity.entity.User}.
+     */
     @Override
     @Transactional
     public void deleteById(Long replyToCommentId, Long authorId) {
@@ -79,6 +105,13 @@ public class ReplyToCommentServiceImpl implements ReplyToCommentService{
         replyToCommentRepo.deleteById(replyToCommentId);
     }
 
+    /**
+     * Method to find all {@link greencity.entity.ReplyToComment} by {@link greencity.entity.Comment} id.
+     *
+     * @param commentId - id of {@link greencity.entity.Comment}.
+     *
+     * @return list of {@link ReplyToCommentDto}.
+     */
     @Override
     @Transactional(readOnly = true)
     public List<ReplyToCommentDto> findAllByCommentId(Long commentId) {
@@ -96,6 +129,9 @@ public class ReplyToCommentServiceImpl implements ReplyToCommentService{
     private void checkContent(String content) {
         if (URL_PATTERN.matcher(content).find()) {
             throw new ContentContainsURLException(ErrorMessage.ENABLE_TO_CONTAIN_URL);
+        }
+        if (EMOJI_PATTERN.matcher(content).find()) {
+            throw new ContentContainsEmojiException(ErrorMessage.ENABLE_TO_CONTAIN_EMOJI);
         }
     }
 }
