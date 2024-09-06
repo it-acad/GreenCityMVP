@@ -162,6 +162,6 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Filter> filters = new ArrayList<>();
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private List<ReplyToComment> replyToComments = new ArrayList<>();
+    @OneToMany(mappedBy = "author", cascade = CascadeType.ALL)
+    private Set<ReplyToComment> replyToComments;
 }
