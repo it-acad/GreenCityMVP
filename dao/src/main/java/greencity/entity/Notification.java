@@ -1,5 +1,6 @@
 package greencity.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import greencity.enums.NotificationSource;
 import greencity.enums.NotificationSourceType;
 import jakarta.persistence.*;
@@ -36,6 +37,7 @@ public class Notification {
     @Column(name = "is_read")
     private boolean isRead;
 
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy HH:mm:ss")
     @Column(name = "received_time")
     private LocalDateTime receivedTime;
 
