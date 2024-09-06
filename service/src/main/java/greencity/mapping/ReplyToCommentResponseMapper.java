@@ -1,14 +1,14 @@
 package greencity.mapping;
 
-import greencity.dto.replytocomment.ReplyToCommentDto;
+import greencity.dto.replytocomment.ReplyToCommentResponseDto;
 import greencity.entity.ReplyToComment;
 import org.springframework.stereotype.Component;
 
 @Component
-public class ReplyToCommentMapper implements GenericCommentMapper<ReplyToCommentDto, ReplyToComment> {
+public class ReplyToCommentResponseMapper implements GenericCommentResponseMapper<ReplyToCommentResponseDto, ReplyToComment> {
 
     @Override
-    public ReplyToComment toEntity(ReplyToCommentDto dto) {
+    public ReplyToComment toEntity(ReplyToCommentResponseDto dto) {
         return ReplyToComment.builder()
                 .id(dto.getId())
                 .content(dto.getContent())
@@ -18,8 +18,8 @@ public class ReplyToCommentMapper implements GenericCommentMapper<ReplyToComment
     }
 
     @Override
-    public ReplyToCommentDto toDto(ReplyToComment entity) {
-        return ReplyToCommentDto.builder()
+    public ReplyToCommentResponseDto toDto(ReplyToComment entity) {
+        return ReplyToCommentResponseDto.builder()
                 .id(entity.getId())
                 .content(entity.getContent())
                 .createdDate(entity.getCreatedDate())

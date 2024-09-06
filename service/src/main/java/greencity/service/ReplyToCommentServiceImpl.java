@@ -1,13 +1,13 @@
 package greencity.service;
 
 import greencity.constant.ErrorMessage;
-import greencity.dto.replytocomment.ReplyToCommentDto;
+import greencity.dto.replytocomment.ReplyToCommentResponseDto;
 import greencity.dto.replytocomment.ReplyToCommentRequestDto;
 import greencity.entity.Comment;
 import greencity.entity.ReplyToComment;
 import greencity.entity.User;
 import greencity.exception.exceptions.*;
-import greencity.mapping.ReplyToCommentMapper;
+import greencity.mapping.ReplyToCommentResponseMapper;
 import greencity.mapping.ReplyToCommentRequestDtoMapper;
 import greencity.repository.CommentRepo;
 import greencity.repository.ReplyToCommentRepo;
@@ -26,7 +26,7 @@ public class ReplyToCommentServiceImpl implements ReplyToCommentService {
     private final ReplyToCommentRepo replyToCommentRepo;
     private final UserRepo userRepo;
     private final CommentRepo commentRepo;
-    private final ReplyToCommentMapper mapper;
+    private final ReplyToCommentResponseMapper responseMapper;
     private final ReplyToCommentRequestDtoMapper requestMapper;
     private static final Pattern URL_PATTERN = Pattern.compile(
             "(http|https|ftp|ftps)://[^\\s/$.?#].\\S*",
@@ -39,53 +39,53 @@ public class ReplyToCommentServiceImpl implements ReplyToCommentService {
     /**
      * Method to save {@link greencity.entity.EcoNewsComment} to the database.
      *
-     * @param replyToCommentDto - dto for {@link greencity.entity.ReplyToComment}.
+     * @param replyToCommentRequestDto - dto for {@link greencity.entity.ReplyToComment}.
      * @param commentId         - id of {@link greencity.entity.Comment}.
      * @param authorId          - id of {@link greencity.entity.User}.
-     * @return {@link ReplyToCommentDto} - saved {@link greencity.entity.ReplyToComment} as a dto.
+     * @return {@link ReplyToCommentResponseDto} - saved {@link greencity.entity.ReplyToComment} as a dto.
      */
     @Override
     @Transactional
-    public ReplyToCommentDto save(ReplyToCommentRequestDto replyToCommentDto, Long commentId, Long authorId) {
+    public ReplyToCommentResponseDto save(ReplyToCommentRequestDto replyToCommentRequestDto, Long commentId, Long authorId) {
         Comment comment = commentRepo.findById(commentId)
                 .orElseThrow(() -> new CommentNotFoundException(ErrorMessage.COMMENT_NOT_FOUND_BY_ID + commentId));
 
         User author = userRepo.findById(authorId)
                 .orElseThrow(() -> new UserNotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID + authorId));
 
-        checkContent(replyToCommentDto.getContent());
-        ReplyToComment replyToComment = requestMapper.toEntity(replyToCommentDto);
+        checkContent(replyToCommentRequestDto.getContent());
+        ReplyToComment replyToComment = requestMapper.toEntity(replyToCommentRequestDto);
 
         replyToComment.setComment(comment);
         replyToComment.setAuthor(author);
 
-        return mapper.toDto(replyToCommentRepo.save(replyToComment));
+        return responseMapper.toDto(replyToCommentRepo.save(replyToComment));
     }
 
     /**
      * Method to update {@link greencity.entity.ReplyToComment} in the database.
      *
-     * @param replyToCommentDto - dto for {@link greencity.entity.ReplyToComment}.
+     * @param replyToCommentRequestDto - dto for {@link greencity.entity.ReplyToComment}.
      * @param authorId - id of {@link greencity.entity.User}.
      *
-     * @return {@link ReplyToCommentDto} - updated {@link greencity.entity.ReplyToComment} as a dto.
+     * @return {@link ReplyToCommentResponseDto} - updated {@link greencity.entity.ReplyToComment} as a dto.
      */
     @Override
     @Transactional
-    public ReplyToCommentDto update(ReplyToCommentRequestDto replyToCommentDto, Long authorId) {
-        checkContent(replyToCommentDto.getContent());
+    public ReplyToCommentResponseDto update(ReplyToCommentRequestDto replyToCommentRequestDto, Long authorId) {
+        checkContent(replyToCommentRequestDto.getContent());
 
-        ReplyToComment updatedReply = replyToCommentRepo.findById(replyToCommentDto.getId())
-                .orElseThrow(() -> new ReplyNotFoundException(ErrorMessage.REPLY_NOT_FOUND_BY_ID + replyToCommentDto.getId()));
+        ReplyToComment updatedReply = replyToCommentRepo.findById(replyToCommentRequestDto.getId())
+                .orElseThrow(() -> new ReplyNotFoundException(ErrorMessage.REPLY_NOT_FOUND_BY_ID + replyToCommentRequestDto.getId()));
 
         if (!updatedReply.getAuthor().getId().equals(authorId)) {
             throw new UnauthorizedReplyUpdateException(ErrorMessage.ENABLE_TO_UPDATE_REPLY);
         }
 
-        updatedReply.setContent(replyToCommentDto.getContent());
+        updatedReply.setContent(replyToCommentRequestDto.getContent());
         updatedReply.setIsEdited(true);
 
-        return mapper.toDto(replyToCommentRepo.save(updatedReply));
+        return responseMapper.toDto(replyToCommentRepo.save(updatedReply));
     }
 
     /**
@@ -113,11 +113,11 @@ public class ReplyToCommentServiceImpl implements ReplyToCommentService {
      *
      * @param commentId - id of {@link greencity.entity.Comment}.
      *
-     * @return list of {@link ReplyToCommentDto}.
+     * @return list of {@link ReplyToCommentResponseDto}.
      */
     @Override
     @Transactional(readOnly = true)
-    public List<ReplyToCommentDto> findAllByCommentId(Long commentId) {
+    public List<ReplyToCommentResponseDto> findAllByCommentId(Long commentId) {
         if (commentId == null || commentId < 0) {
             throw new InvalidCommentIdException(ErrorMessage.INVALID_COMMENT_ID + commentId);
         }
@@ -125,7 +125,7 @@ public class ReplyToCommentServiceImpl implements ReplyToCommentService {
         List<ReplyToComment> replyToComments = replyToCommentRepo.findAllByCommentId(commentId);
 
         return replyToComments.stream()
-                .map(mapper::toDto)
+                .map(responseMapper::toDto)
                 .toList();
     }
 

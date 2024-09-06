@@ -2,8 +2,8 @@ package greencity.controller;
 
 import greencity.annotations.CurrentUser;
 import greencity.constant.HttpStatuses;
-import greencity.dto.replytocomment.ReplyToCommentDto;
 import greencity.dto.replytocomment.ReplyToCommentRequestDto;
+import greencity.dto.replytocomment.ReplyToCommentResponseDto;
 import greencity.dto.user.UserVO;
 import greencity.service.ReplyToCommentService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -31,7 +31,7 @@ public class ReplyToCommentController {
      * Method for saving reply to comment.
      *
      * @param commentId id of comment
-     * @return {@link ReplyToCommentDto}
+     * @return {@link greencity.dto.replytocomment.ReplyToCommentResponseDto}
      */
     @Operation(summary = "Save reply to comment")
     @ResponseStatus(value = HttpStatus.CREATED)
@@ -42,37 +42,36 @@ public class ReplyToCommentController {
             @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED)
     })
     @PostMapping("/reply/{commentId}")
-    public ResponseEntity<ReplyToCommentDto> save(@PathVariable("commentId") Long commentId,
-                                                  @Valid @RequestBody ReplyToCommentRequestDto replyToCommentDto,
-                                                  @Parameter(hidden = true) @CurrentUser UserVO currentUser) {
-        ReplyToCommentDto savedReply = replyToCommentService.save(replyToCommentDto, commentId, currentUser.getId());
+    public ResponseEntity<ReplyToCommentResponseDto> save(@PathVariable("commentId") Long commentId,
+                                                              @Valid @RequestBody ReplyToCommentRequestDto replyToCommentDto,
+                                                              @Parameter(hidden = true) @CurrentUser UserVO currentUser) {
+        ReplyToCommentResponseDto savedReply = replyToCommentService.save(replyToCommentDto, commentId, currentUser.getId());
         return ResponseEntity.status(HttpStatus.CREATED).body(savedReply);
     }
 
     /**
      * Method for updating reply to comment.
      *
-     * @return {@link ReplyToCommentDto}
+     * @return {@link ReplyToCommentResponseDto}
      */
     @Operation(summary = "Update reply to comment")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = HttpStatuses.OK,
-                    content = @Content(schema = @Schema(implementation = ReplyToCommentDto.class))),
+                    content = @Content(schema = @Schema(implementation = ReplyToCommentResponseDto.class))),
             @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST),
             @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED),
             @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN)
     })
     @PatchMapping()
-    public ResponseEntity<ReplyToCommentDto> update(
+    public ResponseEntity<ReplyToCommentResponseDto> update(
                                                     @Valid @RequestBody ReplyToCommentRequestDto replyToCommentDto,
                                                     @Parameter(hidden = true) @CurrentUser UserVO currentUser) {
-        ReplyToCommentDto updatedReply = replyToCommentService.update(replyToCommentDto, currentUser.getId());
+        ReplyToCommentResponseDto updatedReply = replyToCommentService.update(replyToCommentDto, currentUser.getId());
         return ResponseEntity.ok(updatedReply);
     }
 
     /**
      * Method for deleting reply to comment.
-     *
      *
      */
     @Operation(summary = "Delete reply to comment")
@@ -83,7 +82,7 @@ public class ReplyToCommentController {
     })
     @DeleteMapping("/delete/{replyToCommentId}")
     public void delete(
-                       @PathVariable @RequestParam Long replyToCommentId,
+                       @PathVariable Long replyToCommentId,
                        @Parameter(hidden = true) @CurrentUser UserVO currentUser) {
         replyToCommentService.deleteById(replyToCommentId, currentUser.getId());
     }
@@ -91,17 +90,17 @@ public class ReplyToCommentController {
     /**
      * Method for getting all replies to comment.
      *
-     * @return {@link List<ReplyToCommentDto>}
+     * @return {@link List<ReplyToCommentResponseDto>}
      */
     @Operation(summary = "Get all replies to comment")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = HttpStatuses.OK,
-                    content = @Content(schema = @Schema(implementation = ReplyToCommentDto.class))),
+                    content = @Content(schema = @Schema(implementation = ReplyToCommentResponseDto.class))),
             @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST),
             @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED)
     })
     @GetMapping("/allReplies/{commentId}")
-    public ResponseEntity<List<ReplyToCommentDto>> getAll(@PathVariable Long commentId) {
+    public ResponseEntity<List<ReplyToCommentResponseDto>> getAll(@PathVariable Long commentId) {
         return ResponseEntity.ok(replyToCommentService.findAllByCommentId(commentId));
     }
 }

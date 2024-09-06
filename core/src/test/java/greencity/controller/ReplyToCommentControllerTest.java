@@ -2,7 +2,8 @@ package greencity.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import greencity.converters.UserArgumentResolver;
-import greencity.dto.replytocomment.ReplyToCommentDto;
+import greencity.dto.replytocomment.ReplyToCommentRequestDto;
+import greencity.dto.replytocomment.ReplyToCommentResponseDto;
 import greencity.dto.user.UserVO;
 import greencity.service.ReplyToCommentService;
 import greencity.service.UserService;
@@ -20,6 +21,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.validation.Validator;
 
 import java.security.Principal;
+import java.util.Collections;
 
 import static greencity.ModelUtils.getPrincipal;
 import static greencity.ModelUtils.getUserVO;
@@ -61,13 +63,13 @@ public class ReplyToCommentControllerTest {
 
     @Test
     void saveReplyToComment_statusCreated() throws Exception {
-        ReplyToCommentDto replyToCommentDto = new ReplyToCommentDto();
+        ReplyToCommentResponseDto replyToCommentDto = new ReplyToCommentResponseDto();
         replyToCommentDto.setContent("content");
 
-        when(replyToCommentService.save(any(), anyLong(), anyLong())).thenReturn(new ReplyToCommentDto());
+        when(replyToCommentService.save(any(), anyLong(), anyLong())).thenReturn(new ReplyToCommentResponseDto());
         when(userService.findByEmail(anyString())).thenReturn(userVO);
 
-        mockMvc.perform(post(initialUrl + "/" + 1L)
+        mockMvc.perform(post(initialUrl + "/reply/" + 1L)
                         .principal(principal)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(replyToCommentDto)))
@@ -78,22 +80,22 @@ public class ReplyToCommentControllerTest {
 
     @Test
     void saveReplyToComment_withoutContent_statusBadRequest() throws Exception {
-        ReplyToCommentDto replyToCommentDto = new ReplyToCommentDto();
+        ReplyToCommentRequestDto replyToCommentDto = new ReplyToCommentRequestDto();
 
-        mockMvc.perform(post(initialUrl + "/" + 1L)
+        mockMvc.perform(post(initialUrl + "/reply/" + 1L)
                         .principal(principal)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(replyToCommentDto)))
                 .andExpect(status().isBadRequest());
-        verify(replyToCommentService, never()).save(any(ReplyToCommentDto.class), anyLong(), anyLong());
+        verify(replyToCommentService, never()).save(any(ReplyToCommentRequestDto.class), anyLong(), anyLong());
     }
 
     @Test
     void updateReplyToComment_statusOk() throws Exception {
-        ReplyToCommentDto replyToCommentDto = new ReplyToCommentDto();
+        ReplyToCommentResponseDto replyToCommentDto = new ReplyToCommentResponseDto();
         replyToCommentDto.setContent("content");
 
-        when(replyToCommentService.update(any(), anyLong())).thenReturn(new ReplyToCommentDto());
+        when(replyToCommentService.update(any(), anyLong())).thenReturn(new ReplyToCommentResponseDto());
         when(userService.findByEmail(anyString())).thenReturn(userVO);
 
         mockMvc.perform(patch(initialUrl)
@@ -107,7 +109,7 @@ public class ReplyToCommentControllerTest {
 
     @Test
     void updateReplyToComment_withoutContent_statusBadRequest() throws Exception {
-        ReplyToCommentDto replyToCommentDto = new ReplyToCommentDto();
+        ReplyToCommentRequestDto replyToCommentDto = new ReplyToCommentRequestDto();
 
         mockMvc.perform(patch(initialUrl)
                         .principal(principal)
@@ -115,7 +117,7 @@ public class ReplyToCommentControllerTest {
                         .content(new ObjectMapper().writeValueAsString(replyToCommentDto)))
                 .andExpect(status().isBadRequest());
 
-        verify(replyToCommentService, never()).update(any(ReplyToCommentDto.class), anyLong());
+        verify(replyToCommentService, never()).update(any(ReplyToCommentRequestDto.class), anyLong());
     }
 
     @Test
@@ -123,17 +125,16 @@ public class ReplyToCommentControllerTest {
 
         when(userService.findByEmail(anyString())).thenReturn(userVO);
 
-        mockMvc.perform(delete(initialUrl)
+        mockMvc.perform(delete(initialUrl + "/delete/1")
                         .principal(principal)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .param("replyToCommentId", "1"))
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
 
     }
 
     @Test
     void getAllReplies_statusOk() throws Exception {
-        when(replyToCommentService.findAllByCommentId(anyLong())).thenReturn(null);
+        when(replyToCommentService.findAllByCommentId(anyLong())).thenReturn(Collections.emptyList());
 
         mockMvc.perform(get(initialUrl + "/allReplies/1"))
                 .andExpect(status().isOk());

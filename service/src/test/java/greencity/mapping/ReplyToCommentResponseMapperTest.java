@@ -1,6 +1,6 @@
 package greencity.mapping;
 
-import greencity.dto.replytocomment.ReplyToCommentDto;
+import greencity.dto.replytocomment.ReplyToCommentResponseDto;
 import greencity.entity.ReplyToComment;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -10,17 +10,17 @@ import java.time.LocalDateTime;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-public class ReplyToCommentMapperTest {
-    private ReplyToCommentMapper mapper;
+public class ReplyToCommentResponseMapperTest {
+    private ReplyToCommentResponseMapper mapper;
 
     @BeforeEach
     void setUp() {
-        mapper = new ReplyToCommentMapper();
+        mapper = new ReplyToCommentResponseMapper();
     }
 
     @Test
     void toEntityTest() {
-        ReplyToCommentDto dto = ReplyToCommentDto.builder()
+        ReplyToCommentResponseDto dto = ReplyToCommentResponseDto.builder()
                 .id(1L)
                 .content("Test content")
                 .createdDate(LocalDateTime.now())
@@ -44,7 +44,7 @@ public class ReplyToCommentMapperTest {
                 .isEdited(false)
                 .build();
 
-        ReplyToCommentDto dto = mapper.toDto(entity);
+        ReplyToCommentResponseDto dto = mapper.toDto(entity);
 
         assertEquals(entity.getId(), dto.getId());
         assertEquals(entity.getContent(), dto.getContent());
@@ -55,7 +55,7 @@ public class ReplyToCommentMapperTest {
 
     @Test
     void toEntityWithPartialValuesTest() {
-        ReplyToCommentDto dto = ReplyToCommentDto.builder()
+        ReplyToCommentResponseDto dto = ReplyToCommentResponseDto.builder()
                 .id(1L)
                 .content("Partial content")
                 .build();

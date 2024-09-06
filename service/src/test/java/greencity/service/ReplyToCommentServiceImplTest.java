@@ -1,12 +1,13 @@
 package greencity.service;
 
-import greencity.dto.replytocomment.ReplyToCommentDto;
+import greencity.ModelUtils;
 import greencity.dto.replytocomment.ReplyToCommentRequestDto;
+import greencity.dto.replytocomment.ReplyToCommentResponseDto;
 import greencity.entity.Comment;
 import greencity.entity.ReplyToComment;
-import greencity.entity.User;
 import greencity.exception.exceptions.*;
-import greencity.mapping.ReplyToCommentMapper;
+import greencity.mapping.ReplyToCommentResponseMapper;
+import greencity.mapping.ReplyToCommentRequestDtoMapper;
 import greencity.repository.CommentRepo;
 import greencity.repository.ReplyToCommentRepo;
 import greencity.repository.UserRepo;
@@ -35,7 +36,10 @@ public class ReplyToCommentServiceImplTest {
     private UserRepo userRepo;
 
     @Mock
-    private ReplyToCommentMapper mapper;
+    private ReplyToCommentResponseMapper responseMapper;
+
+    @Mock
+    private ReplyToCommentRequestDtoMapper requestMapper;
 
     @Mock
     private CommentRepo commentRepo;
@@ -44,31 +48,25 @@ public class ReplyToCommentServiceImplTest {
     private ReplyToCommentServiceImpl replyToCommentService;
 
     private ReplyToComment replyToComment;
-    private ReplyToCommentRequestDto replyToCommentDto;
+    private ReplyToCommentRequestDto replyToCommentRequestDto;
 
     @BeforeEach
     public void setUp() {
-        replyToComment = createReplyToComment("content", 1L);
-        replyToCommentDto = createReplyToCommentDto("content");
+        replyToComment = createReplyToComment("content");
+        replyToCommentRequestDto = createReplyToCommentRequestDto("content");
     }
 
-    private ReplyToComment createReplyToComment(String content, Long authorId) {
+    private ReplyToComment createReplyToComment(String content) {
         ReplyToComment reply = new ReplyToComment();
         reply.setContent(content);
-        reply.setAuthor(createUser(authorId));
+        reply.setAuthor(ModelUtils.getUser());
         return reply;
     }
 
-    private ReplyToCommentDto createReplyToCommentDto(String content) {
-        ReplyToCommentDto dto = new ReplyToCommentDto();
+    private ReplyToCommentRequestDto createReplyToCommentRequestDto(String content) {
+        ReplyToCommentRequestDto dto = new ReplyToCommentRequestDto();
         dto.setContent(content);
         return dto;
-    }
-
-    private User createUser(Long id) {
-        User user = new User();
-        user.setId(id);
-        return user;
     }
 
     @Test
@@ -77,29 +75,30 @@ public class ReplyToCommentServiceImplTest {
         Long authorId = 1L;
 
         Comment comment = new Comment();
-        ReplyToCommentDto savedReplyDto = createReplyToCommentDto("content");
+        ReplyToCommentResponseDto savedReplyDto = new ReplyToCommentResponseDto();
+        savedReplyDto.setContent("content");
 
         when(commentRepo.findById(commentId)).thenReturn(Optional.of(comment));
         when(userRepo.findById(authorId)).thenReturn(Optional.of(replyToComment.getAuthor()));
-        when(mapper.toEntity(replyToCommentDto)).thenReturn(replyToComment);
+        when(requestMapper.toEntity(replyToCommentRequestDto)).thenReturn(replyToComment);
         when(replyToCommentRepo.save(replyToComment)).thenReturn(replyToComment);
-        when(mapper.toDto(replyToComment)).thenReturn(savedReplyDto);
+        when(responseMapper.toDto(replyToComment)).thenReturn(savedReplyDto);
 
-        ReplyToCommentDto result = replyToCommentService.save(replyToCommentDto, commentId, authorId);
+        ReplyToCommentResponseDto result = replyToCommentService.save(replyToCommentRequestDto, commentId, authorId);
 
         assertEquals(savedReplyDto, result);
     }
 
-//    @Test
-//    void save_InvalidCommentId_ThrowsCommentNotFoundException() {
-//        Long invalidCommentId = 1L;
-//        Long authorId = 1L;
-//
-//        when(commentRepo.findById(invalidCommentId)).thenReturn(Optional.empty());
-//
-//        assertThrows(CommentNotFoundException.class, () ->
-//                replyToCommentService.save(replyToCommentDto, invalidCommentId, authorId));
-//    }
+    @Test
+    void save_InvalidCommentId_ThrowsCommentNotFoundException() {
+        Long invalidCommentId = 1L;
+        Long authorId = 1L;
+
+        when(commentRepo.findById(invalidCommentId)).thenReturn(Optional.empty());
+
+        assertThrows(CommentNotFoundException.class, () ->
+                replyToCommentService.save(replyToCommentRequestDto, invalidCommentId, authorId));
+    }
 
     @Test
     void save_InvalidAuthorId_ThrowsUserNotFoundException() {
@@ -108,34 +107,34 @@ public class ReplyToCommentServiceImplTest {
 
         Comment comment = new Comment();
         when(commentRepo.findById(commentId)).thenReturn(Optional.of(comment));
-        when(userRepo.findById(invalidAuthorId)).thenReturn(Optional.empty());
 
         assertThrows(UserNotFoundException.class, () ->
-                replyToCommentService.save(replyToCommentDto, commentId, invalidAuthorId));
+                replyToCommentService.save(replyToCommentRequestDto, commentId, invalidAuthorId));
     }
 
     @Test
     void update_ValidData_ReturnsUpdatedReply() {
         Long replyId = 1L;
         Long authorId = 1L;
-        ReplyToCommentDto updatedDto = createReplyToCommentDto("Updated content");
+        ReplyToCommentRequestDto updatedDto = createReplyToCommentRequestDto("Updated content");
         updatedDto.setId(replyId);
 
-        ReplyToComment existingReply = createReplyToComment("Old content", authorId);
+        ReplyToComment existingReply = createReplyToComment("Old content");
         existingReply.setId(replyId);
 
-        ReplyToComment updatedReply = createReplyToComment("Updated content", authorId);
+        ReplyToComment updatedReply = createReplyToComment("Updated content");
         updatedReply.setId(replyId);
         updatedReply.setIsEdited(true);
 
-        ReplyToCommentDto updatedReplyDto = createReplyToCommentDto("Updated content");
+        ReplyToCommentResponseDto updatedReplyDto = new ReplyToCommentResponseDto();
+        updatedReplyDto.setContent("Updated content");
         updatedReplyDto.setId(replyId);
 
         when(replyToCommentRepo.findById(replyId)).thenReturn(Optional.of(existingReply));
-        when(mapper.toDto(updatedReply)).thenReturn(updatedReplyDto);
+        when(responseMapper.toDto(updatedReply)).thenReturn(updatedReplyDto);
         when(replyToCommentRepo.save(any(ReplyToComment.class))).thenReturn(updatedReply);
 
-        ReplyToCommentDto result = replyToCommentService.update(updatedDto, authorId);
+        ReplyToCommentResponseDto result = replyToCommentService.update(updatedDto, authorId);
 
         assertEquals(updatedReplyDto, result);
     }
@@ -144,23 +143,23 @@ public class ReplyToCommentServiceImplTest {
     void update_InvalidReplyId_ThrowsReplyNotFoundException() {
         Long invalidReplyId = 1L;
         Long authorId = 1L;
-        ReplyToCommentDto replyToCommentDto = createReplyToCommentDto("Updated content");
-        replyToCommentDto.setId(invalidReplyId);
+        ReplyToCommentRequestDto replyToCommentRequestDto1 = createReplyToCommentRequestDto("Updated content");
+        replyToCommentRequestDto1.setId(invalidReplyId);
 
         when(replyToCommentRepo.findById(invalidReplyId)).thenReturn(Optional.empty());
 
         assertThrows(ReplyNotFoundException.class, () ->
-                replyToCommentService.update(replyToCommentDto, authorId));
+                replyToCommentService.update(replyToCommentRequestDto1, authorId));
     }
 
     @Test
     void update_UnauthorizedUpdate_ThrowsUnauthorizedReplyUpdateException() {
         Long replyId = 1L;
         Long unauthorizedAuthorId = 2L;
-        ReplyToCommentDto replyToCommentDto = createReplyToCommentDto("Updated content");
+        ReplyToCommentRequestDto replyToCommentDto = createReplyToCommentRequestDto("Updated content");
         replyToCommentDto.setId(replyId);
 
-        ReplyToComment existingReply = createReplyToComment("Old content", 1L);
+        ReplyToComment existingReply = createReplyToComment("Old content");
         existingReply.setId(replyId);
 
         when(replyToCommentRepo.findById(replyId)).thenReturn(Optional.of(existingReply));
@@ -173,7 +172,7 @@ public class ReplyToCommentServiceImplTest {
     void deleteById_ValidIdAndAuthorizedUser_DeletesReply() {
         Long replyToCommentId = 1L;
         Long authorId = 1L;
-        ReplyToComment replyToComment = createReplyToComment("content", authorId);
+        ReplyToComment replyToComment = createReplyToComment("content");
         replyToComment.setId(replyToCommentId);
 
         when(replyToCommentRepo.findById(replyToCommentId)).thenReturn(Optional.of(replyToComment));
@@ -198,7 +197,7 @@ public class ReplyToCommentServiceImplTest {
     void deleteById_UnauthorizedUser_ThrowsUnauthorizedReplyDeleteException() {
         Long replyToCommentId = 1L;
         Long unauthorizedAuthorId = 2L;
-        ReplyToComment replyToComment = createReplyToComment("content", 1L);
+        ReplyToComment replyToComment = createReplyToComment("content");
         replyToComment.setId(replyToCommentId);
 
         when(replyToCommentRepo.findById(replyToCommentId)).thenReturn(Optional.of(replyToComment));
@@ -210,19 +209,20 @@ public class ReplyToCommentServiceImplTest {
     @Test
     void findAllByCommentId_ValidCommentId_ReturnsReplyToCommentDtos() {
         Long commentId = 1L;
-        ReplyToComment replyToComment = createReplyToComment("Test reply", 1L);
+        ReplyToComment replyToComment = createReplyToComment("Test reply");
         replyToComment.setId(1L);
 
-        ReplyToCommentDto replyToCommentDto = createReplyToCommentDto("Test reply");
+        ReplyToCommentResponseDto replyToCommentDto = new ReplyToCommentResponseDto();
+        replyToCommentDto.setContent("Test reply");
         replyToCommentDto.setId(1L);
 
         List<ReplyToComment> replyToComments = List.of(replyToComment);
-        List<ReplyToCommentDto> replyToCommentDtos = List.of(replyToCommentDto);
+        List<ReplyToCommentResponseDto> replyToCommentDtos = List.of(replyToCommentDto);
 
         when(replyToCommentRepo.findAllByCommentId(commentId)).thenReturn(replyToComments);
-        when(mapper.toDto(replyToComment)).thenReturn(replyToCommentDto);
+        when(responseMapper.toDto(replyToComment)).thenReturn(replyToCommentDto);
 
-        List<ReplyToCommentDto> result = replyToCommentService.findAllByCommentId(commentId);
+        List<ReplyToCommentResponseDto> result = replyToCommentService.findAllByCommentId(commentId);
 
         assertEquals(replyToCommentDtos, result);
     }

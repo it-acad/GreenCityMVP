@@ -1,6 +1,6 @@
 package greencity.mapping;
 
-public interface GenericCommentMapper<V, T> {
+public interface GenericCommentResponseMapper<V, T> {
     T toEntity(V dto);
     V toDto(T entity);
 }
