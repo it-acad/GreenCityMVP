@@ -8,23 +8,22 @@ import greencity.enums.NotificationSource;
 import greencity.enums.NotificationSourceType;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDateTime;
 
 @Component
-public class NotificationMapper implements GenericNotificationMapper<Notification, NotificationDto>{
+public class NotificationMapper implements GenericNotificationMapper<Notification, NotificationDto> {
 
     @Override
     public Notification toEntity(NotificationDto dto) {
         if (dto == null) {
             throw new IllegalArgumentException(ErrorMessage.CANNOT_MAP_NULL_TO_ENTITY);
         }
+
         return Notification.builder()
                 .id(dto.getId())
                 .section(NotificationSource.valueOf(dto.getSection()))
                 .sectionType(NotificationSourceType.valueOf(dto.getSectionType()))
                 .text(dto.getText())
                 .isRead(dto.isRead())
-                .receivedTime(LocalDateTime.parse(dto.getReceivedTime()))
                 .user(User.builder().id(dto.getUserId()).build())
                 .build();
     }
@@ -40,7 +39,6 @@ public class NotificationMapper implements GenericNotificationMapper<Notificatio
                 .sectionType(entity.getSectionType().toString())
                 .text(entity.getText())
                 .isRead(entity.isRead())
-                .receivedTime(entity.getReceivedTime().toString())
                 .userId(entity.getUser().getId())
                 .build();
     }

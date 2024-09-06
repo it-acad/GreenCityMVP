@@ -10,11 +10,12 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode
-public class NotificationDto {
+public class NotificationResponseDto {
     private Long id;
     private String section;
     private String sectionType;
     private String text;
     private boolean isRead;
+    private LocalDateTime receivedTime;
     private Long userId;
 }

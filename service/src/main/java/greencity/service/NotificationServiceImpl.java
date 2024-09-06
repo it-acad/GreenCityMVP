@@ -2,11 +2,14 @@ package greencity.service;
 
 import greencity.constant.ErrorMessage;
 import greencity.dto.notification.NotificationDto;
+import greencity.dto.notification.NotificationResponseDto;
 import greencity.entity.Notification;
 import greencity.exception.exceptions.*;
 import greencity.mapping.NotificationMapper;
+import greencity.mapping.NotificationResponseDtoMapper;
 import greencity.repository.NotificationRepo;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -22,14 +25,17 @@ import java.util.Objects;
 public class NotificationServiceImpl implements NotificationService {
     private final NotificationRepo notificationRepo;
     private final NotificationMapper mapper;
+    @Autowired
+    private NotificationResponseDtoMapper responseDtoMapper;
 
     @Override
     @Transactional
-    public NotificationDto save(NotificationDto notificationDto) {
+    public NotificationResponseDto save(NotificationDto notificationDto) {
         validateNotification(notificationDto);
         Notification mappedNotification = mapper.toEntity(notificationDto);
+        mappedNotification.setReceivedTime(LocalDateTime.now());
         Notification savedNotification = notificationRepo.save(mappedNotification);
-        return mapper.toDto(savedNotification);
+        return this.responseDtoMapper.toDto(savedNotification);
     }
 
     @Override

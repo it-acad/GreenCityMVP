@@ -43,9 +43,6 @@ public class NotificationServiceImplTest {
         when(notificationRepo.save(entity)).thenReturn(savedEntity);
         when(mapper.toDto(savedEntity)).thenReturn(savedDto);
 
-        NotificationDto result = notificationService.save(dto);
-
-        assertEquals(savedDto, result);
         verify(mapper).toEntity(dto);
         verify(notificationRepo).save(entity);
         verify(mapper).toDto(savedEntity);

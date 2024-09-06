@@ -22,7 +22,6 @@ public class NotificationMapperTest {
                 .sectionType("EVENT_EDITED")
                 .text("Test notification")
                 .isRead(false)
-                .receivedTime("2023-10-01T10:00:00")
                 .userId(1L)
                 .build();
 
@@ -34,7 +33,6 @@ public class NotificationMapperTest {
         assertEquals(NotificationSourceType.EVENT_EDITED, entity.getSectionType());
         assertEquals(dto.getText(), entity.getText());
         assertEquals(dto.isRead(), entity.isRead());
-        assertEquals(LocalDateTime.parse(dto.getReceivedTime()), entity.getReceivedTime());
         assertEquals(dto.getUserId(), entity.getUser().getId());
     }
 
@@ -59,7 +57,6 @@ public class NotificationMapperTest {
         assertEquals(entity.getSectionType().toString(), dto.getSectionType());
         assertEquals(entity.getText(), dto.getText());
         assertEquals(entity.isRead(), dto.isRead());
-        assertEquals(entity.getReceivedTime().toString(), dto.getReceivedTime());
         assertEquals(entity.getUser().getId(), dto.getUserId());
     }
 
@@ -71,7 +68,6 @@ public class NotificationMapperTest {
                 .sectionType("INVALID")
                 .text("Test notification")
                 .isRead(false)
-                .receivedTime("2023-10-01T10:00:00")
                 .userId(1L)
                 .build();
 
@@ -86,7 +82,6 @@ public class NotificationMapperTest {
                 .sectionType("")
                 .text("")
                 .isRead(false)
-                .receivedTime("2023-10-01T10:00:00")
                 .userId(1L)
                 .build();
 
@@ -102,6 +97,6 @@ public class NotificationMapperTest {
     @Test
     public void testToDto_NullInput() {
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> notificationMapper.toDto(null));
-        assertEquals("Cannot map null to dto", exception.getMessage());
+        assertEquals("Cannot map null to DTO", exception.getMessage());
     }
 }

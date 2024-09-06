@@ -1,12 +1,13 @@
 package greencity.service;
 
 import greencity.dto.notification.NotificationDto;
+import greencity.dto.notification.NotificationResponseDto;
 
 import java.util.List;
 
 public interface NotificationService {
 
-    NotificationDto save(NotificationDto notificationDto);
+    NotificationResponseDto save(NotificationDto notificationDto);
 
     List<NotificationDto> findAllByUserId(Long userId);
 

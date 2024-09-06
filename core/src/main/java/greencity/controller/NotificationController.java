@@ -3,6 +3,7 @@ package greencity.controller;
 import greencity.annotations.CurrentUser;
 import greencity.constant.HttpStatuses;
 import greencity.dto.notification.NotificationDto;
+import greencity.dto.notification.NotificationResponseDto;
 import greencity.dto.user.UserVO;
 import greencity.service.NotificationService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -127,8 +128,8 @@ public class NotificationController {
             @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED)
     })
     @PostMapping("/save")
-    public ResponseEntity<NotificationDto> saveNotification(@RequestBody NotificationDto notificationDto) {
-        NotificationDto savedNotification = notificationService.save(notificationDto);
-        return ResponseEntity.ok(savedNotification);
+    public ResponseEntity<NotificationResponseDto> saveNotification(@RequestBody NotificationDto notificationDto) {
+        NotificationResponseDto responseDto = notificationService.save(notificationDto);
+        return ResponseEntity.ok(responseDto);
     }
 }
