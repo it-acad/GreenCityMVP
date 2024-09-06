@@ -2,11 +2,13 @@ package greencity.service;
 
 import greencity.constant.ErrorMessage;
 import greencity.dto.replytocomment.ReplyToCommentDto;
+import greencity.dto.replytocomment.ReplyToCommentRequestDto;
 import greencity.entity.Comment;
 import greencity.entity.ReplyToComment;
 import greencity.entity.User;
 import greencity.exception.exceptions.*;
 import greencity.mapping.ReplyToCommentMapper;
+import greencity.mapping.ReplyToCommentRequestDtoMapper;
 import greencity.repository.CommentRepo;
 import greencity.repository.ReplyToCommentRepo;
 import greencity.repository.UserRepo;
@@ -25,6 +27,7 @@ public class ReplyToCommentServiceImpl implements ReplyToCommentService {
     private final UserRepo userRepo;
     private final CommentRepo commentRepo;
     private final ReplyToCommentMapper mapper;
+    private final ReplyToCommentRequestDtoMapper requestMapper;
     private static final Pattern URL_PATTERN = Pattern.compile(
             "(http|https|ftp|ftps)://[^\\s/$.?#].\\S*",
             Pattern.CASE_INSENSITIVE);
@@ -43,7 +46,7 @@ public class ReplyToCommentServiceImpl implements ReplyToCommentService {
      */
     @Override
     @Transactional
-    public ReplyToCommentDto save(ReplyToCommentDto replyToCommentDto, Long commentId, Long authorId) {
+    public ReplyToCommentDto save(ReplyToCommentRequestDto replyToCommentDto, Long commentId, Long authorId) {
         Comment comment = commentRepo.findById(commentId)
                 .orElseThrow(() -> new CommentNotFoundException(ErrorMessage.COMMENT_NOT_FOUND_BY_ID + commentId));
 
@@ -51,7 +54,7 @@ public class ReplyToCommentServiceImpl implements ReplyToCommentService {
                 .orElseThrow(() -> new UserNotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID + authorId));
 
         checkContent(replyToCommentDto.getContent());
-        ReplyToComment replyToComment = mapper.toEntity(replyToCommentDto);
+        ReplyToComment replyToComment = requestMapper.toEntity(replyToCommentDto);
 
         replyToComment.setComment(comment);
         replyToComment.setAuthor(author);
@@ -69,7 +72,7 @@ public class ReplyToCommentServiceImpl implements ReplyToCommentService {
      */
     @Override
     @Transactional
-    public ReplyToCommentDto update(ReplyToCommentDto replyToCommentDto, Long authorId) {
+    public ReplyToCommentDto update(ReplyToCommentRequestDto replyToCommentDto, Long authorId) {
         checkContent(replyToCommentDto.getContent());
 
         ReplyToComment updatedReply = replyToCommentRepo.findById(replyToCommentDto.getId())

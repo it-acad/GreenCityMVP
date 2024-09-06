@@ -3,6 +3,7 @@ package greencity.controller;
 import greencity.annotations.CurrentUser;
 import greencity.constant.HttpStatuses;
 import greencity.dto.replytocomment.ReplyToCommentDto;
+import greencity.dto.replytocomment.ReplyToCommentRequestDto;
 import greencity.dto.user.UserVO;
 import greencity.service.ReplyToCommentService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -40,9 +41,9 @@ public class ReplyToCommentController {
             @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST),
             @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED)
     })
-    @PostMapping("{commentId}")
+    @PostMapping("/reply/{commentId}")
     public ResponseEntity<ReplyToCommentDto> save(@PathVariable("commentId") Long commentId,
-                                                  @Valid @RequestBody ReplyToCommentDto replyToCommentDto,
+                                                  @Valid @RequestBody ReplyToCommentRequestDto replyToCommentDto,
                                                   @Parameter(hidden = true) @CurrentUser UserVO currentUser) {
         ReplyToCommentDto savedReply = replyToCommentService.save(replyToCommentDto, commentId, currentUser.getId());
         return ResponseEntity.status(HttpStatus.CREATED).body(savedReply);
@@ -62,7 +63,8 @@ public class ReplyToCommentController {
             @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN)
     })
     @PatchMapping()
-    public ResponseEntity<ReplyToCommentDto> update(@Valid @RequestBody ReplyToCommentDto replyToCommentDto,
+    public ResponseEntity<ReplyToCommentDto> update(
+                                                    @Valid @RequestBody ReplyToCommentRequestDto replyToCommentDto,
                                                     @Parameter(hidden = true) @CurrentUser UserVO currentUser) {
         ReplyToCommentDto updatedReply = replyToCommentService.update(replyToCommentDto, currentUser.getId());
         return ResponseEntity.ok(updatedReply);
@@ -79,8 +81,9 @@ public class ReplyToCommentController {
             @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED),
             @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN)
     })
-    @DeleteMapping()
-    public void delete(@RequestParam Long replyToCommentId,
+    @DeleteMapping("/delete/{replyToCommentId}")
+    public void delete(
+                       @PathVariable @RequestParam Long replyToCommentId,
                        @Parameter(hidden = true) @CurrentUser UserVO currentUser) {
         replyToCommentService.deleteById(replyToCommentId, currentUser.getId());
     }

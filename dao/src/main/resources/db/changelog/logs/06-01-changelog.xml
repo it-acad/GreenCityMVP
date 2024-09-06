@@ -36,6 +36,11 @@
         </createTable>
     </changeSet>
     <changeSet id="1725641572652-66" author="keega">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <foreignKeyConstraintExists foreignKeyName="FK_REPLY_TO_COMMENT_ON_COMMENT"/>
+            </not>
+        </preConditions>
         <addForeignKeyConstraint baseColumnNames="comment_id" baseTableName="reply_to_comment"
                                  constraintName="FK_REPLY_TO_COMMENT_ON_COMMENT" referencedColumnNames="id"
                                  referencedTableName="comments"/>
