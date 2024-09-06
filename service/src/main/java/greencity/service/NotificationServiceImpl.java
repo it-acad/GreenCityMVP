@@ -33,6 +33,7 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     public List<NotificationDto> findAllByUserId(Long userId) {
+        validateUserId(userId);
         List<Notification> notifications = notificationRepo.findAllByUserId(userId);
         return notifications.stream()
                 .map(mapper::toDto)
@@ -41,9 +42,7 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     public List<NotificationDto> findAllByUserIdAndIsReadFalse(Long userId) {
-        if (userId == null) {
-            throw new InvalidUserIdException("User ID cannot be null");
-        }
+        validateUserId(userId);
         List<Notification> notifications = notificationRepo.findAllByUserIdAndIsReadFalse(userId);
         if (notifications.isEmpty()){
             return Collections.emptyList();
@@ -68,6 +67,7 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     public List<NotificationDto> getFirstThreeNotifications(Long userId) {
+        validateUserId(userId);
         List<Notification> notifications = notificationRepo.findFirstThreeByUserIdOrderByReceivedTimeDesc(userId);
         return notifications.stream()
                 .map(mapper::toDto)
@@ -76,6 +76,7 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     public List<NotificationDto> getNotificationsSortedByReceivedTime(Long userId, boolean ascending) {
+        validateUserId(userId);
         List<Notification> notifications = notificationRepo.findAllByUserIdOrderByReceivedTimeDesc(userId);
         Comparator<Notification> comparator = Comparator.comparing(Notification::getReceivedTime);
 
@@ -86,5 +87,11 @@ public class NotificationServiceImpl implements NotificationService {
                 .sorted(comparator)
                 .map(mapper::toDto)
                 .toList();
+    }
+
+    private void validateUserId(Long userId) {
+        if (userId == null) {
+            throw new InvalidUserIdException("User ID cannot be null");
+        }
     }
 }
