@@ -67,12 +67,13 @@ public class ReplyToCommentController {
             @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN)
     })
     @PreAuthorize("@replyToCommentServiceImpl.isOwner(#replyToCommentDto.getId(), #currentUser.getId()) or hasRole('ADMIN')")
-    @PatchMapping()
+    @PatchMapping("/update/{replyToCommentId}")
     public ResponseEntity<ReplyToCommentResponseDto> update(
+                                                    @PathVariable Long replyToCommentId,
                                                     @Valid @RequestBody ReplyToCommentRequestDto replyToCommentDto,
                                                     @Parameter(hidden = true) @CurrentUser UserVO currentUser) {
         logger.info("Updating reply to comment with id: {} by authorId: {}", replyToCommentDto.getId(), currentUser.getId());
-        ReplyToCommentResponseDto updatedReply = replyToCommentService.update(replyToCommentDto, currentUser.getId());
+        ReplyToCommentResponseDto updatedReply = replyToCommentService.update(replyToCommentDto, replyToCommentId, currentUser.getId());
         return ResponseEntity.ok(updatedReply);
     }
 

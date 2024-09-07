@@ -92,32 +92,32 @@ public class ReplyToCommentControllerTest {
 
     @Test
     void updateReplyToComment_statusOk() throws Exception {
-        ReplyToCommentResponseDto replyToCommentDto = new ReplyToCommentResponseDto();
+        ReplyToCommentRequestDto replyToCommentDto = new ReplyToCommentRequestDto();
         replyToCommentDto.setContent("content");
 
-        when(replyToCommentService.update(any(), anyLong())).thenReturn(new ReplyToCommentResponseDto());
+        when(replyToCommentService.update(any(), anyLong(), anyLong())).thenReturn(new ReplyToCommentResponseDto());
         when(userService.findByEmail(anyString())).thenReturn(userVO);
 
-        mockMvc.perform(patch(initialUrl)
+        mockMvc.perform(patch(initialUrl + "/update/{replyToCommentId}", 1L)
                         .principal(principal)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(replyToCommentDto)))
                 .andExpect(status().isOk());
 
-        verify(replyToCommentService).update(any(), anyLong());
+        verify(replyToCommentService).update(any(), eq(1L), anyLong());
     }
 
     @Test
     void updateReplyToComment_withoutContent_statusBadRequest() throws Exception {
         ReplyToCommentRequestDto replyToCommentDto = new ReplyToCommentRequestDto();
 
-        mockMvc.perform(patch(initialUrl)
+        mockMvc.perform(patch(initialUrl + "/update/{replyToCommentId}", 1L)
                         .principal(principal)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(replyToCommentDto)))
                 .andExpect(status().isBadRequest());
 
-        verify(replyToCommentService, never()).update(any(ReplyToCommentRequestDto.class), anyLong());
+        verify(replyToCommentService, never()).update(any(ReplyToCommentRequestDto.class), anyLong(), anyLong());
     }
 
     @Test

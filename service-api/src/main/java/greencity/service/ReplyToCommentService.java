@@ -8,7 +8,7 @@ import java.util.List;
 public interface ReplyToCommentService {
     ReplyToCommentResponseDto save(ReplyToCommentRequestDto replyToCommentDto, Long commentId, Long authorId);
 
-    ReplyToCommentResponseDto update(ReplyToCommentRequestDto replyToCommentDto, Long authorId);
+    ReplyToCommentResponseDto update(ReplyToCommentRequestDto replyToCommentDto, Long replyToCommentId, Long authorId);
 
     void deleteById(Long replyToCommentId, Long authorId);
 

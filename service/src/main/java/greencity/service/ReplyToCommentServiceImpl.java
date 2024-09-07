@@ -76,12 +76,12 @@ public class ReplyToCommentServiceImpl implements ReplyToCommentService {
      */
     @Override
     @Transactional
-    public ReplyToCommentResponseDto update(ReplyToCommentRequestDto replyToCommentRequestDto, Long authorId) {
-        logger.info("Updating reply to comment with id: {} by authorId: {}", replyToCommentRequestDto.getId(), authorId);
+    public ReplyToCommentResponseDto update(ReplyToCommentRequestDto replyToCommentRequestDto, Long replyToCommentId,Long authorId) {
+        logger.info("Updating reply to comment with id: {} by authorId: {}", replyToCommentId, authorId);
         checkContent(replyToCommentRequestDto.getContent());
 
-        ReplyToComment updatedReply = replyToCommentRepo.findById(replyToCommentRequestDto.getId())
-                .orElseThrow(() -> new ReplyNotFoundException(ErrorMessage.REPLY_NOT_FOUND_BY_ID + replyToCommentRequestDto.getId()));
+        ReplyToComment updatedReply = replyToCommentRepo.findById(replyToCommentId)
+                .orElseThrow(() -> new ReplyNotFoundException(ErrorMessage.REPLY_NOT_FOUND_BY_ID + replyToCommentId));
 
         if (!updatedReply.getAuthor().getId().equals(authorId)) {
             throw new UnauthorizedReplyUpdateException(ErrorMessage.ENABLE_TO_UPDATE_REPLY);

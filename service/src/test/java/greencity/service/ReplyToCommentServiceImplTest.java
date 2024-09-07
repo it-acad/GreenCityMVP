@@ -87,6 +87,7 @@ public class ReplyToCommentServiceImplTest {
         ReplyToCommentResponseDto result = replyToCommentService.save(replyToCommentRequestDto, commentId, authorId);
 
         assertEquals(savedReplyDto, result);
+        verify(replyToCommentRepo).save(replyToComment);
     }
 
     @Test
@@ -98,6 +99,7 @@ public class ReplyToCommentServiceImplTest {
 
         assertThrows(CommentNotFoundException.class, () ->
                 replyToCommentService.save(replyToCommentRequestDto, invalidCommentId, authorId));
+        verify(commentRepo).findById(invalidCommentId);
     }
 
     @Test
@@ -110,12 +112,15 @@ public class ReplyToCommentServiceImplTest {
 
         assertThrows(UserNotFoundException.class, () ->
                 replyToCommentService.save(replyToCommentRequestDto, commentId, invalidAuthorId));
+        verify(commentRepo).findById(commentId);
     }
 
     @Test
     void update_ValidData_ReturnsUpdatedReply() {
         Long replyId = 1L;
         Long authorId = 1L;
+        Long commentId = 1L;
+
         ReplyToCommentRequestDto updatedDto = createReplyToCommentRequestDto("Updated content");
         updatedDto.setId(replyId);
 
@@ -134,38 +139,47 @@ public class ReplyToCommentServiceImplTest {
         when(responseMapper.toDto(updatedReply)).thenReturn(updatedReplyDto);
         when(replyToCommentRepo.save(any(ReplyToComment.class))).thenReturn(updatedReply);
 
-        ReplyToCommentResponseDto result = replyToCommentService.update(updatedDto, authorId);
+        ReplyToCommentResponseDto result = replyToCommentService.update(updatedDto, authorId, commentId);
 
         assertEquals(updatedReplyDto, result);
+        verify(replyToCommentRepo).save(updatedReply);
     }
 
     @Test
     void update_InvalidReplyId_ThrowsReplyNotFoundException() {
         Long invalidReplyId = 1L;
         Long authorId = 1L;
+        Long commentId = 1L;
         ReplyToCommentRequestDto replyToCommentRequestDto1 = createReplyToCommentRequestDto("Updated content");
         replyToCommentRequestDto1.setId(invalidReplyId);
 
         when(replyToCommentRepo.findById(invalidReplyId)).thenReturn(Optional.empty());
 
         assertThrows(ReplyNotFoundException.class, () ->
-                replyToCommentService.update(replyToCommentRequestDto1, authorId));
+                replyToCommentService.update(replyToCommentRequestDto1, authorId, commentId));
+
+        verify(replyToCommentRepo).findById(invalidReplyId);
+        verifyNoInteractions(responseMapper);
     }
 
     @Test
     void update_UnauthorizedUpdate_ThrowsUnauthorizedReplyUpdateException() {
         Long replyId = 1L;
         Long unauthorizedAuthorId = 2L;
+        Long commentId = 1L;
         ReplyToCommentRequestDto replyToCommentDto = createReplyToCommentRequestDto("Updated content");
         replyToCommentDto.setId(replyId);
 
         ReplyToComment existingReply = createReplyToComment("Old content");
         existingReply.setId(replyId);
+        existingReply.getAuthor().setId(3L);
 
         when(replyToCommentRepo.findById(replyId)).thenReturn(Optional.of(existingReply));
 
         assertThrows(UnauthorizedReplyUpdateException.class, () ->
-                replyToCommentService.update(replyToCommentDto, unauthorizedAuthorId));
+                replyToCommentService.update(replyToCommentDto, commentId, unauthorizedAuthorId));
+
+        verify(replyToCommentRepo).findById(replyId);
     }
 
     @Test
@@ -191,6 +205,7 @@ public class ReplyToCommentServiceImplTest {
 
         assertThrows(ReplyNotFoundException.class, () ->
                 replyToCommentService.deleteById(invalidReplyToCommentId, authorId));
+        verify(replyToCommentRepo).findById(invalidReplyToCommentId);
     }
 
     @Test
@@ -204,6 +219,7 @@ public class ReplyToCommentServiceImplTest {
 
         assertThrows(UnauthorizedReplyDeleteException.class, () ->
                 replyToCommentService.deleteById(replyToCommentId, unauthorizedAuthorId));
+        verify(replyToCommentRepo).findById(replyToCommentId);
     }
 
     @Test
@@ -225,17 +241,20 @@ public class ReplyToCommentServiceImplTest {
         List<ReplyToCommentResponseDto> result = replyToCommentService.findAllByCommentId(commentId);
 
         assertEquals(replyToCommentDtos, result);
+        verify(replyToCommentRepo).findAllByCommentId(commentId);
     }
 
     @Test
     void findAllByCommentId_InvalidCommentId_ThrowsInvalidCommentIdException() {
         assertThrows(InvalidCommentIdException.class, () ->
                 replyToCommentService.findAllByCommentId(-1L));
+        verify(replyToCommentRepo, never()).findAllByCommentId(any());
     }
 
     @Test
     void findAllByCommentId_NullCommentId_ThrowsInvalidCommentIdException() {
         assertThrows(InvalidCommentIdException.class, () ->
                 replyToCommentService.findAllByCommentId(null));
+        verify(replyToCommentRepo, never()).findAllByCommentId(any());
     }
 }
