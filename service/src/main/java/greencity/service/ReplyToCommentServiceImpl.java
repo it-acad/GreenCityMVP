@@ -85,10 +85,6 @@ public class ReplyToCommentServiceImpl implements ReplyToCommentService {
         ReplyToComment updatedReply = replyToCommentRepo.findById(replyToCommentId)
                 .orElseThrow(() -> new ReplyNotFoundException(ErrorMessage.REPLY_NOT_FOUND_BY_ID + replyToCommentId));
 
-        if (!updatedReply.getAuthor().getId().equals(authorId)) {
-            throw new UnauthorizedReplyUpdateException(ErrorMessage.ENABLE_TO_UPDATE_REPLY);
-        }
-
         updatedReply.setContent(replyToCommentRequestDto.getContent());
         updatedReply.setIsEdited(true);
 
@@ -108,10 +104,6 @@ public class ReplyToCommentServiceImpl implements ReplyToCommentService {
         logger.info("Deleting reply to comment with id: {} by authorId: {}", replyToCommentId, authorId);
         ReplyToComment replyToComment = replyToCommentRepo.findById(replyToCommentId)
                 .orElseThrow(() -> new ReplyNotFoundException(ErrorMessage.REPLY_NOT_FOUND_BY_ID + replyToCommentId));
-
-        if (!replyToComment.getAuthor().getId().equals(authorId)) {
-            throw new UnauthorizedReplyDeleteException(ErrorMessage.ENABLE_TO_DELETE_REPLY);
-        }
 
         replyToCommentRepo.deleteById(replyToCommentId);
     }
