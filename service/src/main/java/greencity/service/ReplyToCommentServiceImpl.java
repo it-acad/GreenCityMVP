@@ -15,6 +15,7 @@ import greencity.repository.UserRepo;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -75,6 +76,7 @@ public class ReplyToCommentServiceImpl implements ReplyToCommentService {
      * @return {@link ReplyToCommentResponseDto} - updated {@link greencity.entity.ReplyToComment} as a dto.
      */
     @Override
+    @PreAuthorize("@replyToCommentServiceImpl.isOwner(#replyToCommentRequestDto.getId(), #authorId) or hasRole('ADMIN')")
     @Transactional
     public ReplyToCommentResponseDto update(ReplyToCommentRequestDto replyToCommentRequestDto, Long replyToCommentId,Long authorId) {
         logger.info("Updating reply to comment with id: {} by authorId: {}", replyToCommentId, authorId);
@@ -100,6 +102,7 @@ public class ReplyToCommentServiceImpl implements ReplyToCommentService {
      * @param authorId - id of {@link greencity.entity.User}.
      */
     @Override
+    @PreAuthorize("@replyToCommentServiceImpl.isOwner(#replyToCommentId, #authorId) or hasRole('ADMIN')")
     @Transactional
     public void deleteById(Long replyToCommentId, Long authorId) {
         logger.info("Deleting reply to comment with id: {} by authorId: {}", replyToCommentId, authorId);

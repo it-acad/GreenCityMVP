@@ -18,7 +18,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -66,8 +65,7 @@ public class ReplyToCommentController {
             @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED),
             @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN)
     })
-    @PreAuthorize("@replyToCommentServiceImpl.isOwner(#replyToCommentDto.getId(), #currentUser.getId()) or hasRole('ADMIN')")
-    @PatchMapping("/update/{replyToCommentId}")
+    @PatchMapping("/{replyToCommentId}")
     public ResponseEntity<ReplyToCommentResponseDto> update(
                                                     @PathVariable Long replyToCommentId,
                                                     @Valid @RequestBody ReplyToCommentRequestDto replyToCommentDto,
@@ -87,8 +85,7 @@ public class ReplyToCommentController {
             @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED),
             @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN)
     })
-    @PreAuthorize("@replyToCommentServiceImpl.isOwner(#replyToCommentId, #currentUser.getId()) or hasRole('ADMIN')")
-    @DeleteMapping("/delete/{replyToCommentId}")
+    @DeleteMapping("/{replyToCommentId}")
     public void delete(
                        @PathVariable Long replyToCommentId,
                        @Parameter(hidden = true) @CurrentUser UserVO currentUser) {

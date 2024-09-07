@@ -244,7 +244,7 @@ public class SecurityConfig {
                                 USER_SHOPPING_LIST + "/{userShoppingListItemId}",
                                 "/user/profilePicture",
                                 "/user/deleteProfilePicture",
-                                REPLY_TO_COMMENT + "/update/{replyToCommentId}")
+                                REPLY_TO_COMMENT + "/{replyToCommentId}")
                         .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
                         .requestMatchers(HttpMethod.DELETE,
                                 ECONEWS_COMMENTS,
@@ -256,7 +256,7 @@ public class SecurityConfig {
                                 "/social-networks",
                                 USER_CUSTOM_SHOPPING_LIST_ITEMS,
                                 USER_SHOPPING_LIST + "/user-shopping-list-items",
-                                REPLY_TO_COMMENT + "/delete/{replyToCommentId}")
+                                REPLY_TO_COMMENT + "/{replyToCommentId}")
                         .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
                         .requestMatchers(HttpMethod.GET,
                                 "/newsSubscriber",
