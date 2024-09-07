@@ -70,7 +70,7 @@ public class ReplyToCommentController {
                                                     @PathVariable Long replyToCommentId,
                                                     @Valid @RequestBody ReplyToCommentRequestDto replyToCommentDto,
                                                     @Parameter(hidden = true) @CurrentUser UserVO currentUser) {
-        logger.info("Updating reply to comment with id: {} by authorId: {}", replyToCommentDto.getId(), currentUser.getId());
+        logger.info("Updating reply to comment with id: {} by authorId: {}", replyToCommentId, currentUser.getId());
         ReplyToCommentResponseDto updatedReply = replyToCommentService.update(replyToCommentDto, replyToCommentId, currentUser.getId());
         return ResponseEntity.ok(updatedReply);
     }
@@ -103,7 +103,8 @@ public class ReplyToCommentController {
             @ApiResponse(responseCode = "200", description = HttpStatuses.OK,
                     content = @Content(schema = @Schema(implementation = ReplyToCommentResponseDto.class))),
             @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST),
-            @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED)
+            @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED),
+            @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND)
     })
     @GetMapping("/allReplies/{commentId}")
     public ResponseEntity<List<ReplyToCommentResponseDto>> getAll(@PathVariable Long commentId) {

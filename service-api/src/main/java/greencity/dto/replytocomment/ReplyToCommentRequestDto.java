@@ -9,12 +9,8 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ReplyToCommentRequestDto {
-    private Long id;
-
     @NotBlank
     @NonNull
     @Size(min = 1, max = 8000)
     private String content;
-
-    private Boolean isEdited;
 }

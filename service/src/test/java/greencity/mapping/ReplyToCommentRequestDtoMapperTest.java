@@ -22,13 +22,11 @@ public class ReplyToCommentRequestDtoMapperTest {
     public void testToEntity() {
         ReplyToCommentRequestDto dto = ReplyToCommentRequestDto.builder()
                 .content("content")
-                .isEdited(false)
                 .build();
 
         ReplyToComment entity = replyToCommentRequestDtoMapper.toEntity(dto);
 
         assertEquals(dto.getContent(), entity.getContent());
-        assertEquals(dto.getIsEdited(), entity.getIsEdited());
     }
 
     @Test

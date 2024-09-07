@@ -122,7 +122,6 @@ public class ReplyToCommentServiceImplTest {
         Long commentId = 1L;
 
         ReplyToCommentRequestDto updatedDto = createReplyToCommentRequestDto("Updated content");
-        updatedDto.setId(replyId);
 
         ReplyToComment existingReply = createReplyToComment("Old content");
         existingReply.setId(replyId);
@@ -151,7 +150,6 @@ public class ReplyToCommentServiceImplTest {
         Long authorId = 1L;
         Long commentId = 1L;
         ReplyToCommentRequestDto replyToCommentRequestDto1 = createReplyToCommentRequestDto("Updated content");
-        replyToCommentRequestDto1.setId(invalidReplyId);
 
         when(replyToCommentRepo.findById(invalidReplyId)).thenReturn(Optional.empty());
 
@@ -160,26 +158,6 @@ public class ReplyToCommentServiceImplTest {
 
         verify(replyToCommentRepo).findById(invalidReplyId);
         verifyNoInteractions(responseMapper);
-    }
-
-    @Test
-    void update_UnauthorizedUpdate_ThrowsUnauthorizedReplyUpdateException() {
-        Long replyId = 1L;
-        Long unauthorizedAuthorId = 2L;
-        Long commentId = 1L;
-        ReplyToCommentRequestDto replyToCommentDto = createReplyToCommentRequestDto("Updated content");
-        replyToCommentDto.setId(replyId);
-
-        ReplyToComment existingReply = createReplyToComment("Old content");
-        existingReply.setId(replyId);
-        existingReply.getAuthor().setId(3L);
-
-        when(replyToCommentRepo.findById(replyId)).thenReturn(Optional.of(existingReply));
-
-        assertThrows(UnauthorizedReplyUpdateException.class, () ->
-                replyToCommentService.update(replyToCommentDto, commentId, unauthorizedAuthorId));
-
-        verify(replyToCommentRepo).findById(replyId);
     }
 
     @Test
@@ -209,22 +187,12 @@ public class ReplyToCommentServiceImplTest {
     }
 
     @Test
-    void deleteById_UnauthorizedUser_ThrowsUnauthorizedReplyDeleteException() {
-        Long replyToCommentId = 1L;
-        Long unauthorizedAuthorId = 2L;
-        ReplyToComment replyToComment = createReplyToComment("content");
-        replyToComment.setId(replyToCommentId);
-
-        when(replyToCommentRepo.findById(replyToCommentId)).thenReturn(Optional.of(replyToComment));
-
-        assertThrows(UnauthorizedReplyDeleteException.class, () ->
-                replyToCommentService.deleteById(replyToCommentId, unauthorizedAuthorId));
-        verify(replyToCommentRepo).findById(replyToCommentId);
-    }
-
-    @Test
     void findAllByCommentId_ValidCommentId_ReturnsReplyToCommentDtos() {
         Long commentId = 1L;
+
+        Comment comment = new Comment();
+        comment.setId(commentId);
+
         ReplyToComment replyToComment = createReplyToComment("Test reply");
         replyToComment.setId(1L);
 
@@ -235,14 +203,20 @@ public class ReplyToCommentServiceImplTest {
         List<ReplyToComment> replyToComments = List.of(replyToComment);
         List<ReplyToCommentResponseDto> replyToCommentDtos = List.of(replyToCommentDto);
 
+        when(commentRepo.findById(commentId)).thenReturn(Optional.of(comment));
+
         when(replyToCommentRepo.findAllByCommentId(commentId)).thenReturn(replyToComments);
+
         when(responseMapper.toDto(replyToComment)).thenReturn(replyToCommentDto);
 
         List<ReplyToCommentResponseDto> result = replyToCommentService.findAllByCommentId(commentId);
 
         assertEquals(replyToCommentDtos, result);
+
+        verify(commentRepo).findById(commentId);
         verify(replyToCommentRepo).findAllByCommentId(commentId);
     }
+
 
     @Test
     void findAllByCommentId_InvalidCommentId_ThrowsInvalidCommentIdException() {

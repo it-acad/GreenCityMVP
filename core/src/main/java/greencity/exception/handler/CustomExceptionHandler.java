@@ -619,22 +619,6 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(exceptionResponse);
     }
 
-    @ExceptionHandler(UnauthorizedReplyUpdateException.class)
-    public final ResponseEntity<Object> handleUnauthorizedReplyUpdateException(
-            UnauthorizedReplyUpdateException ex, WebRequest request) {
-        ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
-        log.trace(ex.getMessage(), ex);
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(exceptionResponse);
-    }
-
-    @ExceptionHandler(UnauthorizedReplyDeleteException.class)
-    public final ResponseEntity<Object> handleUnauthorizedReplyDeleteException(
-            UnauthorizedReplyDeleteException ex, WebRequest request) {
-        ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
-        log.trace(ex.getMessage(), ex);
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(exceptionResponse);
-    }
-
     @ExceptionHandler(ContentContainsURLException.class)
     public final ResponseEntity<Object> handleContentContainsURLException(
             ContentContainsURLException ex, WebRequest request) {

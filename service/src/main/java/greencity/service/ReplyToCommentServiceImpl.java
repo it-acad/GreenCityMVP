@@ -76,7 +76,7 @@ public class ReplyToCommentServiceImpl implements ReplyToCommentService {
      * @return {@link ReplyToCommentResponseDto} - updated {@link greencity.entity.ReplyToComment} as a dto.
      */
     @Override
-    @PreAuthorize("@replyToCommentServiceImpl.isOwner(#replyToCommentRequestDto.getId(), #authorId) or hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN') or @replyToCommentServiceImpl.isOwner(#replyToCommentId, #authorId)")
     @Transactional
     public ReplyToCommentResponseDto update(ReplyToCommentRequestDto replyToCommentRequestDto, Long replyToCommentId,Long authorId) {
         logger.info("Updating reply to comment with id: {} by authorId: {}", replyToCommentId, authorId);
@@ -98,7 +98,7 @@ public class ReplyToCommentServiceImpl implements ReplyToCommentService {
      * @param authorId - id of {@link greencity.entity.User}.
      */
     @Override
-    @PreAuthorize("@replyToCommentServiceImpl.isOwner(#replyToCommentId, #authorId) or hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN') or @replyToCommentServiceImpl.isOwner(#replyToCommentId, #authorId)")
     @Transactional
     public void deleteById(Long replyToCommentId, Long authorId) {
         logger.info("Deleting reply to comment with id: {} by authorId: {}", replyToCommentId, authorId);
@@ -122,6 +122,9 @@ public class ReplyToCommentServiceImpl implements ReplyToCommentService {
         if (commentId == null || commentId < 0) {
             throw new InvalidCommentIdException(ErrorMessage.INVALID_COMMENT_ID + commentId);
         }
+
+        Comment comment = commentRepo.findById(commentId)
+                .orElseThrow(() -> new CommentNotFoundException(ErrorMessage.COMMENT_NOT_FOUND_BY_ID + commentId));
 
         List<ReplyToComment> replyToComments = replyToCommentRepo.findAllByCommentId(commentId);
 
