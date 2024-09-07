@@ -67,7 +67,6 @@ public class ReplyToCommentController {
             @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN)
     })
     @PreAuthorize("@replyToCommentServiceImpl.isOwner(#replyToCommentDto.getId(), #currentUser.getId()) or hasRole('ADMIN')")
-    //don't know if this preauthorize is necessary but let it be here
     @PatchMapping()
     public ResponseEntity<ReplyToCommentResponseDto> update(
                                                     @Valid @RequestBody ReplyToCommentRequestDto replyToCommentDto,
