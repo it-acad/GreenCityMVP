@@ -66,7 +66,7 @@ public class ReplyToCommentController {
             @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED),
             @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN)
     })
-    @PreAuthorize("@replyToCommentServiceImpl.isOwner(#replyToCommentDto.getId(), #currentUser.getId())")
+    @PreAuthorize("@replyToCommentServiceImpl.isOwner(#replyToCommentDto.getId(), #currentUser.getId()) or hasRole('ADMIN')")
     //don't know if this preauthorize is necessary but let it be here
     @PatchMapping()
     public ResponseEntity<ReplyToCommentResponseDto> update(
@@ -87,6 +87,7 @@ public class ReplyToCommentController {
             @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED),
             @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN)
     })
+    @PreAuthorize("@replyToCommentServiceImpl.isOwner(#replyToCommentId, #currentUser.getId()) or hasRole('ADMIN')")
     @DeleteMapping("/delete/{replyToCommentId}")
     public void delete(
                        @PathVariable Long replyToCommentId,
