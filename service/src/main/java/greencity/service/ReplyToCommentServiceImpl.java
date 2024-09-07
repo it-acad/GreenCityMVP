@@ -143,4 +143,10 @@ public class ReplyToCommentServiceImpl implements ReplyToCommentService {
             throw new ContentContainsEmojiException(ErrorMessage.ENABLE_TO_CONTAIN_EMOJI);
         }
     }
+
+    public boolean isOwner(Long replyToCommentId, Long currentUserId) {
+        return replyToCommentRepo.findById(replyToCommentId)
+                .map(replyToComment -> replyToComment.getAuthor().getId().equals(currentUserId))
+                .orElseThrow(() -> new ReplyNotFoundException(ErrorMessage.REPLY_NOT_FOUND_BY_ID + replyToCommentId));
+    }
 }
