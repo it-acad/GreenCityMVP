@@ -13,6 +13,8 @@ import greencity.repository.CommentRepo;
 import greencity.repository.ReplyToCommentRepo;
 import greencity.repository.UserRepo;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,6 +35,7 @@ public class ReplyToCommentServiceImpl implements ReplyToCommentService {
             Pattern.CASE_INSENSITIVE);
     private static final Pattern EMOJI_PATTERN = Pattern.compile(
             "[\\u203C-\\u3299\\uD83C\\uD000-\\uDFFF\\uD83D\\uD000-\\uDFFF\\uD83E\\uD000-\\uDFFF]");
+    private static final Logger logger = LoggerFactory.getLogger(ReplyToCommentServiceImpl.class.getName());
 
 
 
@@ -47,6 +50,7 @@ public class ReplyToCommentServiceImpl implements ReplyToCommentService {
     @Override
     @Transactional
     public ReplyToCommentResponseDto save(ReplyToCommentRequestDto replyToCommentRequestDto, Long commentId, Long authorId) {
+        logger.info("Saving reply to comment with commentId: {} and authorId: {}", commentId, authorId);
         Comment comment = commentRepo.findById(commentId)
                 .orElseThrow(() -> new CommentNotFoundException(ErrorMessage.COMMENT_NOT_FOUND_BY_ID + commentId));
 
@@ -73,6 +77,7 @@ public class ReplyToCommentServiceImpl implements ReplyToCommentService {
     @Override
     @Transactional
     public ReplyToCommentResponseDto update(ReplyToCommentRequestDto replyToCommentRequestDto, Long authorId) {
+        logger.info("Updating reply to comment with id: {} by authorId: {}", replyToCommentRequestDto.getId(), authorId);
         checkContent(replyToCommentRequestDto.getContent());
 
         ReplyToComment updatedReply = replyToCommentRepo.findById(replyToCommentRequestDto.getId())
@@ -97,7 +102,7 @@ public class ReplyToCommentServiceImpl implements ReplyToCommentService {
     @Override
     @Transactional
     public void deleteById(Long replyToCommentId, Long authorId) {
-
+        logger.info("Deleting reply to comment with id: {} by authorId: {}", replyToCommentId, authorId);
         ReplyToComment replyToComment = replyToCommentRepo.findById(replyToCommentId)
                 .orElseThrow(() -> new ReplyNotFoundException(ErrorMessage.REPLY_NOT_FOUND_BY_ID + replyToCommentId));
 
@@ -118,6 +123,7 @@ public class ReplyToCommentServiceImpl implements ReplyToCommentService {
     @Override
     @Transactional(readOnly = true)
     public List<ReplyToCommentResponseDto> findAllByCommentId(Long commentId) {
+        logger.info("Finding all replies to comment with id: {}", commentId);
         if (commentId == null || commentId < 0) {
             throw new InvalidCommentIdException(ErrorMessage.INVALID_COMMENT_ID + commentId);
         }

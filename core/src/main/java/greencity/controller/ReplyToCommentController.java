@@ -14,6 +14,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,7 +26,7 @@ import java.util.List;
 @RequestMapping("/reply-to-comment")
 @RequiredArgsConstructor
 public class ReplyToCommentController {
-
+    private static final Logger logger = LoggerFactory.getLogger(ReplyToCommentController.class);
     private final ReplyToCommentService replyToCommentService;
 
     /**
@@ -45,6 +47,7 @@ public class ReplyToCommentController {
     public ResponseEntity<ReplyToCommentResponseDto> save(@PathVariable("commentId") Long commentId,
                                                               @Valid @RequestBody ReplyToCommentRequestDto replyToCommentDto,
                                                               @Parameter(hidden = true) @CurrentUser UserVO currentUser) {
+        logger.info("Saving reply to comment with commentId: {} and authorId: {}", commentId, currentUser.getId());
         ReplyToCommentResponseDto savedReply = replyToCommentService.save(replyToCommentDto, commentId, currentUser.getId());
         return ResponseEntity.status(HttpStatus.CREATED).body(savedReply);
     }
@@ -66,6 +69,7 @@ public class ReplyToCommentController {
     public ResponseEntity<ReplyToCommentResponseDto> update(
                                                     @Valid @RequestBody ReplyToCommentRequestDto replyToCommentDto,
                                                     @Parameter(hidden = true) @CurrentUser UserVO currentUser) {
+        logger.info("Updating reply to comment with id: {} by authorId: {}", replyToCommentDto.getId(), currentUser.getId());
         ReplyToCommentResponseDto updatedReply = replyToCommentService.update(replyToCommentDto, currentUser.getId());
         return ResponseEntity.ok(updatedReply);
     }
@@ -84,6 +88,7 @@ public class ReplyToCommentController {
     public void delete(
                        @PathVariable Long replyToCommentId,
                        @Parameter(hidden = true) @CurrentUser UserVO currentUser) {
+        logger.info("Deleting reply to comment with id: {} by authorId: {}", replyToCommentId, currentUser.getId());
         replyToCommentService.deleteById(replyToCommentId, currentUser.getId());
     }
 
@@ -101,6 +106,7 @@ public class ReplyToCommentController {
     })
     @GetMapping("/allReplies/{commentId}")
     public ResponseEntity<List<ReplyToCommentResponseDto>> getAll(@PathVariable Long commentId) {
+        logger.info("Finding all replies to comment with id: {}", commentId);
         return ResponseEntity.ok(replyToCommentService.findAllByCommentId(commentId));
     }
 }
