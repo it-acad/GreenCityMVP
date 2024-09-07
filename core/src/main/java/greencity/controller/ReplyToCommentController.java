@@ -45,8 +45,8 @@ public class ReplyToCommentController {
     })
     @PostMapping("/reply/{commentId}")
     public ResponseEntity<ReplyToCommentResponseDto> save(@PathVariable("commentId") Long commentId,
-                                                              @Valid @RequestBody ReplyToCommentRequestDto replyToCommentDto,
-                                                              @Parameter(hidden = true) @CurrentUser UserVO currentUser) {
+                                                          @Valid @RequestBody ReplyToCommentRequestDto replyToCommentDto,
+                                                          @Parameter(hidden = true) @CurrentUser UserVO currentUser) {
         logger.info("Saving reply to comment with commentId: {} and authorId: {}", commentId, currentUser.getId());
         ReplyToCommentResponseDto savedReply = replyToCommentService.save(replyToCommentDto, commentId, currentUser.getId());
         return ResponseEntity.status(HttpStatus.CREATED).body(savedReply);
