@@ -1,15 +1,19 @@
 package greencity.controller;
 
 import greencity.annotations.CurrentUser;
+import greencity.constant.AppConstant;
+import greencity.dto.event.EventDto;
 import greencity.annotations.ImageListSizeValidation;
 import greencity.annotations.ImageSizeValidation;
 import greencity.annotations.ImageValidation;
-import greencity.constant.SwaggerExampleModel;
-import greencity.dto.event.EventCreationDtoRequest;
-import greencity.dto.event.EventDto;
+import greencity.constant.HttpStatuses;
+import greencity.dto.event.EventEditDto;
 import greencity.dto.user.UserVO;
+import greencity.exception.handler.MessageResponse;
 import greencity.service.EventService;
 import io.swagger.v3.oas.annotations.Operation;
+import greencity.constant.SwaggerExampleModel;
+import greencity.dto.event.EventCreationDtoRequest;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -21,16 +25,17 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
+import java.util.Set;
 import java.util.List;
 
 
+@Validated
 @RestController
 @RequestMapping("/events")
 @RequiredArgsConstructor
-@Validated
 public class EventController {
     private final EventService eventService;
+
 
     @Operation(summary = "Create new event.")
     @ResponseStatus(value = HttpStatus.CREATED)
@@ -47,7 +52,7 @@ public class EventController {
             @RequestPart(required = false) @ImageListSizeValidation(maxSize = 5) List<
                     @ImageSizeValidation(maxSizeMB = 10)
                     @ImageValidation MultipartFile> images,
-            @Parameter(description = "Current User", hidden = true)
+            @Parameter(description = "Current User")
             @CurrentUser UserVO currentUser) {
 
         // Save the event
@@ -55,4 +60,65 @@ public class EventController {
         return ResponseEntity.status(HttpStatus.CREATED).body(savedEvent);
     }
 
+    /**
+     * Method for getting all events.
+     *
+     * @return List of {@link EventDto} instances.
+     * @author Chernenko Vitaliy
+     */
+    @Operation(summary = "Find all events.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+            @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST)
+    })
+    @GetMapping
+    public ResponseEntity<Set<EventDto>> getAll() {
+        return ResponseEntity.status(HttpStatus.OK).body(eventService.findAll());
+    }
+
+    /**
+     * Method for getting all events by its owner id.
+     *
+     * @return List of {@link EventDto} instances.
+     * @author Chernenko Vitaliy
+     */
+    @Operation(summary = "Find all events by its owner id.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+            @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST),
+            @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED),
+            @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN)
+    })
+    @GetMapping("/{userId}")
+    public ResponseEntity<Set<EventDto>> getAllEventsByUser(@PathVariable Long userId) {
+        return ResponseEntity.status(HttpStatus.OK).body(eventService.findAllByUserId(userId));
+    }
+
+    @Operation(summary = "Delete event")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+            @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND),
+            @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED)
+    })
+    @DeleteMapping("/{eventId}")
+    public ResponseEntity<Object> delete(@PathVariable Long eventId,
+                                         @CurrentUser UserVO currentUser) {
+        eventService.delete(eventId, currentUser.getId());
+        return ResponseEntity.status(HttpStatus.OK).body(MessageResponse.builder()
+                .message(AppConstant.DELETED).success(true).build());
+    }
+
+    @Operation(summary = "Update event")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+            @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND),
+            @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED)
+    })
+    @PutMapping("/{eventId}")
+    public ResponseEntity<EventDto> update(@PathVariable Long eventId,
+                                           @RequestPart @Valid EventEditDto eventEditDto,
+                                           @RequestPart MultipartFile[] images,
+                                           @CurrentUser UserVO currentUser) {
+        return ResponseEntity.status(HttpStatus.OK).body(eventService.update(eventEditDto, currentUser.getId(), eventId, images));
+    }
 }

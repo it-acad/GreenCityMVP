@@ -15,7 +15,6 @@ import greencity.dto.user.EcoNewsAuthorDto;
 import greencity.dto.user.PlaceAuthorDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.*;
-import greencity.entity.EcoNews_;
 import greencity.entity.localization.TagTranslation;
 import greencity.enums.Role;
 import greencity.enums.TagType;

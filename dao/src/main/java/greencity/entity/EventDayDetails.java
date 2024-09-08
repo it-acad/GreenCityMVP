@@ -12,7 +12,7 @@ import java.time.LocalTime;
 @Getter
 @Setter
 @Builder
-@EqualsAndHashCode
+@EqualsAndHashCode(exclude = "event")
 @Table(name = "event_day_details")
 public class EventDayDetails {
     @Id
