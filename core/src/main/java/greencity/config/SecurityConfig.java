@@ -48,7 +48,7 @@ public class SecurityConfig {
     private static final String CUSTOM_SHOPPING_LIST_ITEMS = "/{userId}/custom-shopping-list-items";
     private static final String HABIT_ASSIGN_ID = "/habit/assign/{habitId}";
     private static final String USER_SHOPPING_LIST = "/user/shopping-list-items";
-    private static final String REPLY_TO_COMMENT = "/reply-to-comment";
+    private static final String COMMENTS = "/comments";
     private final JwtTool jwtTool;
     private final UserService userService;
     private final AuthenticationConfiguration authenticationConfiguration;
@@ -201,7 +201,8 @@ public class SecurityConfig {
                                 "/habit/tags/search",
                                 "/habit/search",
                                 "/habit/{habitId}/friends/profile-pictures",
-                                "/reply-to-comment/allReplies/{commentId}")
+                                COMMENTS,
+                                "/comments/allReplies/{commentId}")
                         .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
                         .requestMatchers(HttpMethod.POST,
                                 "/category",
@@ -224,7 +225,7 @@ public class SecurityConfig {
                                 "/user/{userId}/habit",
                                 "/habit/custom",
                                 "/custom/shopping-list-items/{userId}/{habitId}/custom-shopping-list-items",
-                                REPLY_TO_COMMENT + "/reply/{commentId}")
+                                COMMENTS + "/{commentId}")
                         .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
                         .requestMatchers(HttpMethod.PUT,
                                 "/habit/statistic/{id}",
@@ -248,7 +249,7 @@ public class SecurityConfig {
                                 USER_SHOPPING_LIST + "/{userShoppingListItemId}",
                                 "/user/profilePicture",
                                 "/user/deleteProfilePicture",
-                                REPLY_TO_COMMENT + "/{replyToCommentId}")
+                                COMMENTS + "/{commentId}")
                         .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
                         .requestMatchers(HttpMethod.DELETE,
                                 ECONEWS_COMMENTS,
@@ -260,7 +261,7 @@ public class SecurityConfig {
                                 "/social-networks",
                                 USER_CUSTOM_SHOPPING_LIST_ITEMS,
                                 USER_SHOPPING_LIST + "/user-shopping-list-items",
-                                REPLY_TO_COMMENT + "/{replyToCommentId}")
+                                COMMENTS + "/{commentId}")
                         .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
                         .requestMatchers(HttpMethod.GET,
                                 "/newsSubscriber",

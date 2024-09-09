@@ -5,7 +5,7 @@ import greencity.converters.UserArgumentResolver;
 import greencity.dto.replytocomment.ReplyToCommentRequestDto;
 import greencity.dto.replytocomment.ReplyToCommentResponseDto;
 import greencity.dto.user.UserVO;
-import greencity.service.ReplyToCommentService;
+import greencity.service.CommentService;
 import greencity.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -36,7 +36,7 @@ public class ReplyToCommentControllerTest {
     private MockMvc mockMvc;
 
     @Mock
-    private ReplyToCommentService replyToCommentService;
+    private CommentService replyToCommentService;
 
     @Mock
     private Validator mockValidator;
@@ -48,7 +48,7 @@ public class ReplyToCommentControllerTest {
     private ModelMapper modelMapper;
 
     @InjectMocks
-    private ReplyToCommentController replyToCommentController;
+    private CommentController replyToCommentController;
     private static final String initialUrl = "/reply-to-comment";
     private final Principal principal = getPrincipal();
     private final UserVO userVO = getUserVO();
