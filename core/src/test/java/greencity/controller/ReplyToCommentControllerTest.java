@@ -2,10 +2,8 @@ package greencity.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import greencity.converters.UserArgumentResolver;
-import greencity.dto.replytocomment.ReplyToCommentRequestDto;
-import greencity.dto.replytocomment.ReplyToCommentResponseDto;
 import greencity.dto.user.UserVO;
-import greencity.service.CommentService;
+import greencity.service.EventCommentService;
 import greencity.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -36,7 +34,7 @@ public class ReplyToCommentControllerTest {
     private MockMvc mockMvc;
 
     @Mock
-    private CommentService replyToCommentService;
+    private EventCommentService replyToCommentService;
 
     @Mock
     private Validator mockValidator;

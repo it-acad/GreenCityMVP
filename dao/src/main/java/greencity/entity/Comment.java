@@ -44,5 +44,5 @@ public class Comment {
 
     @OneToMany(mappedBy = "comment", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
-    private List<ReplyToComment> replies = new ArrayList<>();
+    private List<EventComment> replies = new ArrayList<>();
 }

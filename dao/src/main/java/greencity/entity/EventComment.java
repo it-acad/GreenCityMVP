@@ -16,8 +16,8 @@ import java.util.Objects;
 @Builder
 @EntityListeners(AuditingEntityListener.class)
 @Entity
-@Table(name = "reply_to_comment")
-public class ReplyToComment {
+@Table(name = "event_comment")
+public class EventComment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,6 +33,11 @@ public class ReplyToComment {
     @ManyToOne
     @JoinColumn(name = "comment_id", nullable = false)
     private Comment comment;
+
+    @ManyToOne
+    @JoinColumn(name = "parent_comment_id")
+    private EventComment parentComment;
+
 
     @CreatedDate
     @Column(nullable = false, updatable = false)
@@ -50,7 +55,7 @@ public class ReplyToComment {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        ReplyToComment that = (ReplyToComment) o;
+        EventComment that = (EventComment) o;
         return Objects.equals(id, that.id);
     }
 
