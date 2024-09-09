@@ -21,6 +21,7 @@ import greencity.repository.UserRepo;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.modelmapper.ModelMapper;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -133,7 +134,7 @@ public class EventServiceImpl implements EventService {
         return eventImages;
     }
 
-    public void sendEmailDto(Event savedEvent) {
+    public void sendEmailDto(@NotNull Event savedEvent) {
         // Retrieve the access token from the HTTP request header
         String accessToken = httpServletRequest.getHeader(AUTHORIZATION);
 

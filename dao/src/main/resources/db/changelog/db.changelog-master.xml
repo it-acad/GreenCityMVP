@@ -178,5 +178,6 @@
     <include file="db/changelog/logs/ch-drop-user-friends-table-Bokalo.xml"/>
     <include file="db/changelog/logs/ch-event-Chernenko.xml"/>
     <include file="db/changelog/logs/ch-event-vulook.xml"/>
+    <include file="db/changelog/logs/ch-event-comment-Vavrushchak.xml"/>
 </databaseChangeLog>
 
