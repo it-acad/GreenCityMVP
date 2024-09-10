@@ -26,4 +26,6 @@ public class EventCommentDtoResponse {
 
     @CreatedDate
     private LocalDateTime createdDate;
+
+    private boolean edited;
 }
