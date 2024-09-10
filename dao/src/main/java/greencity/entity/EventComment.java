@@ -1,12 +1,15 @@
 package greencity.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 @Getter
@@ -23,7 +26,8 @@ public class EventComment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(length = 8000, nullable = false)
+    @Column(nullable = false)
+    @Size(min = 1, max = 8000)
     private String content;
 
     @ManyToOne
@@ -31,12 +35,19 @@ public class EventComment {
     private User author;
 
     @ManyToOne
-    @JoinColumn(name = "comment_id", nullable = false)
-    private Comment comment;
+    private Event event;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_comment_id")
     private EventComment parentComment;
+
+    @ManyToMany
+    @JoinTable(
+            name = "event_comment_mentions",
+            joinColumns = @JoinColumn(name = "comment_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id")
+    )
+    List<User> mentionedUsers = new ArrayList<>();
 
     @CreatedDate
     @Column(nullable = false, updatable = false)
@@ -63,4 +74,3 @@ public class EventComment {
         return Objects.hash(id);
     }
 }
-
