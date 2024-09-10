@@ -3,11 +3,13 @@ package greencity.service;
 import greencity.ModelUtils;
 import greencity.dto.eventcomment.EventCommentDtoRequest;
 import greencity.dto.eventcomment.EventCommentDtoResponse;
+import greencity.entity.Event;
 import greencity.entity.EventComment;
 import greencity.exception.exceptions.*;
 import greencity.mapping.EventCommentDtoRequestMapper;
 import greencity.mapping.EventCommentResponseMapper;
 import greencity.repository.EventCommentRepo;
+import greencity.repository.EventRepo;
 import greencity.repository.UserRepo;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -32,6 +34,9 @@ public class CommentServiceImplTest {
 
     @Mock
     private UserRepo userRepo;
+
+    @Mock
+    private EventRepo eventRepo;
 
     @Mock
     private EventCommentResponseMapper responseMapper;
@@ -67,6 +72,10 @@ public class CommentServiceImplTest {
     void save_ValidData_ReturnsSavedComment() {
         Long commentId = 1L;
         Long authorId = 1L;
+        Long eventId = 1L;
+
+        Event event = new Event();
+        event.setId(eventId);
 
         EventComment parentComment = new EventComment();
         EventCommentDtoResponse savedCommentDto = new EventCommentDtoResponse();
@@ -74,11 +83,12 @@ public class CommentServiceImplTest {
 
         when(commentRepo.findById(commentId)).thenReturn(Optional.of(parentComment));
         when(userRepo.findById(authorId)).thenReturn(Optional.of(comment.getAuthor()));
+        when(eventRepo.findById(eventId)).thenReturn(Optional.of(event));
         when(requestMapper.toEntity(commentDto)).thenReturn(comment);
         when(commentRepo.save(comment)).thenReturn(comment);
         when(responseMapper.toDto(comment)).thenReturn(savedCommentDto);
 
-        EventCommentDtoResponse result = commentService.saveReply(commentDto, commentId, authorId);
+        EventCommentDtoResponse result = commentService.saveReply(commentDto, commentId, authorId, eventId);
 
         assertEquals(savedCommentDto, result);
         verify(commentRepo).save(comment);
@@ -87,25 +97,27 @@ public class CommentServiceImplTest {
     @Test
     void save_InvalidCommentId_ThrowsCommentNotFoundException() {
         Long invalidCommentId = 1L;
+        Long eventId = 1L;
         Long authorId = 1L;
 
         when(commentRepo.findById(invalidCommentId)).thenReturn(Optional.empty());
 
         assertThrows(CommentNotFoundException.class, () ->
-                commentService.saveReply(commentDto, invalidCommentId, authorId));
+                commentService.saveReply(commentDto, invalidCommentId, authorId, eventId));
         verify(commentRepo).findById(invalidCommentId);
     }
 
     @Test
     void save_InvalidAuthorId_ThrowsUserNotFoundException() {
         Long commentId = 1L;
+        Long eventId = 1L;
         Long invalidAuthorId = 1L;
 
         EventComment parentComment = new EventComment();
         when(commentRepo.findById(commentId)).thenReturn(Optional.of(parentComment));
 
         assertThrows(UserNotFoundException.class, () ->
-                commentService.saveReply(commentDto, commentId, invalidAuthorId));
+                commentService.saveReply(commentDto, commentId, invalidAuthorId, eventId));
         verify(commentRepo).findById(commentId);
     }
 

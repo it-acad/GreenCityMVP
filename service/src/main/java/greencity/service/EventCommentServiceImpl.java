@@ -112,14 +112,17 @@ public class EventCommentServiceImpl implements EventCommentService {
 
     @Override
     public EventCommentDtoResponse saveReply(EventCommentDtoRequest commentDtoRequest, Long commentId, Long
-            authorId) {
+            authorId, Long eventId) {
         EventComment parentComment = eventCommentRepo.findById(commentId)
                 .orElseThrow(() -> new CommentNotFoundException(ErrorMessage.COMMENT_NOT_FOUND_BY_ID + commentId));
         User user = userRepo.findById(authorId)
                 .orElseThrow(() -> new UserNotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID + authorId));
         EventComment comment = requestMapper.toEntity(commentDtoRequest);
         comment.setAuthor(user);
+        comment.setEvent(eventRepo.findById(eventId)
+                .orElseThrow(() -> new EventNotFoundException("ErrorMessage.EVENT_NOT_FOUND_BY_ID + eventId")));
         comment.setParentComment(parentComment);
+
         EventComment savedComment = eventCommentRepo.save(comment);
         return responseMapper.toDto(savedComment);
     }

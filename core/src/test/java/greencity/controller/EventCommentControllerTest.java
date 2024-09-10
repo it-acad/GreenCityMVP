@@ -61,7 +61,7 @@ public class EventCommentControllerTest {
         EventCommentDtoRequest replyToCommentDto = new EventCommentDtoRequest();
         replyToCommentDto.setText("content");
 
-        when(replyToCommentService.saveReply(any(), anyLong(), anyLong())).thenReturn(new EventCommentDtoResponse());
+        when(replyToCommentService.saveReply(any(), anyLong(), anyLong(), anyLong())).thenReturn(new EventCommentDtoResponse());
         when(userService.findByEmail(anyString())).thenReturn(userVO);
 
         mockMvc.perform(post(initialUrl + "/reply/" + 1L)
@@ -70,7 +70,7 @@ public class EventCommentControllerTest {
                         .content(new ObjectMapper().writeValueAsString(replyToCommentDto)))
                 .andExpect(status().isCreated());
 
-        verify(replyToCommentService).saveReply(any(), anyLong(), anyLong());
+        verify(replyToCommentService).saveReply(any(), anyLong(), anyLong(), anyLong());
     }
 
     @Test
@@ -83,7 +83,7 @@ public class EventCommentControllerTest {
                         .content(new ObjectMapper().writeValueAsString(replyToCommentDto)))
                 .andExpect(status().isBadRequest());
 
-        verify(replyToCommentService, never()).saveReply(any(EventCommentDtoRequest.class), anyLong(), anyLong());
+        verify(replyToCommentService, never()).saveReply(any(EventCommentDtoRequest.class), anyLong(), anyLong(), anyLong());
     }
 
     @Test

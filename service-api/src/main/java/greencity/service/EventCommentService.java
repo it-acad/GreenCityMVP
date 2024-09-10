@@ -10,7 +10,7 @@ import java.util.List;
 
 public interface EventCommentService {
 
-    EventCommentDtoResponse saveReply(EventCommentDtoRequest commentDtoRequest, Long commentId, Long authorId);
+    EventCommentDtoResponse saveReply(EventCommentDtoRequest commentDtoRequest, Long commentId, Long authorId, Long eventId);
 
     AddEventCommentDtoResponse addComment(Long eventId, AddEventCommentDtoRequest commentDto, UserVO currentUser);
 

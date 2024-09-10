@@ -87,7 +87,7 @@ public class EventCommentController {
                                                              @Valid @RequestBody EventCommentDtoRequest commentDtoRequest,
                                                              @Parameter(hidden = true) @CurrentUser UserVO currentUser) {
         logger.info("Saving comment with commentId: {} and authorId: {}", commentId, currentUser.getId());
-        EventCommentDtoResponse savedComment = commentService.saveReply(commentDtoRequest, commentId, currentUser.getId());
+        EventCommentDtoResponse savedComment = commentService.saveReply(commentDtoRequest, commentId, currentUser.getId(), eventId);
         return ResponseEntity.status(HttpStatus.CREATED).body(savedComment);
     }
 
