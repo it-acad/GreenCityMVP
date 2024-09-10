@@ -38,7 +38,6 @@ public class EventComment {
     @JoinColumn(name = "parent_comment_id")
     private EventComment parentComment;
 
-
     @CreatedDate
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdDate;
@@ -64,3 +63,4 @@ public class EventComment {
         return Objects.hash(id);
     }
 }
+
