@@ -6,11 +6,11 @@ import greencity.dto.eventcomment.EventCommentDtoResponse;
 import java.util.List;
 
 public interface EventCommentService {
-    EventCommentDtoResponse save(EventCommentDtoRequest commentDtoRequest, Long commentId, Long authorId);
+    EventCommentDtoResponse saveReply(EventCommentDtoRequest commentDtoRequest, Long commentId, Long authorId);
 
-    EventCommentDtoResponse update(EventCommentDtoRequest commentDtoRequest, Long replyToCommentId, Long authorId);
+    EventCommentDtoResponse updateReply(EventCommentDtoRequest commentDtoRequest, Long replyToCommentId, Long authorId);
 
-    void deleteById(Long replyToCommentId, Long authorId);
+    void deleteReplyById(Long replyToCommentId, Long authorId);
 
-    List<EventCommentDtoResponse> findAllByCommentId(Long commentId);
+    List<EventCommentDtoResponse> findAllReplyByCommentId(Long commentId);
 }

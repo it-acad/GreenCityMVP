@@ -1,11 +1,13 @@
 package greencity.service;
 
 import greencity.ModelUtils;
-import greencity.dto.comment.CommentDto;
-import greencity.dto.comment.CommentReturnDto;
-import greencity.entity.Comment;
-import greencity.entity.User;
+import greencity.dto.eventcomment.EventCommentDtoRequest;
+import greencity.dto.eventcomment.EventCommentDtoResponse;
+import greencity.entity.EventComment;
 import greencity.exception.exceptions.*;
+import greencity.mapping.EventCommentDtoRequestMapper;
+import greencity.mapping.EventCommentResponseMapper;
+import greencity.repository.EventCommentRepo;
 import greencity.repository.UserRepo;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -26,22 +28,22 @@ import static org.mockito.Mockito.*;
 public class CommentServiceImplTest {
 
     @Mock
-    private CommentRepo commentRepo;
+    private EventCommentRepo commentRepo;
 
     @Mock
     private UserRepo userRepo;
 
     @Mock
-    private CommentReturnMapper responseMapper;
+    private EventCommentResponseMapper responseMapper;
 
     @Mock
-    private CommentDtoMapper requestMapper;
+    private EventCommentDtoRequestMapper requestMapper;
 
     @InjectMocks
-    private CommentServiceImpl commentService;
+    private EventCommentServiceImpl commentService;
 
-    private Comment comment;
-    private CommentDto commentDto;
+    private EventComment comment;
+    private EventCommentDtoRequest commentDto;
 
     @BeforeEach
     public void setUp() {
@@ -49,15 +51,15 @@ public class CommentServiceImplTest {
         commentDto = createCommentDto("content");
     }
 
-    private Comment createComment(String content) {
-        Comment comment = new Comment();
-        comment.setText(content);
-        comment.setUser(ModelUtils.getUser());
+    private EventComment createComment(String content) {
+        EventComment comment = new EventComment();
+        comment.setContent(content);
+        comment.setAuthor(ModelUtils.getUser());
         return comment;
     }
 
-    private CommentDto createCommentDto(String content) {
-        CommentDto dto = new CommentDto();
+    private EventCommentDtoRequest createCommentDto(String content) {
+        EventCommentDtoRequest dto = new EventCommentDtoRequest();
         dto.setText(content);
         return dto;
     }
@@ -66,17 +68,17 @@ public class CommentServiceImplTest {
         Long commentId = 1L;
         Long authorId = 1L;
 
-        Comment parentComment = new Comment();
-        CommentReturnDto savedCommentDto = new CommentReturnDto();
+        EventComment parentComment = new EventComment();
+        EventCommentDtoResponse savedCommentDto = new EventCommentDtoResponse();
         savedCommentDto.setText("content");
 
         when(commentRepo.findById(commentId)).thenReturn(Optional.of(parentComment));
-        when(userRepo.findById(authorId)).thenReturn(Optional.of(comment.getUser()));
+        when(userRepo.findById(authorId)).thenReturn(Optional.of(comment.getAuthor()));
         when(requestMapper.toEntity(commentDto)).thenReturn(comment);
         when(commentRepo.save(comment)).thenReturn(comment);
         when(responseMapper.toDto(comment)).thenReturn(savedCommentDto);
 
-        CommentReturnDto result = commentService.save(commentDto, commentId, authorId);
+        EventCommentDtoResponse result = commentService.saveReply(commentDto, commentId, authorId);
 
         assertEquals(savedCommentDto, result);
         verify(commentRepo).save(comment);
@@ -90,7 +92,7 @@ public class CommentServiceImplTest {
         when(commentRepo.findById(invalidCommentId)).thenReturn(Optional.empty());
 
         assertThrows(CommentNotFoundException.class, () ->
-                commentService.save(commentDto, invalidCommentId, authorId));
+                commentService.saveReply(commentDto, invalidCommentId, authorId));
         verify(commentRepo).findById(invalidCommentId);
     }
 
@@ -99,25 +101,12 @@ public class CommentServiceImplTest {
         Long commentId = 1L;
         Long invalidAuthorId = 1L;
 
-        Comment parentComment = new Comment();
+        EventComment parentComment = new EventComment();
         when(commentRepo.findById(commentId)).thenReturn(Optional.of(parentComment));
 
         assertThrows(UserNotFoundException.class, () ->
-                commentService.save(commentDto, commentId, invalidAuthorId));
+                commentService.saveReply(commentDto, commentId, invalidAuthorId));
         verify(commentRepo).findById(commentId);
-    }
-
-    @Test
-    void save_InvalidContent_ThrowsContentContainsInvalidCharactersException() {
-        Long commentId = 1L;
-        Long authorId = 1L;
-        CommentDto invalidCommentDto = createCommentDto("Invalid content!");
-
-        when(commentRepo.findById(commentId)).thenReturn(Optional.of(new Comment()));
-        when(userRepo.findById(authorId)).thenReturn(Optional.of(new User()));
-
-        assertThrows(ContentContainsInvalidCharactersException.class, () ->
-                commentService.save(invalidCommentDto, commentId, authorId));
     }
 
     @Test
@@ -125,23 +114,24 @@ public class CommentServiceImplTest {
         Long commentId = 1L;
         Long authorId = 1L;
 
-        CommentDto updatedDto = createCommentDto("Updated content");
 
-        Comment existingComment = createComment("Old content");
+        EventCommentDtoRequest updatedDto = createCommentDto("Updated content");
+
+        EventComment existingComment = createComment("Old content");
         existingComment.setId(commentId);
 
-        Comment updatedComment = createComment("Updated content");
+        EventComment updatedComment = createComment("Updated content");
         updatedComment.setId(commentId);
 
-        CommentReturnDto updatedCommentDto = new CommentReturnDto();
+        EventCommentDtoResponse updatedCommentDto = new EventCommentDtoResponse();
         updatedCommentDto.setText("Updated content");
         updatedCommentDto.setId(commentId);
 
         when(commentRepo.findById(commentId)).thenReturn(Optional.of(existingComment));
         when(responseMapper.toDto(updatedComment)).thenReturn(updatedCommentDto);
-        when(commentRepo.save(any(Comment.class))).thenReturn(updatedComment);
+        when(commentRepo.save(any(EventComment.class))).thenReturn(updatedComment);
 
-        CommentReturnDto result = commentService.update(updatedDto, commentId, authorId);
+        EventCommentDtoResponse result = commentService.updateReply(updatedDto, commentId, authorId);
 
         assertEquals(updatedCommentDto, result);
         verify(commentRepo).save(updatedComment);
@@ -151,39 +141,27 @@ public class CommentServiceImplTest {
     void update_InvalidCommentId_ThrowsCommentNotFoundException() {
         Long invalidCommentId = 1L;
         Long authorId = 1L;
-        CommentDto updatedDto = createCommentDto("Updated content");
+        EventCommentDtoRequest updatedDto = createCommentDto("Updated content");
 
         when(commentRepo.findById(invalidCommentId)).thenReturn(Optional.empty());
 
         assertThrows(CommentNotFoundException.class, () ->
-                commentService.update(updatedDto, invalidCommentId, authorId));
+                commentService.updateReply(updatedDto, invalidCommentId, authorId));
 
         verify(commentRepo).findById(invalidCommentId);
         verifyNoInteractions(responseMapper);
     }
 
     @Test
-    void update_InvalidContent_ThrowsContentContainsInvalidCharactersException() {
-        Long commentId = 1L;
-        Long authorId = 1L;
-        CommentDto invalidCommentDto = createCommentDto("Invalid content!");
-
-        when(commentRepo.findById(commentId)).thenReturn(Optional.of(new Comment()));
-
-        assertThrows(ContentContainsInvalidCharactersException.class, () ->
-                commentService.update(invalidCommentDto, commentId, authorId));
-    }
-
-    @Test
     void deleteById_ValidIdAndAuthorizedUser_DeletesComment() {
         Long commentId = 1L;
         Long authorId = 1L;
-        Comment comment = createComment("content");
+        EventComment comment = createComment("content");
         comment.setId(commentId);
 
         when(commentRepo.findById(commentId)).thenReturn(Optional.of(comment));
 
-        commentService.deleteById(commentId, authorId);
+        commentService.deleteReplyById(commentId, authorId);
 
         verify(commentRepo).deleteById(commentId);
     }
@@ -196,50 +174,49 @@ public class CommentServiceImplTest {
         when(commentRepo.findById(invalidCommentId)).thenReturn(Optional.empty());
 
         assertThrows(CommentNotFoundException.class, () ->
-                commentService.deleteById(invalidCommentId, authorId));
+                commentService.deleteReplyById(invalidCommentId, authorId));
         verify(commentRepo).findById(invalidCommentId);
     }
 
     @Test
-    void findAllByCommentId_ValidCommentId_ReturnsCommentDtos() {
+    void findAllReplyByCommentId_ValidCommentId_ReturnsCommentDtos() {
         Long commentId = 1L;
 
-        Comment parentComment = new Comment();
+        EventComment parentComment = new EventComment();
         parentComment.setId(commentId);
 
-        Comment replyComment = createComment("Test reply");
+        EventComment replyComment = createComment("Test reply");
         replyComment.setId(1L);
 
-        CommentReturnDto replyCommentDto = new CommentReturnDto();
+        EventCommentDtoResponse replyCommentDto = new EventCommentDtoResponse();
         replyCommentDto.setText("Test reply");
-        replyCommentDto.setId(1L);
 
-        List<Comment> replyComments = List.of(replyComment);
-        List<CommentReturnDto> replyCommentDtos = List.of(replyCommentDto);
+        List<EventComment> replyComments = List.of(replyComment);
+        List<EventCommentDtoResponse> replyCommentDtos = List.of(replyCommentDto);
 
         when(commentRepo.findById(commentId)).thenReturn(Optional.of(parentComment));
-        when(commentRepo.findAllByCommentId(commentId)).thenReturn(replyComments);
+        when(commentRepo.findAllByEventCommentId(commentId)).thenReturn(replyComments);
         when(responseMapper.toDto(replyComment)).thenReturn(replyCommentDto);
 
-        List<CommentReturnDto> result = commentService.findAllByCommentId(commentId);
+        List<EventCommentDtoResponse> result = commentService.findAllReplyByCommentId(commentId);
 
         assertEquals(replyCommentDtos, result);
 
         verify(commentRepo).findById(commentId);
-        verify(commentRepo).findAllByCommentId(commentId);
+        verify(commentRepo).findAllByEventCommentId(commentId);
     }
 
     @Test
     void findAllByCommentId_InvalidCommentId_ThrowsInvalidCommentIdException() {
         assertThrows(InvalidCommentIdException.class, () ->
-                commentService.findAllByCommentId(-1L));
-        verify(commentRepo, never()).findAllByCommentId(any());
+                commentService.findAllReplyByCommentId(-1L));
+        verify(commentRepo, never()).findAllByEventCommentId(any());
     }
 
     @Test
     void findAllByCommentId_NullCommentId_ThrowsInvalidCommentIdException() {
         assertThrows(InvalidCommentIdException.class, () ->
-                commentService.findAllByCommentId(null));
-        verify(commentRepo, never()).findAllByCommentId(any());
+                commentService.findAllReplyByCommentId(null));
+        verify(commentRepo, never()).findAllByEventCommentId(any());
     }
 }

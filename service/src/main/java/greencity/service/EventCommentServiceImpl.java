@@ -30,7 +30,7 @@ public class EventCommentServiceImpl implements EventCommentService{
     private static final Logger logger = LoggerFactory.getLogger(EventCommentServiceImpl.class.getName());
 
     @Override
-    public EventCommentDtoResponse save(EventCommentDtoRequest commentDtoRequest, Long commentId, Long authorId) {
+    public EventCommentDtoResponse saveReply(EventCommentDtoRequest commentDtoRequest, Long commentId, Long authorId) {
         EventComment parentComment = eventCommentRepo.findById(commentId)
                 .orElseThrow(() -> new CommentNotFoundException(ErrorMessage.COMMENT_NOT_FOUND_BY_ID + commentId));
         User user = userRepo.findById(authorId)
@@ -44,25 +44,26 @@ public class EventCommentServiceImpl implements EventCommentService{
 
     @Override
     @PreAuthorize("hasRole('ADMIN') or @eventCommentServiceImpl.isOwner(#commentId, #authorId)")
-    public EventCommentDtoResponse update(EventCommentDtoRequest commentDtoRequest, Long commentId, Long authorId) {
+    public EventCommentDtoResponse updateReply(EventCommentDtoRequest commentDtoRequest, Long commentId, Long authorId) {
         EventComment existingComment = eventCommentRepo.findById(commentId)
                 .orElseThrow(() -> new CommentNotFoundException(ErrorMessage.COMMENT_NOT_FOUND_BY_ID + commentId));
 
         existingComment.setContent(commentDtoRequest.getText());
+        existingComment.setIsEdited(true);
         EventComment updatedComment = eventCommentRepo.save(existingComment);
         return responseMapper.toDto(updatedComment);
     }
 
     @Override
     @PreAuthorize("hasRole('ADMIN') or @eventCommentServiceImpl.isOwner(#commentId, #authorId)")
-    public void deleteById(Long commentId, Long authorId) {
+    public void deleteReplyById(Long commentId, Long authorId) {
         EventComment comment = eventCommentRepo.findById(commentId)
                 .orElseThrow(() -> new CommentNotFoundException(ErrorMessage.COMMENT_NOT_FOUND_BY_ID + commentId));
         eventCommentRepo.deleteById(commentId);
     }
 
     @Override
-    public List<EventCommentDtoResponse> findAllByCommentId(Long commentId) {
+    public List<EventCommentDtoResponse> findAllReplyByCommentId(Long commentId) {
         logger.info("Finding all replies to comment with id: {}", commentId);
         if (commentId == null || commentId < 0) {
             throw new InvalidCommentIdException(ErrorMessage.INVALID_COMMENT_ID + commentId);

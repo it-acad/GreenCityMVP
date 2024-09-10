@@ -38,12 +38,12 @@ public class EventCommentController {
             @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST),
             @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED)
     })
-    @PostMapping("/{commentId}")
-    public ResponseEntity<EventCommentDtoResponse> save(@PathVariable("commentId") Long commentId,
+    @PostMapping("/reply/{commentId}")
+    public ResponseEntity<EventCommentDtoResponse> saveReply(@PathVariable("commentId") Long commentId,
                                                         @Valid @RequestBody EventCommentDtoRequest commentDtoRequest,
                                                         @Parameter(hidden = true) @CurrentUser UserVO currentUser) {
         logger.info("Saving comment with commentId: {} and authorId: {}", commentId, currentUser.getId());
-        EventCommentDtoResponse savedComment = commentService.save(commentDtoRequest, commentId, currentUser.getId());
+        EventCommentDtoResponse savedComment = commentService.saveReply(commentDtoRequest, commentId, currentUser.getId());
         return ResponseEntity.status(HttpStatus.CREATED).body(savedComment);
     }
 
@@ -55,12 +55,12 @@ public class EventCommentController {
             @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED),
             @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN)
     })
-    @PatchMapping("/{commentId}")
-    public ResponseEntity<EventCommentDtoResponse> update(@PathVariable Long commentId,
+    @PatchMapping("/reply/{commentId}")
+    public ResponseEntity<EventCommentDtoResponse> updateReply(@PathVariable Long commentId,
                                                           @Valid @RequestBody EventCommentDtoRequest commentDtoRequest,
                                                           @Parameter(hidden = true) @CurrentUser UserVO currentUser) {
         logger.info("Updating comment with id: {} by authorId: {}", commentId, currentUser.getId());
-        EventCommentDtoResponse updatedComment = commentService.update(commentDtoRequest, commentId, currentUser.getId());
+        EventCommentDtoResponse updatedComment = commentService.updateReply(commentDtoRequest, commentId, currentUser.getId());
         return ResponseEntity.status(HttpStatus.OK).body(updatedComment);
     }
 
@@ -70,11 +70,11 @@ public class EventCommentController {
             @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED),
             @ApiResponse(responseCode = "403", description = HttpStatuses.FORBIDDEN)
     })
-    @DeleteMapping("/{commentId}")
-    public void delete(@PathVariable Long commentId,
+    @DeleteMapping("/reply/{commentId}")
+    public void deleteReply(@PathVariable Long commentId,
                        @Parameter(hidden = true) @CurrentUser UserVO currentUser) {
         logger.info("Deleting comment with id: {} by authorId: {}", commentId, currentUser.getId());
-        commentService.deleteById(commentId, currentUser.getId());
+        commentService.deleteReplyById(commentId, currentUser.getId());
     }
 
     @Operation(summary = "Get all replies to comment")
@@ -86,8 +86,8 @@ public class EventCommentController {
             @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND)
     })
     @GetMapping("/allReplies/{commentId}")
-    public ResponseEntity<List<EventCommentDtoResponse>> getAll(@PathVariable Long commentId) {
+    public ResponseEntity<List<EventCommentDtoResponse>> getAllReply(@PathVariable Long commentId) {
         logger.info("Finding all replies to comment with id: {}", commentId);
-        return ResponseEntity.status(HttpStatus.OK).body(commentService.findAllByCommentId(commentId));
+        return ResponseEntity.status(HttpStatus.OK).body(commentService.findAllReplyByCommentId(commentId));
     }
 }
