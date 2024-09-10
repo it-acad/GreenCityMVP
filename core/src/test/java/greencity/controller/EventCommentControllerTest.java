@@ -79,15 +79,16 @@ public class EventCommentControllerTest {
     }
 
     @Test
-    void saveReplyToComment_withoutContent_statusBadRequest() throws Exception {
+    void updateReplyToComment_withoutContent_statusBadRequest() throws Exception {
         EventCommentDtoRequest replyToCommentDto = new EventCommentDtoRequest();
 
-        mockMvc.perform(post(initialUrl + "/reply/" + 1L)
+        mockMvc.perform(patch(initialUrl + "/reply/{replyToCommentId}", 1L)
                         .principal(principal)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(replyToCommentDto)))
                 .andExpect(status().isBadRequest());
-        verify(replyToCommentService, never()).saveReply(any(EventCommentDtoRequest.class), anyLong(), anyLong());
+
+        verify(replyToCommentService, never()).updateReply(any(EventCommentDtoRequest.class), anyLong(), anyLong());
     }
 
     @Test
@@ -105,19 +106,6 @@ public class EventCommentControllerTest {
                 .andExpect(status().isOk());
 
         verify(replyToCommentService).updateReply(any(), eq(1L), anyLong());
-    }
-
-    @Test
-    void updateReplyToComment_withoutContent_statusBadRequest() throws Exception {
-        EventCommentDtoRequest replyToCommentDto = new EventCommentDtoRequest();
-
-        mockMvc.perform(patch(initialUrl + "/reply/{replyToCommentId}", 1L)
-                        .principal(principal)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(new ObjectMapper().writeValueAsString(replyToCommentDto)))
-                .andExpect(status().isBadRequest());
-
-        verify(replyToCommentService, never()).updateReply(any(EventCommentDtoRequest.class), anyLong(), anyLong());
     }
 
     @Test
