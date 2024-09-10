@@ -56,8 +56,8 @@ public class EventCommentControllerTest {
     @BeforeEach
     void setup() {
         this.mockMvc = MockMvcBuilders.standaloneSetup(replyToCommentController)
-                .setValidator(mockValidator)
-                .setCustomArgumentResolvers(new UserArgumentResolver(userService, modelMapper))
+                .setValidator(this.mockValidator)
+                .setCustomArgumentResolvers(new UserArgumentResolver(this.userService, this.modelMapper))
                 .build();
     }
 
