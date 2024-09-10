@@ -18,7 +18,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.validation.Validator;
 
 import java.security.Principal;
 import java.util.Collections;
@@ -39,9 +38,6 @@ public class EventCommentControllerTest {
     private EventCommentService replyToCommentService;
 
     @Mock
-    private Validator mockValidator;
-
-    @Mock
     private UserService userService;
 
     @Mock
@@ -49,15 +45,14 @@ public class EventCommentControllerTest {
 
     @InjectMocks
     private EventCommentController replyToCommentController;
-    private static final String initialUrl = "/comments";
+    private static final String initialUrl = "/events/1/comments";
     private final Principal principal = getPrincipal();
     private final UserVO userVO = getUserVO();
 
     @BeforeEach
     void setup() {
         this.mockMvc = MockMvcBuilders.standaloneSetup(replyToCommentController)
-                .setValidator(this.mockValidator)
-                .setCustomArgumentResolvers(new UserArgumentResolver(this.userService, this.modelMapper))
+                .setCustomArgumentResolvers(new UserArgumentResolver(userService, modelMapper))
                 .build();
     }
 
@@ -76,6 +71,19 @@ public class EventCommentControllerTest {
                 .andExpect(status().isCreated());
 
         verify(replyToCommentService).saveReply(any(), anyLong(), anyLong());
+    }
+
+    @Test
+    void saveReplyToComment_withoutContent_statusBadRequest() throws Exception {
+        EventCommentDtoRequest replyToCommentDto = new EventCommentDtoRequest();
+
+        mockMvc.perform(post(initialUrl + "/reply/" + 1L)
+                        .principal(principal)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(new ObjectMapper().writeValueAsString(replyToCommentDto)))
+                .andExpect(status().isBadRequest());
+
+        verify(replyToCommentService, never()).saveReply(any(EventCommentDtoRequest.class), anyLong(), anyLong());
     }
 
     @Test

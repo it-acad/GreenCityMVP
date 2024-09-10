@@ -16,5 +16,5 @@ public class EventCommentDtoResponse {
     private String userName;
     private String text;
     private LocalDateTime createdDate;
-    private LocalDateTime modifiedDate;
+    private boolean edited;
 }

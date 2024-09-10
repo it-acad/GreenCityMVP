@@ -109,4 +109,7 @@
                                  constraintName="fk_evecommen_on_user" referencedColumnNames="id"
                                  referencedTableName="users"/>
     </changeSet>
+    <changeSet id="1725937175622-100" author="keega">
+        <dropColumn tableName="event_comment" columnName="comment_id"/>
+    </changeSet>
 </databaseChangeLog>

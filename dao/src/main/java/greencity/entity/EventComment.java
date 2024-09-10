@@ -17,9 +17,9 @@ import java.util.Objects;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Table(name = "event_comment")
 @EntityListeners(AuditingEntityListener.class)
 @Entity
-@Table(name = "event_comment")
 public class EventComment {
 
     @Id
@@ -29,6 +29,14 @@ public class EventComment {
     @Column(nullable = false)
     @Size(min = 1, max = 8000)
     private String content;
+
+    @CreatedDate
+    @Column(nullable = false, updatable = false)
+    private LocalDateTime createdDate;
+
+    @LastModifiedDate
+    @Column(nullable = false)
+    private LocalDateTime updatedDate;
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
@@ -48,14 +56,6 @@ public class EventComment {
             inverseJoinColumns = @JoinColumn(name = "user_id")
     )
     List<User> mentionedUsers = new ArrayList<>();
-
-    @CreatedDate
-    @Column(nullable = false, updatable = false)
-    private LocalDateTime createdDate;
-
-    @LastModifiedDate
-    @Column(nullable = false)
-    private LocalDateTime updatedDate;
 
     @Column(nullable = false)
     @Builder.Default

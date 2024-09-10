@@ -93,6 +93,7 @@ public final class ErrorMessage {
     public static final String ECO_NEWS_NOT_FOUND_BY_ID = "Eco news doesn't exist by this id: ";
     public static final String ECO_NEWS_NOT_FOUND = "Eco news haven't been found";
     public static final String ECO_NEWS_NOT_SAVED = "Eco news haven't been saved because of constraint violation";
+    public static final String EVENT_NOT_SAVED = "Event haven't been saved because of constraint violation";
     public static final String USER_CANNOT_ADD_MORE_THAN_5_SOCIAL_NETWORK_LINKS =
         "User cannot add more than 5 social network links";
     public static final String INVALID_URI = "The string could not be parsed as a URI reference.";
@@ -138,6 +139,9 @@ public final class ErrorMessage {
     public static final String ENABLE_TO_CONTAIN_EMOJI = "Content can't contain emoji";
     public static final String INVALID_COMMENT_ID = "Invalid comment id: ";
     public static final String ENABLE_TO_CONTAIN_ONLY_ALLOWED_CHARACTERS = "Content can contain only allowed characters";
+    public static final String EVENT_NOT_FOUND = "Event not found with id: ";
+    public static final String EVENT_DAY_DETAILS_NOT_FOUND = "Event day details not found with id: ";
+    public static final String EVENT_EDIT_DTO_ERROR = "Wrong body request format for DTO or null";
 
     private ErrorMessage() {
     }

@@ -48,7 +48,7 @@ public class SecurityConfig {
     private static final String CUSTOM_SHOPPING_LIST_ITEMS = "/{userId}/custom-shopping-list-items";
     private static final String HABIT_ASSIGN_ID = "/habit/assign/{habitId}";
     private static final String USER_SHOPPING_LIST = "/user/shopping-list-items";
-    private static final String COMMENTS = "/comments";
+    private static final String COMMENTS = "/events/{eventId}/comments";
     private final JwtTool jwtTool;
     private final UserService userService;
     private final AuthenticationConfiguration authenticationConfiguration;
@@ -229,6 +229,7 @@ public class SecurityConfig {
                         .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
                         .requestMatchers(HttpMethod.PUT,
                                 "/habit/statistic/{id}",
+                                "/events/{eventId}",
                                 "/econews/update",
                                 "/ownSecurity",
                                 "/user/profile",
@@ -254,6 +255,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.DELETE,
                                 ECONEWS_COMMENTS,
                                 "/events/comments/{eventCommentId}",
+                                "/events/{eventId}",
                                 "/econews/{econewsId}",
                                 CUSTOM_SHOPPING_LIST_ITEMS,
                                 CUSTOM_SHOPPING_LIST_URL,
@@ -293,6 +295,9 @@ public class SecurityConfig {
                                 "/facts/{factId}",
                                 "/comments")
                         .hasAnyRole(ADMIN)
+                        .requestMatchers(HttpMethod.GET,
+                                "/events/{userID}")
+                        .hasAnyRole(ADMIN, USER)
                         .anyRequest().hasAnyRole(ADMIN))
                 .logout(logout -> logout.logoutUrl("/logout")
                         .logoutRequestMatcher(new AntPathRequestMatcher("/management/logout", "GET"))
