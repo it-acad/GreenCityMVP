@@ -12,11 +12,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+@Entity
 @Getter
 @Setter
+@AllArgsConstructor
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Table(name = "event_comment")
 @EntityListeners(AuditingEntityListener.class)
 @Entity
 @Table(name = "event_comment")
@@ -29,10 +32,20 @@ public class EventComment {
     @Column(nullable = false)
     @Size(min = 1, max = 8000)
     private String content;
+    private String text;
+
+    @CreatedDate
+    @Column(nullable = false, updatable = false)
+    private LocalDateTime createdAt;
+
+    @LastModifiedDate
+    @Column(nullable = false)
+    private LocalDateTime updatedAt;
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User author;
+    private User user;
 
     @ManyToOne
     private Event event;
@@ -60,6 +73,9 @@ public class EventComment {
     @Column(nullable = false)
     @Builder.Default
     private Boolean isEdited = false;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "parent_comment_id")
+    private EventComment parentComment;
 
     @Override
     public boolean equals(Object o) {
@@ -68,6 +84,9 @@ public class EventComment {
         EventComment that = (EventComment) o;
         return Objects.equals(id, that.id);
     }
+    @OneToMany(mappedBy = "parentComment", cascade = CascadeType.ALL)
+    private List<EventComment> replies = new ArrayList<>();
+}
 
     @Override
     public int hashCode() {
