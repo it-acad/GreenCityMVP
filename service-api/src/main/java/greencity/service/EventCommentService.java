@@ -9,17 +9,19 @@ import greencity.dto.user.UserVO;
 import java.util.List;
 
 public interface EventCommentService {
+
     EventCommentDtoResponse saveReply(EventCommentDtoRequest commentDtoRequest, Long commentId, Long authorId);
+
     AddEventCommentDtoResponse addComment(Long eventId, AddEventCommentDtoRequest commentDto, UserVO currentUser);
 
     EventCommentDtoResponse updateReply(EventCommentDtoRequest commentDtoRequest, Long replyToCommentId, Long authorId);
+
     List<AddEventCommentDtoResponse> getCommentsByEventId(Long eventId);
 
     void deleteReplyById(Long replyToCommentId, Long authorId);
-    AddEventCommentDtoResponse replyToComment(Long eventId, Long parentCommentId, AddEventCommentDtoRequest replyDto
-            , UserVO currentUserVO);
 
     List<EventCommentDtoResponse> findAllReplyByCommentId(Long commentId);
+
     String filterText(String input , String userName);
 
     Long showQuantityOfAddedComments(Long eventId);

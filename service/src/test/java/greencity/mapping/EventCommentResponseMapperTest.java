@@ -1,13 +1,15 @@
 package greencity.mapping;
 
 import greencity.dto.eventcomment.EventCommentDtoResponse;
+import greencity.entity.Event;
 import greencity.entity.EventComment;
+import greencity.entity.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class EventCommentResponseMapperTest {
     private EventCommentResponseMapper eventCommentResponseMapper;
@@ -18,44 +20,70 @@ public class EventCommentResponseMapperTest {
     }
 
     @Test
-    public void toEntity_givenValidDto_shouldMapToEntity() {
+    public void testToEntity_WhenDtoIsNull_ShouldReturnNull() {
+        EventCommentDtoResponse dto = null;
+        EventComment entity = eventCommentResponseMapper.toEntity(dto);
+        assertNull(entity);
+    }
+
+    @Test
+    public void testToEntity_WhenDtoIsValid_ShouldMapToEntity() {
         EventCommentDtoResponse dto = new EventCommentDtoResponse();
         dto.setId(1L);
-        dto.setText("Sample comment");
+        dto.setEventId(2L);
+        dto.setUserId(3L);
+        dto.setUserName("John Doe");
+        dto.setText("Test comment");
         dto.setCreatedDate(LocalDateTime.now());
+        dto.setEdited(true);
 
         EventComment entity = eventCommentResponseMapper.toEntity(dto);
 
-        assertThat(entity.getId()).isEqualTo(dto.getId());
-        assertThat(entity.getContent()).isEqualTo(dto.getText());
-        assertThat(entity.getCreatedDate()).isEqualTo(dto.getCreatedDate());
+        assertNotNull(entity);
+        assertEquals(dto.getId(), entity.getId());
+        assertEquals(dto.getEventId(), entity.getEvent().getId());
+        assertEquals(dto.getUserId(), entity.getAuthor().getId());
+        assertEquals(dto.getUserName(), entity.getAuthor().getName());
+        assertEquals(dto.getText(), entity.getContent());
+        assertEquals(dto.getCreatedDate(), entity.getCreatedDate());
+        assertEquals(dto.isEdited(), entity.getIsEdited());
     }
 
     @Test
-    public void toEntity_givenNullDto_shouldReturnNull() {
-        EventComment entity = eventCommentResponseMapper.toEntity(null);
-
-        assertThat(entity).isNull();
+    public void testToDto_WhenEntityIsNull_ShouldReturnNull() {
+        EventComment entity = null;
+        EventCommentDtoResponse dto = eventCommentResponseMapper.toDto(entity);
+        assertNull(dto);
     }
 
     @Test
-    public void toDto_givenValidEntity_shouldMapToDto() {
+    public void testToDto_WhenEntityIsValid_ShouldMapToDto() {
+        User user = User.builder()
+                .id(3L)
+                .name("John Doe")
+                .build();
+
+        Event event = Event.builder()
+                .id(2L)
+                .build();
+
         EventComment entity = new EventComment();
         entity.setId(1L);
-        entity.setContent("Sample comment");
+        entity.setAuthor(user);
+        entity.setEvent(event);
+        entity.setContent("Test comment");
         entity.setCreatedDate(LocalDateTime.now());
+        entity.setIsEdited(true);
 
         EventCommentDtoResponse dto = eventCommentResponseMapper.toDto(entity);
 
-        assertThat(dto.getId()).isEqualTo(entity.getId());
-        assertThat(dto.getText()).isEqualTo(entity.getContent());
-        assertThat(dto.getCreatedDate()).isEqualTo(entity.getCreatedDate());
-    }
-
-    @Test
-    public void toDto_givenNullEntity_shouldReturnNull() {
-        EventCommentDtoResponse dto = eventCommentResponseMapper.toDto(null);
-
-        assertThat(dto).isNull();
+        assertNotNull(dto);
+        assertEquals(entity.getId(), dto.getId());
+        assertEquals(entity.getEvent().getId(), dto.getEventId());
+        assertEquals(entity.getAuthor().getId(), dto.getUserId());
+        assertEquals(entity.getAuthor().getName(), dto.getUserName());
+        assertEquals(entity.getContent(), dto.getText());
+        assertEquals(entity.getCreatedDate(), dto.getCreatedDate());
+        assertEquals(entity.getIsEdited(), dto.isEdited());
     }
 }

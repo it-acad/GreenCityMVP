@@ -627,7 +627,6 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
     }
 
-    @Override
     @ExceptionHandler(CommentNotFoundException.class)
     public final ResponseEntity<Object> handleCommentNotFoundException(
             CommentNotFoundException ex, WebRequest request) {
