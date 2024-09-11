@@ -177,9 +177,9 @@ public class EventCommentServiceImpl implements EventCommentService {
     }
 
     public void sendNotificationToOrganizer(Event event, EventComment eventComment) {
-        String accessToken = httpServletRequest.getHeader(AUTHORIZATION);
+        String accessToken = this.httpServletRequest.getHeader(AUTHORIZATION);
 
-        PlaceAuthorDto placeAuthorDto = modelMapper.map(event.getAuthor(), PlaceAuthorDto.class);
+        PlaceAuthorDto placeAuthorDto = this.modelMapper.map(event.getAuthor(), PlaceAuthorDto.class);
 
         //build dto object
         EventCommentNotificationDto commentNotificationDto = EventCommentNotificationDto.builder()
