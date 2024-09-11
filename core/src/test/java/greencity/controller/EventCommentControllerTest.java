@@ -51,8 +51,8 @@ public class EventCommentControllerTest {
 
     @BeforeEach
     void setup() {
-        this.mockMvc = MockMvcBuilders.standaloneSetup(replyToCommentController)
-                .setCustomArgumentResolvers(new UserArgumentResolver(userService, modelMapper))
+        this.mockMvc = MockMvcBuilders.standaloneSetup(this.replyToCommentController)
+                .setCustomArgumentResolvers(new UserArgumentResolver(this.userService, this.modelMapper))
                 .build();
     }
 
@@ -61,42 +61,42 @@ public class EventCommentControllerTest {
         EventCommentDtoRequest replyToCommentDto = new EventCommentDtoRequest();
         replyToCommentDto.setText("content");
 
-        when(replyToCommentService.saveReply(any(), anyLong(), anyLong(), anyLong())).thenReturn(new EventCommentDtoResponse());
-        when(userService.findByEmail(anyString())).thenReturn(userVO);
+        when(this.replyToCommentService.saveReply(any(), anyLong(), anyLong(), anyLong())).thenReturn(new EventCommentDtoResponse());
+        when(this.userService.findByEmail(anyString())).thenReturn(userVO);
 
-        mockMvc.perform(post(initialUrl + "/reply/" + 1L)
-                        .principal(principal)
+        this.mockMvc.perform(post(initialUrl + "/reply/" + 1L)
+                        .principal(this.principal)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(replyToCommentDto)))
                 .andExpect(status().isCreated());
 
-        verify(replyToCommentService).saveReply(any(), anyLong(), anyLong(), anyLong());
+        verify(this.replyToCommentService).saveReply(any(), anyLong(), anyLong(), anyLong());
     }
 
     @Test
     void saveReplyToComment_withoutContent_statusBadRequest() throws Exception {
         EventCommentDtoRequest replyToCommentDto = new EventCommentDtoRequest();
 
-        mockMvc.perform(post(initialUrl + "/reply/" + 1L)
-                        .principal(principal)
+        this.mockMvc.perform(post(initialUrl + "/reply/" + 1L)
+                        .principal(this.principal)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(replyToCommentDto)))
                 .andExpect(status().isBadRequest());
 
-        verify(replyToCommentService, never()).saveReply(any(EventCommentDtoRequest.class), anyLong(), anyLong(), anyLong());
+        verify(this.replyToCommentService, never()).saveReply(any(EventCommentDtoRequest.class), anyLong(), anyLong(), anyLong());
     }
 
     @Test
     void updateReplyToComment_withoutContent_statusBadRequest() throws Exception {
         EventCommentDtoRequest replyToCommentDto = new EventCommentDtoRequest();
 
-        mockMvc.perform(patch(initialUrl + "/reply/{replyToCommentId}", 1L)
-                        .principal(principal)
+        this.mockMvc.perform(patch(initialUrl + "/reply/{replyToCommentId}", 1L)
+                        .principal(this.principal)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(replyToCommentDto)))
                 .andExpect(status().isBadRequest());
 
-        verify(replyToCommentService, never()).updateReply(any(EventCommentDtoRequest.class), anyLong(), anyLong());
+        verify(this.replyToCommentService, never()).updateReply(any(EventCommentDtoRequest.class), anyLong(), anyLong());
     }
 
     @Test
@@ -104,25 +104,25 @@ public class EventCommentControllerTest {
         EventCommentDtoRequest replyToCommentDto = new EventCommentDtoRequest();
         replyToCommentDto.setText("content");
 
-        when(replyToCommentService.updateReply(any(), anyLong(), anyLong())).thenReturn(new EventCommentDtoResponse());
-        when(userService.findByEmail(anyString())).thenReturn(userVO);
+        when(this.replyToCommentService.updateReply(any(), anyLong(), anyLong())).thenReturn(new EventCommentDtoResponse());
+        when(this.userService.findByEmail(anyString())).thenReturn(userVO);
 
-        mockMvc.perform(patch(initialUrl + "/reply/{replyToCommentId}", 1L)
-                        .principal(principal)
+        this.mockMvc.perform(patch(initialUrl + "/reply/{replyToCommentId}", 1L)
+                        .principal(this.principal)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(replyToCommentDto)))
                 .andExpect(status().isOk());
 
-        verify(replyToCommentService).updateReply(any(), eq(1L), anyLong());
+        verify(this.replyToCommentService).updateReply(any(), eq(1L), anyLong());
     }
 
     @Test
     void deleteReplyToComment_statusOk() throws Exception {
 
-        when(userService.findByEmail(anyString())).thenReturn(userVO);
+        when(this.userService.findByEmail(anyString())).thenReturn(userVO);
 
-        mockMvc.perform(delete(initialUrl + "/reply/{replyToCommentId}", 1L)
-                        .principal(principal)
+        this.mockMvc.perform(delete(initialUrl + "/reply/{replyToCommentId}", 1L)
+                        .principal(this.principal)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
 
@@ -130,9 +130,9 @@ public class EventCommentControllerTest {
 
     @Test
     void getAllReplies_statusOk() throws Exception {
-        when(replyToCommentService.findAllReplyByCommentId(anyLong())).thenReturn(Collections.emptyList());
+        when(this.replyToCommentService.findAllReplyByCommentId(anyLong())).thenReturn(Collections.emptyList());
 
-        mockMvc.perform(get(initialUrl + "/allReplies/1"))
+        this.mockMvc.perform(get(initialUrl + "/allReplies/1"))
                 .andExpect(status().isOk());
     }
 }

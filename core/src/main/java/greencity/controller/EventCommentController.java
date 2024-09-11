@@ -48,7 +48,7 @@ public class EventCommentController {
             @PathVariable Long eventId,
             @RequestBody @Valid AddEventCommentDtoRequest commentDto,
             @CurrentUser UserVO currentUserVO) {
-        return new ResponseEntity<>(commentService.addComment(eventId, commentDto, currentUserVO), HttpStatus.CREATED);
+        return new ResponseEntity<>(this.commentService.addComment(eventId, commentDto, currentUserVO), HttpStatus.CREATED);
     }
 
     @Operation(summary = "Get all comments for the event.")
@@ -60,7 +60,7 @@ public class EventCommentController {
     })
     @GetMapping
     public ResponseEntity<List<AddEventCommentDtoResponse>> getCommentsByEventId(@PathVariable Long eventId) {
-        return ResponseEntity.ok(commentService.getCommentsByEventId(eventId));
+        return ResponseEntity.ok(this.commentService.getCommentsByEventId(eventId));
     }
 
     @Operation(summary = "Get the number of comments for the event.")
@@ -70,7 +70,7 @@ public class EventCommentController {
     })
     @GetMapping("/count")
     public ResponseEntity<Long> showQuantityOfAddedComments(@PathVariable Long eventId) {
-        return ResponseEntity.ok(commentService.showQuantityOfAddedComments(eventId));
+        return ResponseEntity.ok(this.commentService.showQuantityOfAddedComments(eventId));
     }
 
     @Operation(summary = "Save reply to comment")
@@ -87,7 +87,7 @@ public class EventCommentController {
                                                              @Valid @RequestBody EventCommentDtoRequest commentDtoRequest,
                                                              @Parameter(hidden = true) @CurrentUser UserVO currentUser) {
         logger.info("Saving comment with commentId: {} and authorId: {}", commentId, currentUser.getId());
-        EventCommentDtoResponse savedComment = commentService.saveReply(commentDtoRequest, commentId, currentUser.getId(), eventId);
+        EventCommentDtoResponse savedComment = this.commentService.saveReply(commentDtoRequest, commentId, currentUser.getId(), eventId);
         return ResponseEntity.status(HttpStatus.CREATED).body(savedComment);
     }
 
@@ -105,7 +105,7 @@ public class EventCommentController {
                                                                @Valid @RequestBody EventCommentDtoRequest commentDtoRequest,
                                                                @Parameter(hidden = true) @CurrentUser UserVO currentUser) {
         logger.info("Updating comment with id: {} by authorId: {}", commentId, currentUser.getId());
-        EventCommentDtoResponse updatedComment = commentService.updateReply(commentDtoRequest, commentId, currentUser.getId());
+        EventCommentDtoResponse updatedComment = this.commentService.updateReply(commentDtoRequest, commentId, currentUser.getId());
         return ResponseEntity.status(HttpStatus.OK).body(updatedComment);
     }
 
@@ -120,7 +120,7 @@ public class EventCommentController {
                             @PathVariable Long commentId,
                             @Parameter(hidden = true) @CurrentUser UserVO currentUser) {
         logger.info("Deleting comment with id: {} by authorId: {}", commentId, currentUser.getId());
-        commentService.deleteReplyById(commentId, currentUser.getId());
+        this.commentService.deleteReplyById(commentId, currentUser.getId());
     }
 
     @Operation(summary = "Get all replies to comment")
@@ -135,6 +135,6 @@ public class EventCommentController {
     public ResponseEntity<List<EventCommentDtoResponse>> getAllReply(@PathVariable("eventId") Long eventId,
                                                                      @PathVariable Long commentId) {
         logger.info("Finding all replies to comment with id: {}", commentId);
-        return ResponseEntity.status(HttpStatus.OK).body(commentService.findAllReplyByCommentId(commentId));
+        return ResponseEntity.status(HttpStatus.OK).body(this.commentService.findAllReplyByCommentId(commentId));
     }
 }

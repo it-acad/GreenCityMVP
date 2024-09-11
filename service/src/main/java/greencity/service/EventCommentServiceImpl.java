@@ -68,7 +68,7 @@ public class EventCommentServiceImpl implements EventCommentService {
     @Override
     public AddEventCommentDtoResponse addComment(Long eventId, AddEventCommentDtoRequest commentDto
             , UserVO currentUserVO) {
-        Event event = eventRepo.findById(eventId)
+        Event event = this.eventRepo.findById(eventId)
                 .orElseThrow(() -> new EventNotFoundException("Event not found"));
 
         String filteredText = filterText(commentDto.getText(), currentUserVO.getName());
@@ -76,7 +76,7 @@ public class EventCommentServiceImpl implements EventCommentService {
             throw new IllegalArgumentException(filteredText);
         }
 
-        User currentUser = modelMapper.map(currentUserVO, User.class);
+        User currentUser = this.modelMapper.map(currentUserVO, User.class);
 
         EventComment comment = EventComment.builder()
                 .content(filteredText)
@@ -87,29 +87,29 @@ public class EventCommentServiceImpl implements EventCommentService {
                 .updatedDate(LocalDateTime.now())
                 .build();
 
-        EventComment savedComment = eventCommentRepo.save(comment);
+        EventComment savedComment = this.eventCommentRepo.save(comment);
 
         //send notification to organizer(User author)
         sendNotificationToOrganizer(event, savedComment);
 
-        return modelMapper.map(savedComment, AddEventCommentDtoResponse.class);
+        return this.modelMapper.map(savedComment, AddEventCommentDtoResponse.class);
     }
 
     @Override
     public List<AddEventCommentDtoResponse> getCommentsByEventId(Long eventId) {
-        List<EventComment> comments = eventCommentRepo.findByEventIdOrderByCreatedDateDesc(eventId);
+        List<EventComment> comments = this.eventCommentRepo.findByEventIdOrderByCreatedDateDesc(eventId);
 
         return comments.stream()
-                .map(c -> modelMapper.map(c, AddEventCommentDtoResponse.class))
+                .map(c -> this.modelMapper.map(c, AddEventCommentDtoResponse.class))
                 .collect(Collectors.toList());
     }
 
     @Override
     public Long showQuantityOfAddedComments(Long eventId) {
-        if (!eventRepo.existsById(eventId)) {
+        if (!this.eventRepo.existsById(eventId)) {
             throw new EventNotFoundException("Event not found");
         }
-        return eventCommentRepo.countByEventId(eventId);
+        return this.eventCommentRepo.countByEventId(eventId);
     }
 
     @Override
@@ -192,7 +192,7 @@ public class EventCommentServiceImpl implements EventCommentService {
                 .build();
 
         //send comment details
-        restClient.sendEventCommentNotification(commentNotificationDto);
+        this.restClient.sendEventCommentNotification(commentNotificationDto);
     }
 
     private List<User> getMentionedUsers(String text) {
@@ -205,7 +205,7 @@ public class EventCommentServiceImpl implements EventCommentService {
         while (matcher.find()) {
             String userName = matcher.group(1);
 
-            Optional<User> mentionedUser = userRepo.findByName(userName);
+            Optional<User> mentionedUser = this.userRepo.findByName(userName);
 
             if (mentionedUser.isPresent()) {
                 mentionedUsers.add(mentionedUser.get());
