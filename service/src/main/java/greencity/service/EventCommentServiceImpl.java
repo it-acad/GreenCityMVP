@@ -21,6 +21,7 @@ import greencity.mapping.EventCommentResponseMapper;
 import greencity.repository.EventCommentRepo;
 import greencity.repository.EventRepo;
 import greencity.repository.UserRepo;
+import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
@@ -49,6 +50,7 @@ public class EventCommentServiceImpl implements EventCommentService {
     private final EventCommentRepo eventCommentRepo;
     private final EventRepo eventRepo;
     private final UserRepo userRepo;
+    private final EmailService emailService;
     private final HttpServletRequest httpServletRequest;
     private final RestClient restClient;
     private ModelMapper modelMapper;
@@ -124,6 +126,13 @@ public class EventCommentServiceImpl implements EventCommentService {
         comment.setParentComment(parentComment);
 
         EventComment savedComment = eventCommentRepo.save(comment);
+
+        try {
+            sendReplyNotification(parentComment, savedComment);
+        } catch (MessagingException e) {
+            logger.error("Failed to send email notification", e);
+        }
+
         return responseMapper.toDto(savedComment);
     }
 
@@ -294,5 +303,18 @@ public class EventCommentServiceImpl implements EventCommentService {
             return "This comment were blocked because you were using swear words";
         }
         return input;
+    }
+
+    private void sendReplyNotification(EventComment parentComment, EventComment replyComment) throws MessagingException {
+        String parentCommentAuthorEmail = parentComment.getAuthor().getEmail();
+        String subject = "Your comment has a new reply";
+        String content = String.format(
+                "Hello %s,<br><br>Your comment:<br>%s<br><br>has been replied by %s:<br>%s",
+                parentComment.getAuthor().getName(),
+                parentComment.getContent(),
+                replyComment.getAuthor().getName(),
+                replyComment.getContent()
+        );
+        emailService.sendEmail(parentCommentAuthorEmail, subject, content);
     }
 }
