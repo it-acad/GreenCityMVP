@@ -115,17 +115,17 @@ public class EventCommentServiceImpl implements EventCommentService {
     @Override
     public EventCommentDtoResponse saveReply(EventCommentDtoRequest commentDtoRequest, Long commentId, Long
             authorId, Long eventId) {
-        EventComment parentComment = eventCommentRepo.findById(commentId)
+        EventComment parentComment = this.eventCommentRepo.findById(commentId)
                 .orElseThrow(() -> new CommentNotFoundException(ErrorMessage.COMMENT_NOT_FOUND_BY_ID + commentId));
-        User user = userRepo.findById(authorId)
+        User user = this.userRepo.findById(authorId)
                 .orElseThrow(() -> new UserNotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID + authorId));
-        EventComment comment = requestMapper.toEntity(commentDtoRequest);
+        EventComment comment = this.requestMapper.toEntity(commentDtoRequest);
         comment.setAuthor(user);
-        comment.setEvent(eventRepo.findById(eventId)
+        comment.setEvent(this.eventRepo.findById(eventId)
                 .orElseThrow(() -> new EventNotFoundException("ErrorMessage.EVENT_NOT_FOUND_BY_ID + eventId")));
         comment.setParentComment(parentComment);
 
-        EventComment savedComment = eventCommentRepo.save(comment);
+        EventComment savedComment = this.eventCommentRepo.save(comment);
 
         try {
             sendReplyNotification(parentComment, savedComment);
@@ -133,28 +133,28 @@ public class EventCommentServiceImpl implements EventCommentService {
             logger.error("Failed to send email notification", e);
         }
 
-        return responseMapper.toDto(savedComment);
+        return this.responseMapper.toDto(savedComment);
     }
 
     @Override
     @PreAuthorize("hasRole('ADMIN') or @eventCommentServiceImpl.isOwner(#commentId, #authorId)")
     public EventCommentDtoResponse updateReply(EventCommentDtoRequest commentDtoRequest, Long commentId, Long
             authorId) {
-        EventComment existingComment = eventCommentRepo.findById(commentId)
+        EventComment existingComment = this.eventCommentRepo.findById(commentId)
                 .orElseThrow(() -> new CommentNotFoundException(ErrorMessage.COMMENT_NOT_FOUND_BY_ID + commentId));
 
         existingComment.setContent(commentDtoRequest.getText());
         existingComment.setIsEdited(true);
-        EventComment updatedComment = eventCommentRepo.save(existingComment);
-        return responseMapper.toDto(updatedComment);
+        EventComment updatedComment = this.eventCommentRepo.save(existingComment);
+        return this.responseMapper.toDto(updatedComment);
     }
 
     @Override
     @PreAuthorize("hasRole('ADMIN') or @eventCommentServiceImpl.isOwner(#commentId, #authorId)")
     public void deleteReplyById(Long commentId, Long authorId) {
-        EventComment comment = eventCommentRepo.findById(commentId)
+        EventComment comment = this.eventCommentRepo.findById(commentId)
                 .orElseThrow(() -> new CommentNotFoundException(ErrorMessage.COMMENT_NOT_FOUND_BY_ID + commentId));
-        eventCommentRepo.deleteById(commentId);
+        this.eventCommentRepo.deleteById(commentId);
     }
 
     @Override
@@ -163,16 +163,16 @@ public class EventCommentServiceImpl implements EventCommentService {
         if (commentId == null || commentId < 0) {
             throw new InvalidCommentIdException(ErrorMessage.INVALID_COMMENT_ID + commentId);
         }
-        EventComment comment = eventCommentRepo.findById(commentId)
+        EventComment comment = this.eventCommentRepo.findById(commentId)
                 .orElseThrow(() -> new CommentNotFoundException(ErrorMessage.COMMENT_NOT_FOUND_BY_ID + commentId));
-        List<EventComment> replies = eventCommentRepo.findAllByEventCommentId(commentId);
+        List<EventComment> replies = this.eventCommentRepo.findAllByEventCommentId(commentId);
         return replies.stream()
-                .map(responseMapper::toDto)
+                .map(this.responseMapper::toDto)
                 .toList();
     }
 
     public boolean isOwner(Long commentId, Long userId) {
-        EventComment comment = eventCommentRepo.findById(commentId).orElse(null);
+        EventComment comment = this.eventCommentRepo.findById(commentId).orElse(null);
         return comment != null && comment.getAuthor().getId().equals(userId);
     }
 
@@ -315,6 +315,6 @@ public class EventCommentServiceImpl implements EventCommentService {
                 replyComment.getAuthor().getName(),
                 replyComment.getContent()
         );
-        emailService.sendEmail(parentCommentAuthorEmail, subject, content);
+        this.emailService.sendEmail(parentCommentAuthorEmail, subject, content);
     }
 }

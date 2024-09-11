@@ -2,8 +2,6 @@ package greencity.service;
 
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.MailAuthenticationException;
 import org.springframework.mail.MailException;
 import org.springframework.mail.MailParseException;
@@ -19,13 +17,13 @@ public class EmailService {
     private JavaMailSender mailSender;
 
     public void sendEmail(String to, String subject, String content) {
-        MimeMessage message = mailSender.createMimeMessage();
+        MimeMessage message = this.mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message);
         try {
             helper.setTo(to);
             helper.setSubject(subject);
             helper.setText(content, true);
-            mailSender.send(message);
+            this.mailSender.send(message);
         } catch (MailParseException e) {
             System.err.println("Error parsing email: " + e.getMessage());
         }
