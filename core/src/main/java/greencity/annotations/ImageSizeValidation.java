@@ -1,6 +1,7 @@
 package greencity.annotations;
 
-import greencity.validator.ImageValidator;
+import greencity.validator.ImageSizeValidator;
+
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
 import java.lang.annotation.ElementType;
@@ -8,20 +9,27 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-@Constraint(validatedBy = ImageValidator.class)
+@Constraint(validatedBy = ImageSizeValidator.class)
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE_USE, ElementType.PARAMETER})
-public @interface ImageValidation {
+public @interface ImageSizeValidation {
     /**
-     * Defines the message that will be showed when the input data is not valid.
+     * Defines the maximum allowed size for the image in megabytes.
      *
-     * @return message
+     * @return the maximum size in MB
      */
-    String message() default "Download PNG or JPEG only.";
+    int maxSizeMB();
 
     /**
-     * Let you select to split the annotations into different groups to apply
-     * different validations to each group.
+     * Defines the message that will be shown when the input data is not valid.
+     * The `{maxSizeMB}` placeholder will be replaced with the actual max size value.
+     *
+     * @return the error message
+     */
+    String message() default "Image size exceeds the maximum allowed size of {maxSizeMB} MB.";
+
+    /**
+     * Allows you to specify the validation groups to apply this constraint to.
      *
      * @return groups
      */

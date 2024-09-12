@@ -1,27 +1,29 @@
 package greencity.annotations;
 
-import greencity.validator.ImageValidator;
+import greencity.constant.ServiceValidationConstants;
+import greencity.validator.UniqueEventDayDetailsCreationDtoValidator;
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-@Constraint(validatedBy = ImageValidator.class)
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.TYPE_USE, ElementType.PARAMETER})
-public @interface ImageValidation {
+@Target({ElementType.TYPE_USE, ElementType.FIELD})
+@Constraint(validatedBy = UniqueEventDayDetailsCreationDtoValidator.class)
+public @interface UniqueEventDayDetailsCreationDtoValidation {
+
     /**
-     * Defines the message that will be showed when the input data is not valid.
+     * Defines the message that will be shown when the input data is not valid.
      *
      * @return message
      */
-    String message() default "Download PNG or JPEG only.";
+    String message() default ServiceValidationConstants.EVENT_UNIQUE_DATE_RESTRICTION;
 
     /**
-     * Let you select to split the annotations into different groups to apply
-     * different validations to each group.
+     * Allows you to specify validation groups to apply this constraint to.
      *
      * @return groups
      */
