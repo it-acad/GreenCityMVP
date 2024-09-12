@@ -1,8 +1,11 @@
 package greencity.service;
 
+import greencity.dto.PageableDto;
 import greencity.dto.event.EventCreationDtoRequest;
 import greencity.dto.event.EventDto;
 import greencity.dto.event.EventEditDto;
+import greencity.dto.search.SearchEventDto;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 import java.util.Set;
@@ -41,5 +44,8 @@ public interface EventService {
       void delete(Long eventId, Long userId);
 
       EventDto update(EventEditDto event, Long userId, Long eventId, MultipartFile[] images);
+
+      PageableDto<SearchEventDto> search(Pageable pageable, String searchQuery, String languageCode);
 }
+
 
