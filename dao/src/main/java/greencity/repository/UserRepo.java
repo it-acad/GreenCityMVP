@@ -265,7 +265,8 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
      */
     @Modifying
     @Transactional
-    @Query(nativeQuery = true, value = "DELETE FROM friendship_requests where friend_id = :acceptingUserId and user_id = :invitedUserId")
+    @Query(nativeQuery = true, value = "DELETE FROM friendship_requests WHERE friend_id = :acceptingUserId AND user_id = :invitedUserId " +
+            "OR user_id = :acceptingUserId AND friend_id = :invitedUserId")
     int removeFromFriendshipRequestsByAcceptingUserId(Long acceptingUserId, Long invitedUserId);
 
     /**
@@ -278,7 +279,7 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
      */
     @Modifying
     @Transactional
-    @Query(nativeQuery = true, value = "DELETE FROM friendship_requests where user_id = :invitedUserId and friend_id = :acceptingUserId")
+    @Query(nativeQuery = true, value = "DELETE FROM friendship_requests WHERE user_id = :invitedUserId AND friend_id = :acceptingUserId")
     int removeFromFriendshipRequestsByInvitingUserId(Long invitedUserId, Long acceptingUserId);
 
     /**
