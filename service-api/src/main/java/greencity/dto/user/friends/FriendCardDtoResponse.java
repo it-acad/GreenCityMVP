@@ -13,10 +13,10 @@ public class FriendCardDtoResponse {
     @NotEmpty
     private Long id;
 
-    private String avatarLink;
-
     @NotEmpty
     private String name;
+
+    private String profilePicturePath;
 
     private double personalRate;
 

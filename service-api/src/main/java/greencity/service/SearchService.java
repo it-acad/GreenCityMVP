@@ -1,6 +1,8 @@
 package greencity.service;
 
+import greencity.dto.PageableAdvancedDto;
 import greencity.dto.PageableDto;
+import greencity.dto.econews.EcoNewsGenericDto;
 import greencity.dto.search.SearchNewsDto;
 import greencity.dto.search.SearchResponseDto;
 import greencity.dto.user.friends.FriendCardDtoResponse;
@@ -33,15 +35,29 @@ public interface SearchService {
     PageableDto<SearchNewsDto> searchAllNews(Pageable pageable, String searchQuery, String languageCode);
 
     /**
-     * Method that allow you to search users which are not your friend yet by login or name.
-     * and get result as list of{@link FriendCardDtoResponse}.
+     * Method that allow you to search users which are not your friend yet by login or name and by page.
+     * and get result as PageableAdvancedDto of{@link FriendCardDtoResponse} instances.
      *
      * @param userId The ID of the current user.
      * @param searchQuery The search query pattern for login and name field.
      * @param city The search query pattern for city field.
-     * @return list of {@link FriendCardDtoResponse} instances.
+     * @param page parameters of to search.
+     * @return PageableDto of {@link FriendCardDtoResponse} instances.
      *
      * @author Chernenko Vitaliy
      */
-    List<FriendCardDtoResponse> searchFriends(long userId, String searchQuery, String city);
+    PageableAdvancedDto<FriendCardDtoResponse> searchNotFriendsYet(long userId, String searchQuery, String city, Pageable page);
+
+    /**
+     * Method that allow you to search user's friends by login or name and by page.
+     * and get result as PageableAdvancedDto of{@link FriendCardDtoResponse} instances.
+     *
+     * @param userId The ID of the current user.
+     * @param searchQuery The search query pattern for login and name field.
+     * @param page parameters of to search.
+     * @return PageableDto of {@link FriendCardDtoResponse} instances.
+     *
+     * @author Chernenko Vitaliy
+     */
+    PageableAdvancedDto<FriendCardDtoResponse> searchFriends(long userId, String searchQuery, Pageable page);
 }

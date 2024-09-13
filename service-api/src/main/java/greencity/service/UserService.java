@@ -1,10 +1,12 @@
 package greencity.service;
 
+import greencity.dto.PageableAdvancedDto;
 import greencity.dto.PageableDto;
 import greencity.dto.user.UserManagementVO;
 import greencity.dto.user.UserRoleDto;
 import greencity.dto.user.UserStatusDto;
 import greencity.dto.user.UserVO;
+import greencity.dto.user.friends.FriendCardDtoResponse;
 import greencity.enums.Role;
 import greencity.enums.UserStatus;
 import org.springframework.data.domain.Pageable;
@@ -129,6 +131,16 @@ public interface UserService {
     void acceptFriendshipInvitation(Long userId, Long friendId);
 
     /**
+     * Method for canceling friendship request.
+     *
+     * @param userId The ID of current user.
+     * @param friendId The ID of user request to who need to cancel.
+     *
+     * @author Chernenko Vitaliy
+     */
+    void cancelFriendshipInvitation(Long userId, Long friendId);
+
+    /**
      * Method for declining friendship invitation.
      *
      * @param userId The ID of current user.
@@ -139,12 +151,24 @@ public interface UserService {
     void declineFriendshipInvitation(Long userId, Long friendId);
 
     /**
-     * Method for canceling friendship request.
+     * Method for deleting user from friends.
      *
      * @param userId The ID of current user.
-     * @param friendId The ID of user request to who need to cancel.
+     * @param friendId The ID of user who has to be removed from friends.
      *
      * @author Chernenko Vitaliy
      */
-    void cancelFriendshipInvitation(Long userId, Long friendId);
+    void deleteFriend(Long userId, Long friendId);
+
+    /**
+     * Method for receiving all users who make request to be friends.
+     *
+     * @param userId The ID of the current user.
+     * @param page parameters of to search.
+     * @return PageableDto of {@link FriendCardDtoResponse} instances.
+     *
+     * @author Chernenko Vitaliy
+     */
+    PageableAdvancedDto<FriendCardDtoResponse> getFriendshipRequests(long userId, Pageable page);
+
 }

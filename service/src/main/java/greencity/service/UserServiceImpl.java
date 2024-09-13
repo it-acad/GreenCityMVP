@@ -2,19 +2,18 @@ package greencity.service;
 
 import greencity.constant.ErrorMessage;
 import greencity.constant.LogMessage;
+import greencity.dto.PageableAdvancedDto;
 import greencity.dto.PageableDto;
 import greencity.dto.filter.UserFilterDto;
 import greencity.dto.user.UserManagementVO;
 import greencity.dto.user.UserRoleDto;
 import greencity.dto.user.UserStatusDto;
 import greencity.dto.user.UserVO;
+import greencity.dto.user.friends.FriendCardDtoResponse;
 import greencity.entity.User;
 import greencity.enums.Role;
 import greencity.enums.UserStatus;
-import greencity.exception.exceptions.BadUpdateRequestException;
-import greencity.exception.exceptions.LowRoleLevelException;
-import greencity.exception.exceptions.WrongEmailException;
-import greencity.exception.exceptions.WrongIdException;
+import greencity.exception.exceptions.*;
 import greencity.repository.UserRepo;
 import greencity.repository.options.UserFilter;
 import lombok.RequiredArgsConstructor;
@@ -23,13 +22,17 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -222,46 +225,104 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public void addFriend(Long userId, Long friendId) {
-        //check if not friend yet
+        if (userRepo.existsFriendshipById(userId, friendId)) {
+            throw new FriendAlreadyAddedException("Friend with id " + friendId + " already added");
+        }
         if(!userId.equals(friendId)) {
-            userRepo.addFriend(userId, friendId);
+            userRepo.addFriendshipRequest(userId, friendId);
         }
     }
 
     /**
      * {@inheritDoc}
      */
+    @PreAuthorize("@userServiceImpl.isCurrentUserId(#userId)")
+    @Transactional
     @Override
     public void acceptFriendshipInvitation(Long userId, Long friendId) {
-        //find in repo. If exists and status pending, then accept
-        //and owner of request try to accept
-        userRepo.acceptFriendshipInvitation(userId, friendId);
-        //TODO
+        if (userId.equals(friendId)) {
+            throw new BadRequestException("Can't accept friendship");
+        }
+
+        if (userRepo.existsFriendshipById(userId, friendId)) {
+            throw new FriendAlreadyAddedException("Friend with id " + friendId + " already added");
+        }
+
+        if (userRepo.removeFromFriendshipRequestsByAcceptingUserId(userId, friendId) == 0) {
+            throw new BadRequestException("Invitation not exists.");
+        }
+
+        userRepo.addFriend(userId, friendId);
     }
 
     /**
      * {@inheritDoc}
      */
-    @Override
-    public void declineFriendshipInvitation(Long userId, Long friendId) {
-        //find in repo. If exists and status pending, then decline
-        //and owner of request try to decline
-
-        userRepo.removeFriend(userId, friendId);
-        //TODO
-    }
-
-    /**
-     * {@inheritDoc}
-     */
+    @PreAuthorize("@userServiceImpl.isCurrentUserId(#userId)")
     @Override
     public void cancelFriendshipInvitation(Long userId, Long friendId) {
-        //find in repo. If exists and status pending, then cancel
-        //and owner of request try to cancel
+        if (userId.equals(friendId)) {
+            throw new BadRequestException("Can't cancel invitation");
+        }
+
+        if (userRepo.removeFromFriendshipRequestsByInvitingUserId(userId, friendId) == 0) {
+            throw new BadRequestException("Invitation not exists.");
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @PreAuthorize("@userServiceImpl.isCurrentUserId(#userId)")
+    @Override
+    public void declineFriendshipInvitation(Long userId, Long friendId) {
+        if (userId.equals(friendId)) {
+            throw new BadRequestException("Can't decline invitation");
+        }
+
+        if (userRepo.removeFromFriendshipRequestsByAcceptingUserId(userId, friendId) == 0) {
+            throw new BadRequestException("Invitation not exists.");
+        }
+    }
+
+    @PreAuthorize("@userServiceImpl.isCurrentUserId(#userId)")
+    @Override
+    public void deleteFriend(Long userId, Long friendId) {
+        if (!userRepo.existsFriendshipById(userId, friendId)) {
+            throw new BadRequestException("Friendship with user id " + friendId + " not exists");
+        }
 
         userRepo.removeFriend(userId, friendId);
-        //TODO
     }
+
+    @PreAuthorize("@userServiceImpl.isCurrentUserId(#userId)")
+    @Override
+    public PageableAdvancedDto<FriendCardDtoResponse> getFriendshipRequests(long userId, Pageable page) {
+        Page<User> requests = userRepo.getFriendshipRequestsByUserId(userId, page);
+
+        return buildPageableAdvancedGeneticDto(requests, userId);
+    }
+
+    private PageableAdvancedDto<FriendCardDtoResponse> buildPageableAdvancedGeneticDto(Page<User> usersPage, long userId) {
+        List<FriendCardDtoResponse> friendsDto = usersPage.stream()
+                .map(user -> modelMapper.map(user, FriendCardDtoResponse.class))
+                .toList();
+
+        friendsDto.forEach(friend -> friend.setMutualFriends(userRepo.getAmountOfMutualFriends(userId, friend.getId())));
+
+
+        return new PageableAdvancedDto<>(
+                friendsDto,
+                usersPage.getTotalElements(),
+                usersPage.getPageable().getPageNumber(),
+                usersPage.getTotalPages(),
+                usersPage.getNumber(),
+                usersPage.hasPrevious(),
+                usersPage.hasNext(),
+                usersPage.isFirst(),
+                usersPage.isLast());
+    }
+
 
     private UserFilterDto createUserFilterDto(String criteria, String role, String status) {
         if (status != null) {
@@ -271,5 +332,11 @@ public class UserServiceImpl implements UserService {
             role = role.equals("all") ? null : role;
         }
         return new UserFilterDto(criteria, role, status);
+    }
+
+    public boolean isCurrentUserId(long userId) {
+        String email = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        UserVO user = findByEmail(email);
+        return user.getId() == userId;
     }
 }

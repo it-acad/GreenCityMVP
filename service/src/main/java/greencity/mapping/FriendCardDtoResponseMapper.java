@@ -11,7 +11,7 @@ public class FriendCardDtoResponseMapper extends AbstractConverter<User, FriendC
     protected FriendCardDtoResponse convert(User user) {
         return FriendCardDtoResponse.builder()
                 .id(user.getId())
-                .avatarLink(user.getProfilePicturePath())
+                .profilePicturePath(user.getProfilePicturePath())
                 .name(user.getName())
                 .personalRate(user.getRating())
                 .city(user.getCity())

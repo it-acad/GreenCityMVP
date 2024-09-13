@@ -12,6 +12,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.authentication.configuration.EnableGlobalAuthentication;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -37,6 +38,7 @@ import static org.springframework.security.config.http.SessionCreationPolicy.STA
 @Configuration
 @EnableWebSecurity
 @EnableGlobalAuthentication
+@EnableMethodSecurity
 public class SecurityConfig {
     private static final String ECONEWS_COMMENTS = "/econews/comments";
     private static final String USER_CUSTOM_SHOPPING_LIST_ITEMS = "/user/{userId}/custom-shopping-list-items";
@@ -284,15 +286,20 @@ public class SecurityConfig {
                                 "/comments")
                         .hasAnyRole(ADMIN)
                         .requestMatchers(HttpMethod.GET,
-                                "/search/friends")
+                                "/friends",
+                                "/friends/not-friends-yet",
+                                "/friends/friendRequests")
                         .hasAnyRole(ADMIN, USER)
                         .requestMatchers(HttpMethod.POST,
-                                "/friends")
+                                "/friends/{friendId}")
                         .hasAnyRole(ADMIN, USER)
                         .requestMatchers(HttpMethod.PATCH,
-                                "/friends/accept/{friendId}",
-                                "/friends/decline/{friendId}",
-                                "/friends/cancel/{friendId}")
+                                "/friends/{friendId}/acceptFriend")
+                        .hasAnyRole(ADMIN, USER)
+                        .requestMatchers(HttpMethod.DELETE,
+                                "/friends/{friendId}",
+                                "/friends/{friendId}/cancelFriend",
+                                "/friends/{friendId}/declineFriend")
                         .hasAnyRole(ADMIN, USER)
                         .anyRequest().hasAnyRole(ADMIN))
                 .logout(logout -> logout.logoutUrl("/logout")
