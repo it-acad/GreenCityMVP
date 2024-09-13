@@ -11,10 +11,9 @@ public interface EventCommentService {
 
     List<AddEventCommentDtoResponse> getCommentsByEventId(Long eventId);
 
-    AddEventCommentDtoResponse replyToComment(Long eventId, Long parentCommentId, AddEventCommentDtoRequest replyDto
-            , UserVO currentUserVO);
-
-    String filterText(String input , String userName);
+    String filterText(String input, String userName);
 
     Long showQuantityOfAddedComments(Long eventId);
+
+    AddEventCommentDtoResponse getCommentById(Long commentId);
 }
