@@ -45,7 +45,13 @@ public class SearchServiceImpl implements SearchService {
     }
 
     /**
-     * {@inheritDoc}
+     * Searches for news articles based on the given query and returns the results in a pageable format.
+     * Delegates the search logic to the {@link EcoNewsService}.
+     *
+     * @param pageable      the pagination and sorting information
+     * @param searchQuery   the query text used to search news
+     * @param languageCode  the language code to filter news by language
+     * @return a {@link PageableDto} containing the search results in the form of {@link SearchNewsDto}
      */
     @Override
     public PageableDto<SearchNewsDto> searchAllNews(Pageable pageable, String searchQuery, String languageCode) {

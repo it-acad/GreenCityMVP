@@ -99,12 +99,12 @@ public class EventSearchRepo {
         Expression<String> title = root.get(GET_TITLE).as(String.class);
         Expression<String> text = root.get(GET_DESCRIPTION).as(String.class);
         Arrays.stream(searchQuery.split(EMPTY_STRING_SPLITTER))
-                .forEach(partOfSearchingText -> predicateList.add(
+                .forEach(searchingText -> predicateList.add(
                 this.criteriaBuilder.or(
                         this.criteriaBuilder.like(this.criteriaBuilder.lower(title), "%"
-                                + partOfSearchingText.toLowerCase() + "%"),
+                                + searchingText.toLowerCase() + "%"),
                         this.criteriaBuilder.like(this.criteriaBuilder.lower(text), "%"
-                                + partOfSearchingText.toLowerCase() + "%"))));
+                                + searchingText.toLowerCase() + "%"))));
         return predicateList;
     }
 
@@ -135,12 +135,10 @@ public class EventSearchRepo {
         Predicate tagPredicate = this.criteriaBuilder.or(tagPredicateList.toArray(new Predicate[0]));
 
         tagTranslationSubquery.select(tagTranslationTagJoin.get(GET_NAME)).where(tagPredicate);
-
         tagSubquery.select(ecoNewsTagJoin).where(this.criteriaBuilder.exists(tagTranslationSubquery));
 
         return this.criteriaBuilder.in(root.get(GET_ID)).value(tagSubquery);
     }
-
 
     /**
      * Creates a list of order conditions based on the pageable object.
