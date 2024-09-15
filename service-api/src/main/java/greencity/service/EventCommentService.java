@@ -16,4 +16,6 @@ public interface EventCommentService {
     Long showQuantityOfAddedComments(Long eventId);
 
     AddEventCommentDtoResponse getCommentById(Long commentId);
+
+    void deleteCommentById(Long eventId, Long commentId, UserVO currentUser);
 }

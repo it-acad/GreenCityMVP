@@ -126,6 +126,20 @@ public class EventCommentServiceImpl implements EventCommentService {
         return responseDto;
     }
 
+    @Override
+    public void deleteCommentById(Long eventId, Long commentId, UserVO currentUserVO) {
+        if(!eventRepo.existsById(eventId)) {
+            throw new EventNotFoundException("Event not found with id: " + eventId);
+        } else {
+            if(!eventCommentRepo.existsById(commentId) || !Objects.equals(currentUserVO.getId(),
+                    eventCommentRepo.findById(commentId).get().getUser().getId())) {
+                throw new EventCommentNotFoundException("Comment not found with id: " + commentId + " or user is not author of comment");
+            } else {
+                eventCommentRepo.deleteById(commentId);
+            }
+        }
+    }
+
     private void sendNotificationToOrganizer(Event event, EventComment eventComment) {
         String accessToken = httpServletRequest.getHeader(AUTHORIZATION);
 
