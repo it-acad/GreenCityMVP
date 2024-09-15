@@ -1,10 +1,15 @@
 package greencity.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import greencity.ModelUtils;
 import greencity.dto.event.AddEventCommentDtoRequest;
 import greencity.dto.event.AddEventCommentDtoResponse;
 import greencity.dto.user.UserVO;
+import greencity.exception.exceptions.EventCommentNotFoundException;
+import greencity.exception.exceptions.EventNotFoundException;
+import greencity.exception.handler.CustomExceptionHandler;
 import greencity.service.EventCommentService;
+import greencity.service.UserService;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -12,9 +17,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.boot.web.servlet.error.DefaultErrorAttributes;
+import org.springframework.boot.web.servlet.error.ErrorAttributes;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.validation.Validator;
 
 import java.security.Principal;
 import java.util.Collections;
@@ -22,10 +30,8 @@ import java.util.Collections;
 import static greencity.ModelUtils.getPrincipal;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(MockitoExtension.class)
@@ -33,22 +39,27 @@ public class EventCommentControllerTest {
     private static final String LINK = "/events/comments";
     private MockMvc mockMvc;
     private ObjectMapper objectMapper = new ObjectMapper();
-
     private final Long eventId = 1L;
     private final Long commentId = 1L;
     private final Long commentCount = 5L;
 
     @Mock
     private EventCommentService eventCommentService;
-
+    @Mock
+    private Validator mockValidator;
     @InjectMocks
     private EventCommentController eventCommentController;
 
     private Principal principal = getPrincipal();
+    private final ErrorAttributes errorAttributes = new DefaultErrorAttributes();
 
     @BeforeEach
     void setup() {
-        mockMvc = MockMvcBuilders.standaloneSetup(eventCommentController).build();
+        mockMvc = MockMvcBuilders.standaloneSetup(eventCommentController)
+        .setControllerAdvice(new CustomExceptionHandler(errorAttributes,
+                objectMapper))
+                .setValidator(mockValidator)
+                .build();
     }
 
     private AddEventCommentDtoRequest createRequestDto(String text) {
@@ -123,5 +134,44 @@ public class EventCommentControllerTest {
                 .andExpect(status().isOk());
 
         verify(eventCommentService).showQuantityOfAddedComments(anyLong());
+    }
+
+    @Test
+    @SneakyThrows
+    void deleteCommentWithExistedEventIdAndCommentId () {
+        doNothing().when(eventCommentService).deleteCommentById(anyLong(), anyLong(), any(UserVO.class));
+
+        mockMvc.perform(delete(LINK + "/{eventId}/{commentId}", eventId, commentId)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+        verify(eventCommentService).deleteCommentById(anyLong(), anyLong(), any(UserVO.class));
+    }
+
+    @Test
+    @SneakyThrows
+    void deleteCommentWithNotExistedEventId() {
+
+        doThrow(new EventNotFoundException("Comment not found")).when(eventCommentService)
+                .deleteCommentById(anyLong(), anyLong(), any(UserVO.class));
+
+        mockMvc.perform(delete(LINK + "/{eventId}/{commentId}", eventId, commentId)
+                        .principal(principal)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+        verify(eventCommentService).deleteCommentById(anyLong(), anyLong(), any(UserVO.class));
+    }
+
+    @Test
+    @SneakyThrows
+    void deleteCommentWithExistedEventIdButNotExistedCommentId() {
+        doThrow(new EventCommentNotFoundException("Comment not found"))
+                .when(eventCommentService)
+                .deleteCommentById(anyLong(), anyLong(), any(UserVO.class));
+
+        mockMvc.perform(delete(LINK + "/{eventId}/{commentId}", eventId, commentId)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+
+        verify(eventCommentService).deleteCommentById(anyLong(), anyLong(), any(UserVO.class));
     }
 }
