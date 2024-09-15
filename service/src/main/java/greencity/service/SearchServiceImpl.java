@@ -11,7 +11,6 @@ import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 import java.util.List;
 
@@ -63,7 +62,7 @@ public class SearchServiceImpl implements SearchService {
     }
 
     @Override
-    public PageableAdvancedDto<FriendCardDtoResponse> searchFriends(long userId, String searchQuery, Pageable page) {
+    public PageableAdvancedDto<FriendCardDtoResponse> searchFriends(long userId, Pageable page) {
         Page<User> friends = userRepo.getAllUsersFriends(userId, page);
 
         return buildPageableAdvancedGeneticDto(friends, userId);

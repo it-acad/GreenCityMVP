@@ -2,13 +2,11 @@ package greencity.service;
 
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.PageableDto;
-import greencity.dto.econews.EcoNewsGenericDto;
 import greencity.dto.search.SearchNewsDto;
 import greencity.dto.search.SearchResponseDto;
 import greencity.dto.user.friends.FriendCardDtoResponse;
 import org.springframework.data.domain.Pageable;
 
-import java.util.List;
 
 /**
  * Provides the interface to manage search functionality.
@@ -53,11 +51,10 @@ public interface SearchService {
      * and get result as PageableAdvancedDto of{@link FriendCardDtoResponse} instances.
      *
      * @param userId The ID of the current user.
-     * @param searchQuery The search query pattern for login and name field.
      * @param page parameters of to search.
      * @return PageableDto of {@link FriendCardDtoResponse} instances.
      *
      * @author Chernenko Vitaliy
      */
-    PageableAdvancedDto<FriendCardDtoResponse> searchFriends(long userId, String searchQuery, Pageable page);
+    PageableAdvancedDto<FriendCardDtoResponse> searchFriends(long userId, Pageable page);
 }

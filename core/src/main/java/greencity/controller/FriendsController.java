@@ -58,9 +58,8 @@ public class FriendsController {
     @PageableAsQueryParam
     @GetMapping
     public ResponseEntity<PageableAdvancedDto<FriendCardDtoResponse>> searchFriends(@CurrentUser UserVO currentUser,
-                                                                                    @RequestParam(required = false) String name,
                                                                                     Pageable pageable) {
-        return ResponseEntity.status(HttpStatus.OK).body(searchService.searchFriends(currentUser.getId(), name, pageable));
+        return ResponseEntity.status(HttpStatus.OK).body(searchService.searchFriends(currentUser.getId(), pageable));
     }
 
     @PageableAsQueryParam

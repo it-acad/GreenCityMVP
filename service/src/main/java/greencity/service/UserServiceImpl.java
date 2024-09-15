@@ -223,13 +223,19 @@ public class UserServiceImpl implements UserService {
     /**
      * {@inheritDoc}
      */
+    @PreAuthorize("@userServiceImpl.isCurrentUserId(#userId)")
     @Override
     public void addFriend(Long userId, Long friendId) {
         if (userRepo.existsFriendshipById(userId, friendId)) {
             throw new FriendAlreadyAddedException("Friend with id " + friendId + " already added");
         }
+
         if(!userId.equals(friendId)) {
             userRepo.addFriendshipRequest(userId, friendId);
+        }
+
+        if (userId.equals(friendId)) {
+            throw new BadRequestException("Can't add friend");
         }
     }
 
