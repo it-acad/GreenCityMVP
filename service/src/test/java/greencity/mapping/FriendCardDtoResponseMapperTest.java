@@ -1,13 +1,8 @@
 package greencity.mapping;
 
 import greencity.ModelUtils;
-import greencity.constant.AppConstant;
-import greencity.dto.econews.EcoNewsDto;
-import greencity.dto.user.EcoNewsAuthorDto;
 import greencity.dto.user.friends.FriendCardDtoResponse;
-import greencity.entity.EcoNews;
 import greencity.entity.User;
-import greencity.entity.localization.TagTranslation;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
