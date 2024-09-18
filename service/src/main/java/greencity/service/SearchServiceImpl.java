@@ -61,13 +61,15 @@ public class SearchServiceImpl implements SearchService {
         return buildPageableAdvancedGeneticDto(notFriendsUsers, userId);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public PageableAdvancedDto<FriendCardDtoResponse> searchFriends(long userId, Pageable page) {
         Page<User> friends = userRepo.getAllUsersFriends(userId, page);
 
         return buildPageableAdvancedGeneticDto(friends, userId);
     }
-
 
     private PageableAdvancedDto<FriendCardDtoResponse> buildPageableAdvancedGeneticDto(Page<User> usersPage, long userId) {
         List<FriendCardDtoResponse> friendsDto = usersPage.stream()
