@@ -299,7 +299,7 @@ public class EcoNewsController {
             @ApiResponse(responseCode = "400", description = HttpStatuses.BAD_REQUEST)
     })
     @GetMapping("/recommended")
-    public ResponseEntity<List<EcoNewsDto>> getThreeRecommendedEcoNews(@RequestParam() Long openedEcoNewsId) {
+    public ResponseEntity<List<EcoNewsDto>> getThreeRecommendedEcoNews(@RequestParam(required = false) Long openedEcoNewsId) {
         List<EcoNewsDto> threeRecommendedEcoNews = ecoNewsService.getThreeRecommendedEcoNews(openedEcoNewsId);
         return ResponseEntity.status(HttpStatus.OK).body(threeRecommendedEcoNews);
     }

@@ -153,6 +153,9 @@ public class EcoNewsServiceImpl implements EcoNewsService {
      */
     @Override
     public List<EcoNewsDto> getThreeRecommendedEcoNews(Long openedEcoNewsId) {
+        if (ecoNewsRepo.findById(openedEcoNewsId).isEmpty()) {
+            throw new BadRequestException(ErrorMessage.ECO_NEWS_NOT_FOUND_BY_ID + openedEcoNewsId);
+        }
         List<EcoNews> ecoNewsList = ecoNewsRepo.getThreeRecommendedEcoNews(openedEcoNewsId);
         return getEcoNewsList(ecoNewsList);
     }
