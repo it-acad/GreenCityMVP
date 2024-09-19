@@ -169,6 +169,7 @@ public class SecurityConfig {
                                 "/custom/shopping-list-items/{userId}/{habitId}",
                                 "/econews/count",
                                 "/econews/isLikedByUser",
+                                "/events/my-events",
                                 "/shopping-list-items",
                                 "/habit/assign/allForCurrentUser",
                                 "/habit/assign/active/{date}",
@@ -251,6 +252,7 @@ public class SecurityConfig {
                                 ECONEWS_COMMENTS,
                                 "/events/comments/{eventCommentId}",
                                 "/events/{eventId}",
+                                "/events/{eventId}/leave",
                                 "/econews/{econewsId}",
                                 CUSTOM_SHOPPING_LIST_ITEMS,
                                 CUSTOM_SHOPPING_LIST_URL,
@@ -293,7 +295,9 @@ public class SecurityConfig {
                                 "/events/{userID}")
                         .hasAnyRole(ADMIN, USER)
                         .requestMatchers(HttpMethod.POST,
-                                "/events")
+                                "/events",
+                                "/events/{eventId}/join",
+                                "/events/filter")
                         .hasAnyRole(ADMIN, USER)
                         .anyRequest().hasAnyRole(ADMIN))
                 .logout(logout -> logout.logoutUrl("/logout")
