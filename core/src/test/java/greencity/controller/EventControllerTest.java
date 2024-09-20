@@ -294,5 +294,30 @@ class EventControllerTest {
         verify(eventService).getEventsUserJoinedOrScheduled(anyLong());
     }
 
+    @Test
+    void testGetFilteredEvents_ByEventLineOnline_ReturnsFilteredEvents() throws Exception {
+        // Initialize filter for ONLINE events
+        EventFilterDto filterDto = new EventFilterDto();
+        filterDto.setEventLine(EventLine.ONLINE);
+
+        Pageable pageable = PageRequest.of(0, 10);  // Pagination
+
+        // Set test data for eventDto
+        eventDto.setEventTitle("Online Event");
+
+        // Mock service to return filtered events
+        List<EventDto> eventDtos = Collections.singletonList(eventDto);
+        Page<EventDto> eventDtoPage = new PageImpl<>(eventDtos, pageable, eventDtos.size());
+        when(eventService.findFilteredEvents(any(EventFilterDto.class), any(Pageable.class))).thenReturn(eventDtoPage);
+
+        // Perform POST request to /filter and check response
+        mockMvc.perform(post(eventLink + "/filter")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"eventLine\":\"ONLINE\"}")  // eventLine passed
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())  // Expect 200 OK
+                .andExpect(jsonPath("$.content[0].eventTitle").value("Online Event"));  // Check event title
+    }
+
 }
 
