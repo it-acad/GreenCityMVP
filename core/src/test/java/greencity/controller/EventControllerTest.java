@@ -5,11 +5,11 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import greencity.ModelUtils;
 import greencity.constant.ErrorMessage;
 import greencity.converters.UserArgumentResolver;
-import greencity.dto.event.EventCreationDtoRequest;
-import greencity.dto.event.EventDto;
-import greencity.dto.event.EventEditDto;
+import greencity.dto.event.*;
 import greencity.dto.user.UserVO;
 import greencity.entity.User;
+import greencity.enums.EventLine;
+import greencity.enums.EventTime;
 import greencity.exception.exceptions.EventNotFoundException;
 import greencity.exception.handler.CustomExceptionHandler;
 import greencity.service.EventServiceImpl;
@@ -23,6 +23,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 import org.springframework.boot.web.servlet.error.DefaultErrorAttributes;
 import org.springframework.boot.web.servlet.error.ErrorAttributes;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
@@ -32,6 +36,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.validation.Validator;
 import org.springframework.web.multipart.MultipartFile;
 import java.security.Principal;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -39,6 +44,7 @@ import java.util.Set;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 @ExtendWith(MockitoExtension.class)
 class EventControllerTest {
@@ -58,6 +64,7 @@ class EventControllerTest {
     private static final String eventLink = "/events";
     private final ErrorAttributes errorAttributes = new DefaultErrorAttributes();
     private MockMvc mockMvc;
+    private EventDto eventDto;
     private final Principal principal = ModelUtils.getPrincipal();
     private final UserVO userVO = ModelUtils.getUserVO();
     private static final Long EVENT_ID = 1L;
@@ -98,6 +105,8 @@ class EventControllerTest {
                 .setValidator(mockValidator)
                 .build();
         objectMapper.registerModule(new JavaTimeModule());
+
+        eventDto = new EventDto();
     }
 
     @Test
@@ -223,7 +232,7 @@ class EventControllerTest {
                 "    \"description\": \"This is a description.\",\n" +
                 "    \"datesLocations\": [\n" +
                 "        {\n" +
-                "            \"eventDate\": \"2024-09-09\",\n" +
+                "            \"eventDate\": \"2024-10-09\",\n" +
                 "            \"eventStartTime\": \"10:00\",\n" +
                 "            \"eventEndTime\": \"12:00\",\n" +
                 "            \"isAllDateDuration\": false,\n" +
@@ -239,5 +248,51 @@ class EventControllerTest {
                 "}";
         return new MockMultipartFile("eventCreationDtoRequest", "", MediaType.APPLICATION_JSON_VALUE, eventCreationDtoJson.getBytes());
     }
+
+    @Test
+    void joinEvent_ValidRequest_Success() throws Exception {
+        when(userService.findByEmail(anyString())).thenReturn(userVO);
+
+        EventParticipantDto participantDto = new EventParticipantDto();
+        when(eventService.joinEvent(anyLong(), anyString())).thenReturn(participantDto);
+
+        mockMvc.perform(post(eventLink + "/{eventId}/join", 1)
+                        .principal(principal)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+
+        verify(eventService).joinEvent(anyLong(), anyString());
+    }
+
+    @Test
+    void leaveEvent_ValidRequest_Success() throws Exception {
+        when(userService.findByEmail(anyString())).thenReturn(userVO);
+
+        EventParticipantDto participantDto = new EventParticipantDto();
+        when(eventService.leaveEvent(anyLong(), anyString())).thenReturn(participantDto);
+
+        mockMvc.perform(delete(eventLink + "/{eventId}/leave", 1)
+                        .principal(principal)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+
+        verify(eventService).leaveEvent(anyLong(), anyString());
+    }
+
+    @Test
+    void getMyEvents_ValidRequest_Success() throws Exception {
+        when(userService.findByEmail(anyString())).thenReturn(userVO);
+
+        List<EventParticipantDto> events = Collections.singletonList(new EventParticipantDto());
+        when(eventService.getEventsUserJoinedOrScheduled(anyLong())).thenReturn(events);
+
+        mockMvc.perform(get(eventLink + "/my-events")
+                        .principal(principal)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+
+        verify(eventService).getEventsUserJoinedOrScheduled(anyLong());
+    }
+
 }
 
