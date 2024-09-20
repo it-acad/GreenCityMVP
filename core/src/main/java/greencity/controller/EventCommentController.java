@@ -1,11 +1,13 @@
 package greencity.controller;
 
 import greencity.annotations.CurrentUser;
+import greencity.constant.AppConstant;
 import greencity.constant.HttpStatuses;
 import greencity.dto.econewscomment.AddEcoNewsCommentDtoResponse;
 import greencity.dto.event.AddEventCommentDtoRequest;
 import greencity.dto.event.AddEventCommentDtoResponse;
 import greencity.dto.user.UserVO;
+import greencity.exception.handler.MessageResponse;
 import greencity.service.EventCommentService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -109,5 +111,22 @@ public class EventCommentController {
     @GetMapping("{eventId}/count")
     public ResponseEntity<Long> showQuantityOfAddedComments(@PathVariable Long eventId) {
         return ResponseEntity.ok(eventCommentService.showQuantityOfAddedComments(eventId));
+    }
+
+
+    @Operation(summary = "Delete comment.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = HttpStatuses.OK),
+            @ApiResponse(responseCode = "404", description = HttpStatuses.NOT_FOUND),
+            @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED)
+    })
+    @DeleteMapping("{eventId}/{commentId}")
+    public ResponseEntity<Object> deleteComment(@PathVariable Long eventId,
+                                                @PathVariable Long commentId,
+                                                @Parameter(hidden = true) @CurrentUser UserVO currentUserVO
+                                                ) {
+        eventCommentService.deleteCommentById(eventId, commentId, currentUserVO);
+        return ResponseEntity.status(HttpStatus.OK).body(MessageResponse.builder()
+                .message(AppConstant.DELETED).success(true).build());
     }
 }
