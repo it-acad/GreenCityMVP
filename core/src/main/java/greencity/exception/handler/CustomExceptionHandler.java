@@ -598,12 +598,16 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     /**
+     * Customize the response for WrongIdException.
      * Customize the response for EventNotFoundException.
      *
      * @param ex      the exception
      * @param request the current request
      * @return a {@code ResponseEntity} message
      */
+    @ExceptionHandler(FriendAlreadyAddedException.class)
+    public final ResponseEntity<Object> handleFriendAlreadyAddedException(
+            FriendAlreadyAddedException ex, WebRequest request) {
     @ExceptionHandler(EventNotFoundException.class)
     public final ResponseEntity<Object> handleEventNotFoundException(
             EventNotFoundException ex, WebRequest request) {

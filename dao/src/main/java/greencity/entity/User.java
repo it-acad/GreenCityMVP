@@ -79,10 +79,10 @@ import java.util.Set;
 @EqualsAndHashCode(
     exclude = {"verifyEmail", "ownSecurity", "ecoNewsLiked", "ecoNewsCommentsLiked",
         "refreshTokenKey", "verifyEmail", "estimates", "restorePasswordEmail", "customShoppingListItems",
-        "eventOrganizerRating"})
+        "eventOrganizerRating", "friends"})
 @ToString(
     exclude = {"verifyEmail", "ownSecurity", "refreshTokenKey", "ecoNewsLiked", "ecoNewsCommentsLiked",
-        "verifyEmail", "estimates", "restorePasswordEmail", "customShoppingListItems", "eventOrganizerRating"})
+        "verifyEmail", "estimates", "restorePasswordEmail", "customShoppingListItems", "eventOrganizerRating", "friends"})
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -163,6 +163,12 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Filter> filters = new ArrayList<>();
 
+    @ManyToMany
+    @JoinTable(
+            name = "users_friends",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "friend_id"))
+    private List<User> friends = new ArrayList<>();
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL)
     private Set<Event> events = new HashSet<>();
 
