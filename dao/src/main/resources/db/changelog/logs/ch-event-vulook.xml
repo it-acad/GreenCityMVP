@@ -15,4 +15,51 @@
         </addColumn>
     </changeSet>
 
+    <changeSet id="1724712461864-2" author="vulook">
+        <createTable tableName="event_participants">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+
+            <column name="event_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="user_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="joined_at" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <!-- add event_id -->
+        <addForeignKeyConstraint baseColumnNames="event_id"
+                                 baseTableName="event_participants"
+                                 constraintName="FK_EVENT_PARTICIPANTS_ON_EVENT"
+                                 referencedColumnNames="id"
+                                 referencedTableName="events"/>
+
+        <!-- add user_id -->
+        <addForeignKeyConstraint baseColumnNames="user_id"
+                                 baseTableName="event_participants"
+                                 constraintName="FK_EVENT_PARTICIPANTS_ON_USER"
+                                 referencedColumnNames="id"
+                                 referencedTableName="users"/>
+    </changeSet>
+
+    <changeSet id="1724712461864-3" author="vulook">
+        <addColumn tableName="event_participants">
+            <column name="event_role" type="VARCHAR(20)">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <!-- Remove Foreign Key for user -->
+    <changeSet id="1724712461864-remove-fk" author="vulook">
+        <dropForeignKeyConstraint baseTableName="event_participants" constraintName="FK_EVENT_PARTICIPANTS_ON_USER"/>
+    </changeSet>
+
 </databaseChangeLog>

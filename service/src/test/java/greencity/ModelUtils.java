@@ -701,7 +701,9 @@ public class ModelUtils {
                         EventImage.builder().id(2L).imagePath("https://someimageurl2.net").build(),
                         EventImage.builder().id(3L).imagePath("https://someimageurl3.net").build()
                 )),
-                getUser());
+                getUser(),
+                new HashSet<>(Set.of(getEventParticipant()))
+        );
     }
 
     public static EventCreationDtoRequest getEventCreationDto() {
@@ -724,6 +726,16 @@ public class ModelUtils {
                 .isOffline(true)
                 .onlinePlace("https://example.org")
                 .offlinePlace("Ukraine, Kyiv, somestreet 99")
+                .build();
+    }
+
+    public static EventParticipant getEventParticipant() {
+        return EventParticipant.builder()
+                .id(1L)
+                .event(getEvent())
+                .userId(getUser().getId())
+                .joinedAt(LocalDateTime.now())
+                .eventRole(EventRole.PARTICIPANT)
                 .build();
     }
 
