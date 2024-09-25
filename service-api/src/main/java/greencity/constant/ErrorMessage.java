@@ -136,6 +136,11 @@ public final class ErrorMessage {
     public static final String FILTER_NOT_FOUND_BY_ID = "Filter not found";
     public static final String USER_HAS_NO_FRIEND_WITH_ID = "User has no friend with this id: ";
     public static final String INVALID_DURATION = "The duration for such habit is lower than previously set";
+    public static final String COMMENT_NOT_FOUND_BY_ID = "Comment with id not found: ";
+    public static final String ENABLE_TO_CONTAIN_URL = "Content can't contain URL";
+    public static final String ENABLE_TO_CONTAIN_EMOJI = "Content can't contain emoji";
+    public static final String INVALID_COMMENT_ID = "Invalid comment id: ";
+    public static final String ENABLE_TO_CONTAIN_ONLY_ALLOWED_CHARACTERS = "Content can contain only allowed characters";
     public static final String EVENT_NOT_FOUND = "Event not found with id: ";
     public static final String EVENT_DAY_DETAILS_NOT_FOUND = "Event day details not found with id: ";
     public static final String EVENT_EDIT_DTO_ERROR = "Wrong body request format for DTO or null";

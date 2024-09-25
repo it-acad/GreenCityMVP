@@ -33,6 +33,7 @@ import greencity.repository.UserRepo;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.modelmapper.ModelMapper;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
@@ -277,6 +278,7 @@ public class EventServiceImpl implements EventService {
         return eventImages;
     }
 
+    public void sendEmailDto(@NotNull Event savedEvent) {
     /**
      * Method to send event details via email using a REST client.
      * This method builds an EventSendEmailDto object.

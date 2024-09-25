@@ -171,4 +171,7 @@ public class User {
     private List<User> friends = new ArrayList<>();
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL)
     private Set<Event> events = new HashSet<>();
+
+    @OneToMany(mappedBy = "author", cascade = CascadeType.ALL)
+    private Set<EventComment> replyToComments;
 }

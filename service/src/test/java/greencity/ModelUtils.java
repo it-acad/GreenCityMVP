@@ -3,6 +3,7 @@ package greencity;
 import greencity.annotations.RatingCalculationEnum;
 import greencity.constant.AppConstant;
 import greencity.dto.PageableAdvancedDto;
+import greencity.dto.comment.CommentDto;
 import greencity.dto.econews.*;
 import greencity.dto.econewscomment.*;
 import greencity.dto.event.EventCreationDtoRequest;

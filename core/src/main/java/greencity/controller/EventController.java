@@ -10,6 +10,7 @@ import greencity.constant.HttpStatuses;
 import greencity.dto.user.UserVO;
 import greencity.exception.handler.MessageResponse;
 import greencity.service.EventService;
+import greencity.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import greencity.constant.SwaggerExampleModel;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -22,6 +23,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -35,6 +37,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class EventController {
     private final EventService eventService;
+    private final UserService userService;
 
     /**
      * Method for creating a new event.

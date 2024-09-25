@@ -141,6 +141,7 @@ public interface UserRepo extends JpaRepository<User, Long>, JpaSpecificationExe
             + "UNION (SELECT friend_id FROM users_friends WHERE user_id = :userId and status = 'FRIEND'));")
     List<User> getAllUserFriends(Long userId);
 
+    Optional<User> findByName(String name);
     /**
      * Get all user not friends except current user by name.
      *

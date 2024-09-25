@@ -6,6 +6,7 @@ public class RestTemplateLinks {
     public static final String ADMIN_LANG = "&admin=";
     public static final String ADD_ECO_NEWS = "/email/addEcoNews";
     public static final String ADD_EVENT = "/email/addEvent";
+    public static final String ADD_EVENT_COMMENT = "/email/addEventComment";
     public static final String EMAIL = "?email=";
     public static final String USER_FIND_BY_EMAIL = "/user/findByEmail";
     public static final String ID = "?id=";
