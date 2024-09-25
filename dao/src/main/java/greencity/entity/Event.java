@@ -16,7 +16,7 @@ import java.util.Set;
 @Getter
 @Setter
 @Builder
-@EqualsAndHashCode(exclude ={"images", "eventDayDetailsList"})
+@EqualsAndHashCode(exclude ={"images", "eventDayDetailsList", "participants"})
 @Table(name = "events")
 public class Event {
     @Id
@@ -47,6 +47,9 @@ public class Event {
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User author;
+
+    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<EventParticipant> participants = new HashSet<>();
 
     public void addEventDayDetails(EventDayDetails eventDayDetails){
         this.eventDayDetailsList.add(eventDayDetails);

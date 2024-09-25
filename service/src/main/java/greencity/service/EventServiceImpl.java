@@ -2,6 +2,15 @@ package greencity.service;
 
 import greencity.client.RestClient;
 import greencity.constant.ErrorMessage;
+import greencity.dto.event.*;
+import greencity.dto.user.PlaceAuthorDto;
+import greencity.dto.user.UserVO;
+import greencity.entity.*;
+import greencity.enums.EventRole;
+import greencity.exception.exceptions.*;
+import greencity.filters.EventSpecification;
+import greencity.filters.SearchCriteria;
+import greencity.repository.*;
 import greencity.dto.PageableDto;
 import greencity.dto.event.EventCreationDtoRequest;
 import greencity.dto.event.EventDto;
@@ -55,8 +64,11 @@ public class EventServiceImpl implements EventService {
     private final HttpServletRequest httpServletRequest;
     private final ModelMapper modelMapper;
     private final EventDayDetailsRepo eventDayDetailsRepo;
+    private final EventParticipantRepo eventParticipantRepo;
 
-
+    /**
+     * {@inheritDoc}
+     */
     @Override
     @Transactional
     public EventDto saveEvent(EventCreationDtoRequest eventCreationDtoRequest,
@@ -75,6 +87,10 @@ public class EventServiceImpl implements EventService {
         try {
             Event savedEvent = eventRepo.save(eventToSave);
 
+            // Create and save the author as a participant with the role of AUTHOR
+            EventParticipant participant = EventParticipant.createParticipant(savedEvent, user.getId(), EventRole.AUTHOR);
+            eventParticipantRepo.save(participant);
+
             // Handle images after event is saved
             List<EventImage> eventImages = uploadImages(images);
             savedEvent.setImages(eventImages);
@@ -92,6 +108,224 @@ public class EventServiceImpl implements EventService {
             throw new NotSavedException(ErrorMessage.EVENT_NOT_SAVED);
         }
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @Transactional
+    public EventParticipantDto joinEvent(Long eventId, String userEmail) {
+        // Find the event by ID
+        Event event = eventRepo.findById(eventId)
+                .orElseThrow(() -> new EventNotFoundException(ErrorMessage.EVENT_NOT_FOUND + eventId));
+
+        // Find the user by email
+        User user = userRepo.findByEmail(userEmail)
+                .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + userEmail));
+
+        // Check if the user is already a participant
+        boolean isAlreadyParticipant = eventParticipantRepo.findByEventAndUserId(event, user.getId()).isPresent();
+
+        if (isAlreadyParticipant) {
+            throw new EventAlreadyJoinedException(ErrorMessage.USER_ALREADY_JOINED_EVENT + event.getEventTitle());
+        }
+
+        // Create and save the user as a participant
+        EventParticipant eventParticipant = EventParticipant.createParticipant(event, user.getId(), EventRole.PARTICIPANT);
+        eventParticipantRepo.save(eventParticipant);
+
+        return modelMapper.map(eventParticipant, EventParticipantDto.class);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @Transactional
+    public EventParticipantDto leaveEvent(Long eventId, String userEmail) {
+        // Find the event by ID
+        Event event = eventRepo.findById(eventId)
+                .orElseThrow(() -> new EventNotFoundException(ErrorMessage.EVENT_NOT_FOUND + eventId));
+
+        // Find the user by email
+        User user = userRepo.findByEmail(userEmail)
+                .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL + userEmail));
+
+        // Check if the user is the author
+        if (event.getAuthor().getId().equals(user.getId())) {
+            throw new EventAuthorCannotLeaveException(ErrorMessage.AUTHOR_CANNOT_LEAVE_EVENT + event.getEventTitle());
+        }
+
+        // Find the participant to remove
+        EventParticipant participant = eventParticipantRepo.findByEventAndUserId(event, user.getId())
+                .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUND + eventId));
+
+        // Remove the participant from the event
+        eventParticipantRepo.delete(participant);
+
+        // Convert the removed participant to EventParticipantDto
+        return modelMapper.map(participant, EventParticipantDto.class);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @PreAuthorize("@eventServiceImpl.isCurrentUserId(#userId)")
+    @Transactional(readOnly = true)
+    public List<EventParticipantDto> getEventsUserJoinedOrScheduled(Long userId) {
+        // Find all events where the user is a participant or author
+        List<EventParticipant> participants = eventParticipantRepo.findAllByUserId(userId);
+
+        return participants.stream()
+                .map(participant -> modelMapper.map(participant, EventParticipantDto.class))
+                .toList();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Set<String> getDistinctLocations() {
+        // Return the distinct locations
+        return eventDayDetailsRepo.findDistinctLocations();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Page<EventDto> findFilteredEvents(EventFilterDto filterDto, Pageable pageable) {
+        EventSpecification specification = getSpecification(filterDto);
+
+        Page<Event> filteredEvents = eventRepo.findAll(specification, pageable);
+
+        return filteredEvents.map(event -> modelMapper.map(event, EventDto.class));
+    }
+
+    /**
+     * Returns {@link EventSpecification} for entered filter parameters.
+     *
+     * @param filterDto contains data from filters.
+     */
+    private EventSpecification getSpecification(EventFilterDto filterDto) {
+        List<SearchCriteria> searchCriteria = buildSearchCriteria(filterDto);
+        return new EventSpecification(searchCriteria);
+    }
+
+    /**
+     * Build {@link SearchCriteria} based on {@link EventFilterDto}.
+     *
+     * @param filterDto contains data from filters.
+     * @return a list of {@link SearchCriteria}.
+     */
+    private List<SearchCriteria> buildSearchCriteria(EventFilterDto filterDto) {
+        List<SearchCriteria> criteriaList = new ArrayList<>();
+
+        // Add eventLine to criteria
+        setValueIfNotEmpty(criteriaList, "eventLine", filterDto.getEventLine() != null ? filterDto.getEventLine().toString() : null);
+
+        // Add eventLocation to criteria
+        setValueIfNotEmpty(criteriaList, "eventLocation", filterDto.getEventLocation() != null ? filterDto.getEventLocation() : null);
+
+        // Add eventTime to criteria
+        setValueIfNotEmpty(criteriaList, "eventTime", filterDto.getEventTime() != null ? filterDto.getEventTime().toString() : null);
+
+        return criteriaList;
+    }
+
+    /**
+     * Method that adds new {@link SearchCriteria} if the value is not empty.
+     *
+     * @param searchCriteriaList - list of existing {@link SearchCriteria}.
+     * @param key                - key of the field.
+     * @param value              - value of the field.
+     */
+    private void setValueIfNotEmpty(List<SearchCriteria> searchCriteriaList, String key, String value) {
+        if (value != null && !value.isEmpty()) {
+            searchCriteriaList.add(SearchCriteria.builder()
+                    .key(key)
+                    .type(key)
+                    .value(value)
+                    .build());
+        }
+    }
+
+    /**
+     * Method to upload a list of images for an event. If no images are provided,
+     * a default image is added to the event.
+     *
+     * @param images a list of MultipartFile objects.
+     * @return A list of EventImage entities. If no images are provided, a default image is added.
+     */
+    private List<EventImage> uploadImages(List<MultipartFile> images) {
+        // Initialize the list to store the event images
+        List<EventImage> eventImages = new ArrayList<>();
+
+        // If list of images is empty, add default image
+        if (images == null || images.isEmpty()) {
+            eventImages.add(new EventImage(DEFAULT_EVENT_IMAGE));
+        } else {
+            // Iterate through the list of images and upload each one
+            for (MultipartFile image : images) {
+                String imagePath = fileService.upload(image);
+                eventImages.add(new EventImage(imagePath));
+            }
+        }
+
+        // Return the list of uploaded event images
+        return eventImages;
+    }
+
+    /**
+     * Method to send event details via email using a REST client.
+     * This method builds an EventSendEmailDto object.
+     *
+     * @param savedEvent the Event entity containing the event details to send.]
+     */
+    public void sendEmailDto(Event savedEvent) {
+        // Retrieve the access token from the HTTP request header
+        String accessToken = httpServletRequest.getHeader(AUTHORIZATION);
+
+        // Map the User entity to an AuthorDto object
+        PlaceAuthorDto placeAuthorDto = modelMapper.map(savedEvent.getAuthor(), PlaceAuthorDto.class);
+
+        // Get the list of event dates
+        List<String> eventDayList = savedEvent.getEventDayDetailsList().stream()
+                .map(eventDayDetail -> eventDayDetail.getEventDate().toString())
+                .toList();
+
+        // Calculate the duration in days
+        int durationInDays = savedEvent.getEventDayDetailsList().size();
+
+        Optional<EventDayDetails> firstDayDetail = savedEvent.getEventDayDetailsList().stream().findFirst();
+        LocalTime eventStartTime = firstDayDetail.map(EventDayDetails::getEventStartTime).orElse(null);
+        LocalTime eventEndTime = firstDayDetail.map(EventDayDetails::getEventEndTime).orElse(null);
+        String onlinePlace = firstDayDetail.map(EventDayDetails::getOnlinePlace).orElse(null);
+        String offlinePlace = firstDayDetail.map(EventDayDetails::getOfflinePlace).orElse(null);
+
+        // Build the EventSendEmailDto object
+        EventSendEmailDto eventSendEmailDto = EventSendEmailDto.builder()
+                .eventTitle(savedEvent.getEventTitle())
+                .description(savedEvent.getDescription())
+                .eventType(savedEvent.getEventType().toString())
+                .eventDayList(eventDayList) // Event dates list
+                .durationInDays(durationInDays) // Duration in days
+                .eventStartTime(eventStartTime)
+                .eventEndTime(eventEndTime)
+                .onlinePlace(onlinePlace)
+                .offlinePlace(offlinePlace)
+                .imagePath(savedEvent.getImages().stream()
+                        .map(EventImage::getImagePath)
+                        .toList())
+                .author(placeAuthorDto)
+                .secureToken(accessToken)
+                .build();
+
+        // Send the event details
+        restClient.addEvent(eventSendEmailDto);
+    }
+
 
     /**
      * {@inheritDoc}
@@ -118,68 +352,6 @@ public class EventServiceImpl implements EventService {
 
         Set<EventDto> resultDto = eventsFromDb.stream().map(event -> modelMapper.map(event, EventDto.class)).collect(Collectors.toSet());
         return resultDto;
-    }
-
-    private List<EventImage> uploadImages(List<MultipartFile> images) {
-        // Initialize the list to store the event images
-        List<EventImage> eventImages = new ArrayList<>();
-
-        // If list of images is empty, add default image
-        if (images == null || images.isEmpty()) {
-            eventImages.add(new EventImage(DEFAULT_EVENT_IMAGE));
-        } else {
-            // Iterate through the list of images and upload each one
-            for (MultipartFile image : images) {
-                String imagePath = fileService.upload(image);
-                eventImages.add(new EventImage(imagePath));
-            }
-        }
-
-        // Return the list of uploaded event images
-        return eventImages;
-    }
-
-    public void sendEmailDto(Event savedEvent) {
-        // Retrieve the access token from the HTTP request header
-        String accessToken = httpServletRequest.getHeader(AUTHORIZATION);
-
-        // Map the User entity to an AuthorDto object
-        PlaceAuthorDto placeAuthorDto = modelMapper.map(savedEvent.getAuthor(), PlaceAuthorDto.class);
-
-        // Get the list of event dates
-        List<String> eventDayList = savedEvent.getEventDayDetailsList().stream()
-                .map(eventDayDetail -> eventDayDetail.getEventDate().toString())
-                .collect(Collectors.toList());
-
-        // Calculate the duration in days
-        int durationInDays = savedEvent.getEventDayDetailsList().size();
-
-        Optional<EventDayDetails> firstDayDetail = savedEvent.getEventDayDetailsList().stream().findFirst();
-        LocalTime eventStartTime = firstDayDetail.map(EventDayDetails::getEventStartTime).orElse(null);
-        LocalTime eventEndTime = firstDayDetail.map(EventDayDetails::getEventEndTime).orElse(null);
-        String onlinePlace = firstDayDetail.map(EventDayDetails::getOnlinePlace).orElse(null);
-        String offlinePlace = firstDayDetail.map(EventDayDetails::getOfflinePlace).orElse(null);
-
-        // Build the EventSendEmailDto object
-        EventSendEmailDto eventSendEmailDto = EventSendEmailDto.builder()
-                .eventTitle(savedEvent.getEventTitle())
-                .description(savedEvent.getDescription())
-                .eventType(savedEvent.getEventType().toString())
-                .eventDayList(eventDayList) // Event dates list
-                .durationInDays(durationInDays) // Duration in days
-                .eventStartTime(eventStartTime)
-                .eventEndTime(eventEndTime)
-                .onlinePlace(onlinePlace)
-                .offlinePlace(offlinePlace)
-                .imagePath(savedEvent.getImages().stream()
-                        .map(EventImage::getImagePath)
-                        .collect(Collectors.toList()))
-                .author(placeAuthorDto)
-                .secureToken(accessToken)
-                .build();
-
-        // Send the event details
-        restClient.addEvent(eventSendEmailDto);
     }
 
     @Override
