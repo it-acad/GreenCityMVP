@@ -1,6 +1,7 @@
 package greencity.service;
 
 import greencity.dto.PageableDto;
+import greencity.dto.search.SearchEventDto;
 import greencity.dto.search.SearchNewsDto;
 import greencity.dto.search.SearchResponseDto;
 import org.springframework.data.domain.Pageable;
@@ -12,6 +13,9 @@ import org.springframework.data.domain.Pageable;
  * @version 1.0
  */
 public interface SearchService {
+
+    PageableDto<SearchEventDto> searchAllEvents(Pageable pageable, String searchQuery, String languageCode);
+
     /**
      * Method that allow you to search {@link SearchResponseDto}.
      *

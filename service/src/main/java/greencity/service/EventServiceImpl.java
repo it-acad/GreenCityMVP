@@ -11,6 +11,25 @@ import greencity.exception.exceptions.*;
 import greencity.filters.EventSpecification;
 import greencity.filters.SearchCriteria;
 import greencity.repository.*;
+import greencity.dto.PageableDto;
+import greencity.dto.event.EventCreationDtoRequest;
+import greencity.dto.event.EventDto;
+import greencity.dto.event.EventEditDto;
+import greencity.dto.event.EventSendEmailDto;
+import greencity.dto.search.SearchEventDto;
+import greencity.dto.user.PlaceAuthorDto;
+import greencity.dto.user.UserVO;
+import greencity.entity.Event;
+import greencity.entity.EventDayDetails;
+import greencity.entity.EventImage;
+import greencity.entity.User;
+import greencity.exception.exceptions.EventNotFoundException;
+import greencity.exception.exceptions.NotFoundException;
+import greencity.exception.exceptions.NotSavedException;
+import greencity.repository.EventDayDetailsRepo;
+import greencity.repository.EventRepo;
+import greencity.repository.EventSearchRepo;
+import greencity.repository.UserRepo;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -38,6 +57,7 @@ import static greencity.constant.AppConstant.DEFAULT_EVENT_IMAGE;
 public class EventServiceImpl implements EventService {
     private final EventRepo eventRepo;
     private final UserRepo userRepo;
+    private final EventSearchRepo eventSearchRepo;
     private final FileService fileService;
     private final UserService userService;
     private final RestClient restClient;
@@ -379,6 +399,20 @@ public class EventServiceImpl implements EventService {
             eventRepo.saveAndFlush(currentEvent);
             return modelMapper.map(currentEvent, EventDto.class);
         }
+    }
+
+    @Override
+    public PageableDto<SearchEventDto> search(Pageable pageable, String searchQuery, String languageCode) {
+        Page<Event> page = this.eventSearchRepo.find(pageable, searchQuery, languageCode);
+        List<SearchEventDto> searchEventDtoList = page.getContent()
+                .stream()
+                .map(event -> this.modelMapper.map(event, SearchEventDto.class))
+                .toList();
+
+        return new PageableDto<>(searchEventDtoList,
+                page.getTotalElements(),
+                page.getPageable().getPageNumber(),
+                page.getTotalPages());
     }
 
     public boolean isEventOwner(Long eventId, Long userId) {
