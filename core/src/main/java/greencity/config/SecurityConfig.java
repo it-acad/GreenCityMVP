@@ -205,6 +205,10 @@ public class SecurityConfig {
                                 "/habit/tags/search",
                                 "/habit/search",
                                 "/habit/{habitId}/friends/profile-pictures",
+                                "/notifications/unread",
+                                "/notifications/all",
+                                "/notifications/topThree",
+                                "/notifications/sorted")
                                 COMMENTS,
                                 "/comments/allReplies/{commentId}")
                         .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
@@ -229,6 +233,7 @@ public class SecurityConfig {
                                 "/user/{userId}/habit",
                                 "/habit/custom",
                                 "/custom/shopping-list-items/{userId}/{habitId}/custom-shopping-list-items",
+                                "/notifications/markAsViewed/{id}")
                                 COMMENTS + "/reply/{commentId}")
                         .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
                         .requestMatchers(HttpMethod.PUT,

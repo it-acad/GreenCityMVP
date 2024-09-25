@@ -403,6 +403,16 @@ public class ModelUtils {
             .build();
     }
 
+    public static Notification getNotification() {
+        return Notification.builder()
+                .user(getUser())
+                .section(NotificationSource.COMMENT)
+                .sectionType(NotificationSourceType.COMMENT_LIKED)
+                .text("text")
+                .receivedTime(LocalDateTime.now())
+                .isRead(false)
+                .build();
+    }
     public static EventDayDetailsDto getEventDayDetailsDto() {
         return EventDayDetailsDto.builder()
                 .id(1L)
