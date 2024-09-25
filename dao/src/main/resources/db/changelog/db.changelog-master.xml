@@ -176,6 +176,7 @@
     <include file="db/changelog/logs/ch-drop-places-table-Bokalo.xml"/>
     <include file="db/changelog/logs/ch-drop-news-subscribers-table-Bokalo.xml"/>
     <include file="db/changelog/logs/ch-drop-user-friends-table-Bokalo.xml"/>
+    <include file="db/changelog/logs/ch-add_friendship_request_and_users_friends_tables_by_Chernenko.xml"/>
     <include file="db/changelog/logs/ch-event-Chernenko.xml"/>
     <include file="db/changelog/logs/ch-event-vulook.xml"/>
 </databaseChangeLog>

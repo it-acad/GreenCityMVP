@@ -292,6 +292,20 @@ public class SecurityConfig {
                                 "/comments")
                         .hasAnyRole(ADMIN)
                         .requestMatchers(HttpMethod.GET,
+                                "/friends",
+                                "/friends/not-friends-yet",
+                                "/friends/friendRequests")
+                        .hasAnyRole(ADMIN, USER)
+                        .requestMatchers(HttpMethod.POST,
+                                "/friends/{friendId}")
+                        .hasAnyRole(ADMIN, USER)
+                        .requestMatchers(HttpMethod.PATCH,
+                                "/friends/{friendId}/acceptFriend")
+                        .hasAnyRole(ADMIN, USER)
+                        .requestMatchers(HttpMethod.DELETE,
+                                "/friends/{friendId}",
+                                "/friends/{friendId}/cancelFriend",
+                                "/friends/{friendId}/declineFriend")
                                 "/events/{userID}")
                         .hasAnyRole(ADMIN, USER)
                         .requestMatchers(HttpMethod.POST,
