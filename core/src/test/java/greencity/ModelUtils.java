@@ -9,6 +9,8 @@ import greencity.dto.econewscomment.AddEcoNewsCommentDtoRequest;
 import greencity.dto.econewscomment.AddEcoNewsCommentDtoResponse;
 import greencity.dto.econewscomment.EcoNewsCommentAuthorDto;
 import greencity.dto.econewscomment.EcoNewsCommentDto;
+import greencity.dto.event.EventDayDetailsDto;
+import greencity.dto.event.EventDto;
 import greencity.dto.habit.*;
 import greencity.dto.habitfact.*;
 import greencity.dto.habitstatistic.AddHabitStatisticDto;
@@ -37,10 +39,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.Principal;
 import java.time.*;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class ModelUtils {
 
@@ -414,4 +413,34 @@ public class ModelUtils {
                 .isRead(false)
                 .build();
     }
+    public static EventDayDetailsDto getEventDayDetailsDto() {
+        return EventDayDetailsDto.builder()
+                .id(1L)
+                .eventDate(LocalDate.now())
+                .eventStartTime(LocalTime.of(10, 10))
+                .eventEndTime(LocalTime.of(12, 10))
+                .isAllDateDuration(false)
+                .isOnline(true)
+                .isOffline(true)
+                .onlinePlace("https://example.org")
+                .offlinePlace("Ukraine, Kyiv, somestreet 99")
+                .build();
+    }
+
+    public static EventDto getEventDto() {
+        return EventDto.builder()
+                .id(1L)
+                .eventTitle("Some event tittle")
+                .description("This is a description of the event. It can be quite long, but not too long.")
+                .eventType(EventType.OPEN.toString())
+                .eventDayDetailsList(Set.of(getEventDayDetailsDto()))
+                .imagePathList(new ArrayList<>(List.of(
+                        "https://someimageurl1.net",
+                        "https://someimageurl2.net",
+                        "https://someimageurl3.net"
+                )))
+                .author(AuthorDto.builder().id(1L).name("Some Author").build())
+                .build();
+    }
+
 }

@@ -12,6 +12,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.authentication.configuration.EnableGlobalAuthentication;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -37,6 +38,7 @@ import static org.springframework.security.config.http.SessionCreationPolicy.STA
 @Configuration
 @EnableWebSecurity
 @EnableGlobalAuthentication
+@EnableMethodSecurity
 public class SecurityConfig {
     private static final String ECONEWS_COMMENTS = "/econews/comments";
     private static final String USER_CUSTOM_SHOPPING_LIST_ITEMS = "/user/{userId}/custom-shopping-list-items";
@@ -46,6 +48,7 @@ public class SecurityConfig {
     private static final String CUSTOM_SHOPPING_LIST_ITEMS = "/{userId}/custom-shopping-list-items";
     private static final String HABIT_ASSIGN_ID = "/habit/assign/{habitId}";
     private static final String USER_SHOPPING_LIST = "/user/shopping-list-items";
+    private static final String COMMENTS = "/events/{eventId}/comments";
     private final JwtTool jwtTool;
     private final UserService userService;
     private final AuthenticationConfiguration authenticationConfiguration;
@@ -113,6 +116,8 @@ public class SecurityConfig {
                         .permitAll()
                         .requestMatchers(HttpMethod.GET, ECONEWS_COMMENTS)
                         .hasAnyRole(ADMIN)
+                        .requestMatchers("/error")
+                        .permitAll()
                         .requestMatchers(HttpMethod.GET,
                                 "/ownSecurity/verifyEmail",
                                 "/ownSecurity/updateAccessToken",
@@ -158,6 +163,9 @@ public class SecurityConfig {
                                 "/ownSecurity/changePassword")
                         .permitAll()
                         .requestMatchers(HttpMethod.GET,
+                        "/events/comments/{eventId}/count")
+                        .permitAll()
+                        .requestMatchers(HttpMethod.GET,
                                 "/achievements",
                                 CUSTOM_SHOPPING_LIST_ITEMS,
                                 CUSTOM_SHOPPING_LIST,
@@ -165,6 +173,7 @@ public class SecurityConfig {
                                 "/custom/shopping-list-items/{userId}/{habitId}",
                                 "/econews/count",
                                 "/econews/isLikedByUser",
+                                "/events/my-events",
                                 "/shopping-list-items",
                                 "/habit/assign/allForCurrentUser",
                                 "/habit/assign/active/{date}",
@@ -200,6 +209,8 @@ public class SecurityConfig {
                                 "/notifications/all",
                                 "/notifications/topThree",
                                 "/notifications/sorted")
+                                COMMENTS,
+                                "/comments/allReplies/{commentId}")
                         .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
                         .requestMatchers(HttpMethod.POST,
                                 "/category",
@@ -223,9 +234,11 @@ public class SecurityConfig {
                                 "/habit/custom",
                                 "/custom/shopping-list-items/{userId}/{habitId}/custom-shopping-list-items",
                                 "/notifications/markAsViewed/{id}")
+                                COMMENTS + "/reply/{commentId}")
                         .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
                         .requestMatchers(HttpMethod.PUT,
                                 "/habit/statistic/{id}",
+                                "/events/{eventId}",
                                 "/econews/update",
                                 "/ownSecurity",
                                 "/user/profile",
@@ -245,18 +258,23 @@ public class SecurityConfig {
                                 USER_SHOPPING_LIST + "/{shoppingListItemId}/status/{status}",
                                 USER_SHOPPING_LIST + "/{userShoppingListItemId}",
                                 "/user/profilePicture",
-                                "/user/deleteProfilePicture")
+                                "/user/deleteProfilePicture",
+                                COMMENTS + "/reply/{commentId}")
                         .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
                         .requestMatchers(HttpMethod.DELETE,
                                 ECONEWS_COMMENTS,
                                 "/events/comments/{eventCommentId}",
+                                "/events/{eventId}",
+                                "/events/comments/{eventId}/{commentId}",
+                                "/events/{eventId}/leave",
                                 "/econews/{econewsId}",
                                 CUSTOM_SHOPPING_LIST_ITEMS,
                                 CUSTOM_SHOPPING_LIST_URL,
                                 "/favorite_place/{placeId}",
                                 "/social-networks",
                                 USER_CUSTOM_SHOPPING_LIST_ITEMS,
-                                USER_SHOPPING_LIST + "/user-shopping-list-items")
+                                USER_SHOPPING_LIST + "/user-shopping-list-items",
+                                COMMENTS + "/reply/{commentId}")
                         .hasAnyRole(USER, ADMIN, MODERATOR, UBS_EMPLOYEE)
                         .requestMatchers(HttpMethod.GET,
                                 "/newsSubscriber",
@@ -288,6 +306,28 @@ public class SecurityConfig {
                                 "/facts/{factId}",
                                 "/comments")
                         .hasAnyRole(ADMIN)
+                        .requestMatchers(HttpMethod.GET,
+                                "/friends",
+                                "/friends/not-friends-yet",
+                                "/friends/friendRequests")
+                        .hasAnyRole(ADMIN, USER)
+                        .requestMatchers(HttpMethod.POST,
+                                "/friends/{friendId}")
+                        .hasAnyRole(ADMIN, USER)
+                        .requestMatchers(HttpMethod.PATCH,
+                                "/friends/{friendId}/acceptFriend")
+                        .hasAnyRole(ADMIN, USER)
+                        .requestMatchers(HttpMethod.DELETE,
+                                "/friends/{friendId}",
+                                "/friends/{friendId}/cancelFriend",
+                                "/friends/{friendId}/declineFriend")
+                                "/events/{userID}")
+                        .hasAnyRole(ADMIN, USER)
+                        .requestMatchers(HttpMethod.POST,
+                                "/events",
+                                "/events/{eventId}/join",
+                                "/events/filter")
+                        .hasAnyRole(ADMIN, USER)
                         .anyRequest().hasAnyRole(ADMIN))
                 .logout(logout -> logout.logoutUrl("/logout")
                         .logoutRequestMatcher(new AntPathRequestMatcher("/management/logout", "GET"))

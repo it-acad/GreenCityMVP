@@ -27,6 +27,14 @@ public final class SwaggerExampleModel {
             + "  \"textTranslation\":\n"
             + "     {\"content\": \"string\",\n"
             + "     \"languageCode\": \"string\"}\n";
+    private static final String UPDATE_ECO_NEWS_DTO_EXAMPLE =
+            "  \"title\": \"Some title\",\n" +
+                    "  \"content\": \"Some content at least 20 characters long.\",\n" +
+                    "  \"shortInfo\": \"Some short info\",\n" +
+                    "  \"tags\": [\n" +
+                    "    \"News\"\n" +
+                    "  ],\n" +
+                    "  \"source\": \"https://example.org\"\n";
 
     private static final String AFTER_EXAMPLE = "\t</pre>\n"
         + "</div>";
@@ -53,28 +61,28 @@ public final class SwaggerExampleModel {
             + IMAGE_DESCRIPTION
             + BEFORE_EXAMPLE
             + "{\n"
-            + "  \"id\": 0,\n"
-            + EXAMPLE
+            + "  \"id\": 1,\n"
+            + UPDATE_ECO_NEWS_DTO_EXAMPLE
             + "}\n"
             + AFTER_EXAMPLE;
     public static final String ADD_EVENT = BEFORE_EXAMPLE
-        + "{\n"
-        + "\t\"title\":\"string\",\n"
-        + "\t\"description\":\"string\",\n"
-        + "\t\"open\":true,\n"
-        + "\t\"datesLocations\":[\n"
-        + "\t\t{\n"
-        + "\t\t\t\"startDate\":\"2023-05-27T15:00:00Z\",\n"
-        + "\t\t\t\"finishDate\":\"2023-05-27T17:00:00Z\",\n"
-        + "\t\t\t\"coordinates\":{\n"
-        + "\t\t\t\t\"latitude\":1,\n"
-        + "\t\t\t\t\"longitude\":1\n"
-        + "\t\t\t},\n"
-        + "\t\t\t\"onlineLink\":\"string\"\n"
-        + "\t\t}\n"
-        + "\t],\n"
-        + "\t\"tags\":[\"Social\"]\n"
-        + "}" + AFTER_EXAMPLE;
+        + "{\n" +
+            "  \"eventTitle\": \"\",\n" +
+            "  \"description\": \"This is a description.\",\n" +
+            "  \"eventDayDetailsList\": [\n" +
+            "    {\n" +
+            "      \"eventDate\": \"2024-03-01\",\n" +
+            "      \"eventStartTime\": \"10:00\",\n" +
+            "      \"eventEndTime\": \"12:00\",\n" +
+            "      \"isAllDateDuration\": false,\n" +
+            "      \"isOnline\": true,\n" +
+            "      \"isOffline\": true,\n" +
+            "      \"offlinePlace\": \"Offline Place\",\n" +
+            "      \"onlinePlace\": \"Online Place\"\n" +
+            "    }\n" +
+            "  ],\n" +
+            "  \"eventType\": \"OPEN\"\n" +
+            "}" + AFTER_EXAMPLE;
 
     public static final String UPDATE_EVENT = BEFORE_EXAMPLE
         + "{\n"
