@@ -4,6 +4,7 @@ import greencity.client.RestClient;
 import greencity.constant.ErrorMessage;
 import greencity.dto.event.AddEventCommentDtoRequest;
 import greencity.dto.event.AddEventCommentDtoResponse;
+import greencity.dto.event.EventCommentSendEmailDto;
 import greencity.dto.event.EventCommentNotificationDto;
 import greencity.dto.eventcomment.EventCommentDtoRequest;
 import greencity.dto.eventcomment.EventCommentDtoResponse;
@@ -12,6 +13,7 @@ import greencity.dto.user.UserVO;
 import greencity.entity.Event;
 import greencity.entity.EventComment;
 import greencity.entity.User;
+import greencity.exception.exceptions.EventCommentNotFoundException;
 import greencity.exception.exceptions.CommentNotFoundException;
 import greencity.exception.exceptions.EventNotFoundException;
 import greencity.exception.exceptions.InvalidCommentIdException;
@@ -25,6 +27,7 @@ import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,6 +49,7 @@ import static greencity.constant.AppConstant.AUTHORIZATION;
 @Service
 @AllArgsConstructor
 @Transactional
+@Slf4j
 public class EventCommentServiceImpl implements EventCommentService {
     private final EventCommentRepo eventCommentRepo;
     private final EventRepo eventRepo;
@@ -92,11 +96,29 @@ public class EventCommentServiceImpl implements EventCommentService {
         //send notification to organizer(User author)
         sendNotificationToOrganizer(event, savedComment);
 
+        AddEventCommentDtoResponse responseDto = modelMapper.map(savedComment, AddEventCommentDtoResponse.class);
+        responseDto.setEventId(savedComment.getEvent().getId());
+        responseDto.setUserId(savedComment.getUser().getId());
+        responseDto.setUserName(savedComment.getUser().getName());
+        responseDto.setCreatedDate(savedComment.getCreatedAt());
+        responseDto.setModifiedDate(savedComment.getUpdatedAt());
+
+        return responseDto;
         return this.modelMapper.map(savedComment, AddEventCommentDtoResponse.class);
     }
 
     @Override
     public List<AddEventCommentDtoResponse> getCommentsByEventId(Long eventId) {
+        if (!eventRepo.existsById(eventId)) {
+            throw new EventNotFoundException("Event not found");
+        }
+        List<EventComment> comments = eventCommentRepo.findByEventIdOrderByCreatedAtDesc(eventId);
+
+        return comments.stream().map(comment -> AddEventCommentDtoResponse.builder()
+                .id(comment.getId())
+                .text(comment.getText())
+                .build()
+        ).collect(Collectors.toList());
         List<EventComment> comments = this.eventCommentRepo.findByEventIdOrderByCreatedDateDesc(eventId);
 
         return comments.stream()
@@ -113,6 +135,37 @@ public class EventCommentServiceImpl implements EventCommentService {
     }
 
     @Override
+    public AddEventCommentDtoResponse getCommentById(Long commentId) {
+        EventComment comment = eventCommentRepo.findById(commentId)
+                .orElseThrow(() -> new EventCommentNotFoundException("Comment not found"));
+
+        AddEventCommentDtoResponse responseDto = modelMapper.map(comment, AddEventCommentDtoResponse.class);
+        responseDto.setEventId(comment.getEvent().getId());
+        responseDto.setUserId(comment.getUser().getId());
+        responseDto.setUserName(comment.getUser().getName());
+        responseDto.setCreatedDate(comment.getCreatedAt());
+        responseDto.setModifiedDate(comment.getUpdatedAt());
+
+        return responseDto;
+    }
+
+    @Override
+    public void deleteCommentById(Long eventId, Long commentId, UserVO currentUserVO) {
+        if(!eventRepo.existsById(eventId)) {
+            throw new EventNotFoundException("Event not found with id: " + eventId);
+        } else {
+            if(!eventCommentRepo.existsById(commentId) || !Objects.equals(currentUserVO.getId(),
+                    eventCommentRepo.findById(commentId).get().getUser().getId())) {
+                throw new EventCommentNotFoundException("Comment not found with id: " + commentId + " or user is not author of comment");
+            } else {
+                eventCommentRepo.deleteById(commentId);
+            }
+        }
+    }
+
+    private void sendNotificationToOrganizer(Event event, EventComment eventComment) {
+        String accessToken = httpServletRequest.getHeader(AUTHORIZATION);
+=======
     public EventCommentDtoResponse saveReply(EventCommentDtoRequest commentDtoRequest, Long commentId, Long
             authorId, Long eventId) {
         EventComment parentComment = this.eventCommentRepo.findById(commentId)
@@ -181,13 +234,18 @@ public class EventCommentServiceImpl implements EventCommentService {
 
         PlaceAuthorDto placeAuthorDto = this.modelMapper.map(event.getAuthor(), PlaceAuthorDto.class);
 
-        //build dto object
-        EventCommentNotificationDto commentNotificationDto = EventCommentNotificationDto.builder()
+        EventCommentSendEmailDto commentNotificationDto = EventCommentSendEmailDto.builder()
                 .eventTitle(event.getEventTitle())
                 .commentText(eventComment.getContent())
                 .commentAuthor(eventComment.getAuthor().getName())
                 .author(placeAuthorDto)
                 .secureToken(accessToken)
+                .commentDate(eventComment.getCreatedAt().toString())
+                .commentId(eventComment.getId())
+                .eventId(event.getId())
+                .build();
+
+        restClient.sendEventCommentNotification(commentNotificationDto);
                 .commentDate(eventComment.getCreatedDate().toString())
                 .build();
 
@@ -214,13 +272,12 @@ public class EventCommentServiceImpl implements EventCommentService {
             }
         }
         if (!invalidMentions.isEmpty()) {
-            throw new IllegalArgumentException("The following mentions are invalid: "
+            throw new IllegalArgumentException("Can't find user with name: "
                     + invalidMentions.toString().trim());
         }
         return mentionedUsers;
     }
 
-    //load configuration for bad words
     private static void loadConfigs() {
         try {
             BufferedReader reader = new BufferedReader(new InputStreamReader(new URL("https://docs.google.com/spreadsheets/d/1hIEi2YG3ydav1E06Bzf2mQbGZ12kh2fe4ISgLg_UBuM/export?format=csv").openConnection().getInputStream()));
@@ -255,7 +312,6 @@ public class EventCommentServiceImpl implements EventCommentService {
         }
     }
 
-    //check for bad words
     private static ArrayList<String> badWordsFound(String input) {
         if (input == null) {
             return new ArrayList<>();
@@ -294,7 +350,6 @@ public class EventCommentServiceImpl implements EventCommentService {
         return badWords;
     }
 
-    //filtering text for bad words
     @Override
     public String filterText(String input, String userName) {
         ArrayList<String> badWords = badWordsFound(input);

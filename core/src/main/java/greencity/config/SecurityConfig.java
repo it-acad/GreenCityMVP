@@ -163,6 +163,9 @@ public class SecurityConfig {
                                 "/ownSecurity/changePassword")
                         .permitAll()
                         .requestMatchers(HttpMethod.GET,
+                        "/events/comments/{eventId}/count")
+                        .permitAll()
+                        .requestMatchers(HttpMethod.GET,
                                 "/achievements",
                                 CUSTOM_SHOPPING_LIST_ITEMS,
                                 CUSTOM_SHOPPING_LIST,
@@ -257,6 +260,7 @@ public class SecurityConfig {
                                 ECONEWS_COMMENTS,
                                 "/events/comments/{eventCommentId}",
                                 "/events/{eventId}",
+                                "/events/comments/{eventId}/{commentId}",
                                 "/events/{eventId}/leave",
                                 "/econews/{econewsId}",
                                 CUSTOM_SHOPPING_LIST_ITEMS,

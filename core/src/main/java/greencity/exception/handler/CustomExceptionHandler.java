@@ -617,6 +617,21 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     /**
+     * Customize the response for EventCommentNotFoundException.
+     *
+     * @param ex      the exception
+     * @param request the current request
+     * @return a {@code ResponseEntity} message
+     */
+    @ExceptionHandler(EventCommentNotFoundException.class)
+    public final ResponseEntity<Object> handleEventCommentNotFoundException(
+            EventCommentNotFoundException ex, WebRequest request){
+        ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
+        log.trace(ex.getMessage(), ex);
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(exceptionResponse);
+    }
+
+    /**
      * Customize the response for EventEditDtoException.
      *
      * @param ex      the exception
@@ -700,5 +715,10 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
     private Map<String, Object> getErrorAttributes(WebRequest webRequest) {
         return new HashMap<>(errorAttributes.getErrorAttributes(webRequest,
                 ErrorAttributeOptions.of(ErrorAttributeOptions.Include.MESSAGE)));
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<String> handleIllegalArgumentException(IllegalArgumentException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
     }
 }

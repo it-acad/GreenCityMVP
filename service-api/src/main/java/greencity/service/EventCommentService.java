@@ -18,6 +18,8 @@ public interface EventCommentService {
 
     List<AddEventCommentDtoResponse> getCommentsByEventId(Long eventId);
 
+    String filterText(String input, String userName);
+  
     void deleteReplyById(Long replyToCommentId, Long authorId);
 
     List<EventCommentDtoResponse> findAllReplyByCommentId(Long commentId);
@@ -25,4 +27,8 @@ public interface EventCommentService {
     String filterText(String input , String userName);
 
     Long showQuantityOfAddedComments(Long eventId);
+
+    AddEventCommentDtoResponse getCommentById(Long commentId);
+
+    void deleteCommentById(Long eventId, Long commentId, UserVO currentUser);
 }

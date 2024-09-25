@@ -7,6 +7,9 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.List;
 
 public interface EventCommentRepo extends JpaRepository<EventComment, Long> {
+    List<EventComment> findByEventIdOrderByCreatedAtDesc(Long eventId);
+
+    List<EventComment> findByParentCommentIdOrderByCreatedAtDesc(Long parentCommentId);
     @Query("SELECT c FROM EventComment c WHERE c.parentComment.id = :commentId")
     List<EventComment> findAllByEventCommentId(Long commentId);
 
@@ -16,7 +19,6 @@ public interface EventCommentRepo extends JpaRepository<EventComment, Long> {
     //get all answers under main comment
     List<EventComment> findByParentCommentIdOrderByCreatedDateDesc(Long parentCommentId);
 
-    //count quantity of comments
     @Query("SELECT COUNT(c) FROM EventComment c WHERE c.event.id = :eventId")
     Long countByEventId(Long eventId);
 }
