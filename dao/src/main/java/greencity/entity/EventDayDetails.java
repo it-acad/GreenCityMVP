@@ -27,7 +27,7 @@ public class EventDayDetails {
 
     @Column(name = "event_end_time", nullable = false)
     private LocalTime eventEndTime;
-    
+
     @Column(name = "all_day", nullable = false)
     private boolean isAllDateDuration;
 

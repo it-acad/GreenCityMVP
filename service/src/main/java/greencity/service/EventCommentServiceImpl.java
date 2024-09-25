@@ -1,24 +1,37 @@
 package greencity.service;
 
 import greencity.client.RestClient;
+import greencity.constant.ErrorMessage;
 import greencity.dto.event.AddEventCommentDtoRequest;
 import greencity.dto.event.AddEventCommentDtoResponse;
 import greencity.dto.event.EventCommentSendEmailDto;
+import greencity.dto.event.EventCommentNotificationDto;
+import greencity.dto.eventcomment.EventCommentDtoRequest;
+import greencity.dto.eventcomment.EventCommentDtoResponse;
 import greencity.dto.user.PlaceAuthorDto;
 import greencity.dto.user.UserVO;
 import greencity.entity.Event;
 import greencity.entity.EventComment;
 import greencity.entity.User;
 import greencity.exception.exceptions.EventCommentNotFoundException;
+import greencity.exception.exceptions.CommentNotFoundException;
 import greencity.exception.exceptions.EventNotFoundException;
+import greencity.exception.exceptions.InvalidCommentIdException;
+import greencity.exception.exceptions.UserNotFoundException;
+import greencity.mapping.EventCommentDtoRequestMapper;
+import greencity.mapping.EventCommentResponseMapper;
 import greencity.repository.EventCommentRepo;
 import greencity.repository.EventRepo;
 import greencity.repository.UserRepo;
+import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.io.BufferedReader;
@@ -41,9 +54,13 @@ public class EventCommentServiceImpl implements EventCommentService {
     private final EventCommentRepo eventCommentRepo;
     private final EventRepo eventRepo;
     private final UserRepo userRepo;
+    private final EmailService emailService;
     private final HttpServletRequest httpServletRequest;
     private final RestClient restClient;
     private ModelMapper modelMapper;
+    private final EventCommentResponseMapper responseMapper;
+    private final EventCommentDtoRequestMapper requestMapper;
+    private static final Logger logger = LoggerFactory.getLogger(EventCommentServiceImpl.class.getName());
 
     static Map<String, String[]> words = new HashMap<>();
     static int largestWordLength = 0;
@@ -55,7 +72,7 @@ public class EventCommentServiceImpl implements EventCommentService {
     @Override
     public AddEventCommentDtoResponse addComment(Long eventId, AddEventCommentDtoRequest commentDto
             , UserVO currentUserVO) {
-        Event event = eventRepo.findById(eventId)
+        Event event = this.eventRepo.findById(eventId)
                 .orElseThrow(() -> new EventNotFoundException("Event not found"));
 
         String filteredText = filterText(commentDto.getText(), currentUserVO.getName());
@@ -63,18 +80,18 @@ public class EventCommentServiceImpl implements EventCommentService {
             throw new IllegalArgumentException(filteredText);
         }
 
-        User currentUser = modelMapper.map(currentUserVO, User.class);
+        User currentUser = this.modelMapper.map(currentUserVO, User.class);
 
         EventComment comment = EventComment.builder()
-                .text(filteredText)
-                .user(currentUser)
+                .content(filteredText)
+                .author(currentUser)
                 .event(event)
                 .mentionedUsers(getMentionedUsers(commentDto.getText()))
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
+                .createdDate(LocalDateTime.now())
+                .updatedDate(LocalDateTime.now())
                 .build();
 
-        EventComment savedComment = eventCommentRepo.save(comment);
+        EventComment savedComment = this.eventCommentRepo.save(comment);
 
         //send notification to organizer(User author)
         sendNotificationToOrganizer(event, savedComment);
@@ -87,6 +104,7 @@ public class EventCommentServiceImpl implements EventCommentService {
         responseDto.setModifiedDate(savedComment.getUpdatedAt());
 
         return responseDto;
+        return this.modelMapper.map(savedComment, AddEventCommentDtoResponse.class);
     }
 
     @Override
@@ -101,14 +119,19 @@ public class EventCommentServiceImpl implements EventCommentService {
                 .text(comment.getText())
                 .build()
         ).collect(Collectors.toList());
+        List<EventComment> comments = this.eventCommentRepo.findByEventIdOrderByCreatedDateDesc(eventId);
+
+        return comments.stream()
+                .map(c -> this.modelMapper.map(c, AddEventCommentDtoResponse.class))
+                .collect(Collectors.toList());
     }
 
     @Override
     public Long showQuantityOfAddedComments(Long eventId) {
-        if (!eventRepo.existsById(eventId)) {
+        if (!this.eventRepo.existsById(eventId)) {
             throw new EventNotFoundException("Event not found");
         }
-        return eventCommentRepo.countByEventId(eventId);
+        return this.eventCommentRepo.countByEventId(eventId);
     }
 
     @Override
@@ -142,13 +165,79 @@ public class EventCommentServiceImpl implements EventCommentService {
 
     private void sendNotificationToOrganizer(Event event, EventComment eventComment) {
         String accessToken = httpServletRequest.getHeader(AUTHORIZATION);
+=======
+    public EventCommentDtoResponse saveReply(EventCommentDtoRequest commentDtoRequest, Long commentId, Long
+            authorId, Long eventId) {
+        EventComment parentComment = this.eventCommentRepo.findById(commentId)
+                .orElseThrow(() -> new CommentNotFoundException(ErrorMessage.COMMENT_NOT_FOUND_BY_ID + commentId));
+        User user = this.userRepo.findById(authorId)
+                .orElseThrow(() -> new UserNotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID + authorId));
+        EventComment comment = this.requestMapper.toEntity(commentDtoRequest);
+        comment.setAuthor(user);
+        comment.setEvent(this.eventRepo.findById(eventId)
+                .orElseThrow(() -> new EventNotFoundException("ErrorMessage.EVENT_NOT_FOUND_BY_ID + eventId")));
+        comment.setParentComment(parentComment);
 
-        PlaceAuthorDto placeAuthorDto = modelMapper.map(event.getAuthor(), PlaceAuthorDto.class);
+        EventComment savedComment = this.eventCommentRepo.save(comment);
+
+        try {
+            sendReplyNotification(parentComment, savedComment);
+        } catch (MessagingException e) {
+            logger.error("Failed to send email notification", e);
+        }
+
+        return this.responseMapper.toDto(savedComment);
+    }
+
+    @Override
+    @PreAuthorize("hasRole('ADMIN') or @eventCommentServiceImpl.isOwner(#commentId, #authorId)")
+    public EventCommentDtoResponse updateReply(EventCommentDtoRequest commentDtoRequest, Long commentId, Long
+            authorId) {
+        EventComment existingComment = this.eventCommentRepo.findById(commentId)
+                .orElseThrow(() -> new CommentNotFoundException(ErrorMessage.COMMENT_NOT_FOUND_BY_ID + commentId));
+
+        existingComment.setContent(commentDtoRequest.getText());
+        existingComment.setIsEdited(true);
+        EventComment updatedComment = this.eventCommentRepo.save(existingComment);
+        return this.responseMapper.toDto(updatedComment);
+    }
+
+    @Override
+    @PreAuthorize("hasRole('ADMIN') or @eventCommentServiceImpl.isOwner(#commentId, #authorId)")
+    public void deleteReplyById(Long commentId, Long authorId) {
+        EventComment comment = this.eventCommentRepo.findById(commentId)
+                .orElseThrow(() -> new CommentNotFoundException(ErrorMessage.COMMENT_NOT_FOUND_BY_ID + commentId));
+        this.eventCommentRepo.deleteById(commentId);
+    }
+
+    @Override
+    public List<EventCommentDtoResponse> findAllReplyByCommentId(Long commentId) {
+        logger.info("Finding all replies to comment with id: {}", commentId);
+        if (commentId == null || commentId < 0) {
+            throw new InvalidCommentIdException(ErrorMessage.INVALID_COMMENT_ID + commentId);
+        }
+        EventComment comment = this.eventCommentRepo.findById(commentId)
+                .orElseThrow(() -> new CommentNotFoundException(ErrorMessage.COMMENT_NOT_FOUND_BY_ID + commentId));
+        List<EventComment> replies = this.eventCommentRepo.findAllByEventCommentId(commentId);
+        return replies.stream()
+                .map(this.responseMapper::toDto)
+                .toList();
+    }
+
+    public boolean isOwner(Long commentId, Long userId) {
+        EventComment comment = this.eventCommentRepo.findById(commentId).orElse(null);
+        return comment != null && comment.getAuthor().getId().equals(userId);
+    }
+
+    public void sendNotificationToOrganizer(Event event, EventComment eventComment) {
+        String accessToken = this.httpServletRequest.getHeader(AUTHORIZATION);
+
+        PlaceAuthorDto placeAuthorDto = this.modelMapper.map(event.getAuthor(), PlaceAuthorDto.class);
 
         EventCommentSendEmailDto commentNotificationDto = EventCommentSendEmailDto.builder()
                 .eventTitle(event.getEventTitle())
-                .commentText(eventComment.getText())
-                .commentAuthor(eventComment.getUser().getName())
+                .commentText(eventComment.getContent())
+                .commentAuthor(eventComment.getAuthor().getName())
                 .author(placeAuthorDto)
                 .secureToken(accessToken)
                 .commentDate(eventComment.getCreatedAt().toString())
@@ -157,6 +246,11 @@ public class EventCommentServiceImpl implements EventCommentService {
                 .build();
 
         restClient.sendEventCommentNotification(commentNotificationDto);
+                .commentDate(eventComment.getCreatedDate().toString())
+                .build();
+
+        //send comment details
+        this.restClient.sendEventCommentNotification(commentNotificationDto);
     }
 
     private List<User> getMentionedUsers(String text) {
@@ -169,7 +263,7 @@ public class EventCommentServiceImpl implements EventCommentService {
         while (matcher.find()) {
             String userName = matcher.group(1);
 
-            Optional<User> mentionedUser = userRepo.findByName(userName);
+            Optional<User> mentionedUser = this.userRepo.findByName(userName);
 
             if (mentionedUser.isPresent()) {
                 mentionedUsers.add(mentionedUser.get());
@@ -264,5 +358,18 @@ public class EventCommentServiceImpl implements EventCommentService {
             return "This comment were blocked because you were using swear words";
         }
         return input;
+    }
+
+    private void sendReplyNotification(EventComment parentComment, EventComment replyComment) throws MessagingException {
+        String parentCommentAuthorEmail = parentComment.getAuthor().getEmail();
+        String subject = "Your comment has a new reply";
+        String content = String.format(
+                "Hello %s,<br><br>Your comment:<br>%s<br><br>has been replied by %s:<br>%s",
+                parentComment.getAuthor().getName(),
+                parentComment.getContent(),
+                replyComment.getAuthor().getName(),
+                replyComment.getContent()
+        );
+        this.emailService.sendEmail(parentCommentAuthorEmail, subject, content);
     }
 }

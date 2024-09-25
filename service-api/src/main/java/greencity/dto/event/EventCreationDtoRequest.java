@@ -1,13 +1,12 @@
 package greencity.dto.event;
 
+import greencity.annotations.UniqueEventDayDetailsCreationDtoValidation;
 import greencity.annotations.ValidEventDayDetails;
 import greencity.constant.ServiceValidationConstants;
 import greencity.dto.user.AuthorDto;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Size;
 import lombok.*;
-import org.springframework.validation.annotation.Validated;
-
 import java.util.Set;
 
 
@@ -26,6 +25,7 @@ public class EventCreationDtoRequest {
 
     @Valid
     @Size(min = 1, max = 7, message = ServiceValidationConstants.EVENT_AMOUNT_OF_DAYS)
+    @UniqueEventDayDetailsCreationDtoValidation
     private Set<@ValidEventDayDetails EventDayDetailsCreatingDto> eventDayDetailsList;
 
     private String eventType;

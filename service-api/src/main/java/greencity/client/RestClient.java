@@ -368,8 +368,7 @@ public class RestClient {
         headers.set(AUTHORIZATION, message.getSecureToken());
         HttpEntity<EventSendEmailDto> entity = new HttpEntity<>(message, headers);
         restTemplate.exchange(greenCityUserServerAddress
-                        + RestTemplateLinks.ADD_EVENT, HttpMethod.POST, entity, Object.class)
-                .getBody();
+                        + RestTemplateLinks.ADD_EVENT, HttpMethod.POST, entity, Object.class);
     }
 
     /**
