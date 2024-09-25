@@ -5,6 +5,10 @@ import greencity.constant.AppConstant;
 import greencity.dto.PageableAdvancedDto;
 import greencity.dto.econews.*;
 import greencity.dto.econewscomment.*;
+import greencity.dto.event.EventCreationDtoRequest;
+import greencity.dto.event.EventDayDetailsCreatingDto;
+import greencity.dto.event.EventDayDetailsDto;
+import greencity.dto.event.EventDto;
 import greencity.dto.habit.*;
 import greencity.dto.habitfact.*;
 import greencity.dto.language.LanguageDTO;
@@ -684,4 +688,96 @@ public class ModelUtils {
         );
     }
 
+    public static Event getEvent() {
+        return new Event(
+                1L,
+                "Some event title",
+                "This is a description of the event. It can be quite long, but not too long.",
+                EventType.OPEN,
+                new HashSet<>(Set.of(getEventDayDetails())),
+                new ArrayList<>(List.of(
+                        EventImage.builder().id(1L).imagePath("https://someimageurl1.net").build(),
+                        EventImage.builder().id(2L).imagePath("https://someimageurl2.net").build(),
+                        EventImage.builder().id(3L).imagePath("https://someimageurl3.net").build()
+                )),
+                getUser(),
+                new HashSet<>(Set.of(getEventParticipant()))
+        );
+    }
+
+    public static EventCreationDtoRequest getEventCreationDto() {
+        return new EventCreationDtoRequest(
+                "Some event title",
+                "This is a description of the event. It can be quite long, but not too long.",
+                new HashSet<>(Set.of(eventDayDetailsCreatingDto())),
+               "OPEN",
+                AuthorDto.builder().id(1L).name("Some Author").build());
+    }
+
+    public static EventDayDetails getEventDayDetails() {
+        return EventDayDetails.builder()
+                .id(1L)
+                .eventDate(LocalDate.now())
+                .eventStartTime(LocalTime.of(10, 10))
+                .eventEndTime(LocalTime.of(12, 10))
+                .isAllDateDuration(false)
+                .isOnline(true)
+                .isOffline(true)
+                .onlinePlace("https://example.org")
+                .offlinePlace("Ukraine, Kyiv, somestreet 99")
+                .build();
+    }
+
+    public static EventParticipant getEventParticipant() {
+        return EventParticipant.builder()
+                .id(1L)
+                .event(getEvent())
+                .userId(getUser().getId())
+                .joinedAt(LocalDateTime.now())
+                .eventRole(EventRole.PARTICIPANT)
+                .build();
+    }
+
+    public static EventDayDetailsDto getEventDayDetailsDto() {
+        return EventDayDetailsDto.builder()
+                .id(1L)
+                .eventDate(LocalDate.now())
+                .eventStartTime(LocalTime.of(10, 10))
+                .eventEndTime(LocalTime.of(12, 10))
+                .isAllDateDuration(false)
+                .isOnline(true)
+                .isOffline(true)
+                .onlinePlace("https://example.org")
+                .offlinePlace("Ukraine, Kyiv, somestreet 99")
+                .build();
+    }
+
+    public static EventDayDetailsCreatingDto eventDayDetailsCreatingDto() {
+        return EventDayDetailsCreatingDto.builder()
+                .eventDate(LocalDate.now())
+                .eventStartTime(LocalTime.of(10, 10))
+                .eventEndTime(LocalTime.of(12, 10))
+                .isAllDateDuration(false)
+                .isOnline(true)
+                .isOffline(true)
+                .onlinePlace("https://example.org")
+                .offlinePlace("Ukraine, Kyiv, somestreet 99")
+                .build();
+    }
+
+    public static EventDto getEventDto() {
+    return EventDto.builder()
+            .id(1L)
+            .eventTitle("Some event tittle")
+            .description("This is a description of the event. It can be quite long, but not too long.")
+            .eventType(EventType.OPEN.toString())
+            .eventDayDetailsList(Set.of(getEventDayDetailsDto()))
+            .imagePathList(new ArrayList<>(List.of(
+                    "https://someimageurl1.net",
+                    "https://someimageurl2.net",
+                    "https://someimageurl3.net"
+            )))
+            .author(AuthorDto.builder().id(1L).name("Some Author").build())
+            .build();
+    }
 }

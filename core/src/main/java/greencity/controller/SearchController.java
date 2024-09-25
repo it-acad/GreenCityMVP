@@ -5,6 +5,7 @@ import greencity.annotations.ApiPageableWithLocale;
 import greencity.annotations.ValidLanguage;
 import greencity.constant.HttpStatuses;
 import greencity.dto.PageableDto;
+import greencity.dto.search.SearchEventDto;
 import greencity.dto.search.SearchNewsDto;
 import greencity.dto.search.SearchResponseDto;
 import greencity.service.SearchService;
@@ -17,6 +18,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import springfox.documentation.annotations.ApiIgnore;
+
 import java.util.Locale;
 
 @RestController
@@ -65,5 +68,20 @@ public class SearchController {
         @Parameter(hidden = true) @ValidLanguage Locale locale) {
         return ResponseEntity.status(HttpStatus.OK)
             .body(searchService.searchAllNews(pageable, searchQuery, locale.getLanguage()));
+    }
+
+    @Operation(summary = "Search events.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "201", description = HttpStatuses.OK),
+        @ApiResponse(responseCode = "401", description = HttpStatuses.UNAUTHORIZED)
+    })
+    @GetMapping("/events")
+    @ApiPageableWithLocale
+    public ResponseEntity<PageableDto<SearchEventDto>> searchEvents(
+        @Parameter(hidden = true) @ApiIgnore Pageable pageable,
+        @Parameter(description = "Query to search events") @RequestParam String searchQuery,
+        @Parameter(hidden = true) @ValidLanguage Locale locale) {
+        return ResponseEntity.status(HttpStatus.OK)
+            .body(searchService.searchAllEvents(pageable, searchQuery, locale.getLanguage()));
     }
 }

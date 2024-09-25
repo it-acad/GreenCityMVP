@@ -29,6 +29,16 @@ public final class ServiceValidationConstants {
     public static final String HABIT_COMPLEXITY = "{greenCity.validation.habit.complexity}";
     public static final String TAG_LIST_MIN_LENGTH = "{greenCity.validation.min.tags}";
     public static final String TAG_LIST_MAX_LENGTH = "{greenCity.validation.max.tags}";
+    public static final String EVENT_TITLE_LENGTH = "{greenCity.validation.event.titleLength}";
+    public static final String EVENT_DESCRIPTION_LENGTH = "{greenCity.validation.event.descriptionLength}";
+    public static final String EVENT_AMOUNT_OF_DAYS = "{greenCity.validation.event.amountOfDays}";
+    public static final String EVENT_DAY_RESTRICTION = "{greenCity.validation.event.dayRestriction}";
+    public static final String EVENT_TIME_RESTRICTION = "{greenCity.validation.event.timeRestriction}";
+    public static final String EVENT_START_TIME_RESTRICTION = "{greenCity.validation.event.startTimeRestriction}";
+    public static final String EVENT_EQUAL_TIME_RESTRICTION = "{greenCity.validation.event.equalTimeRestriction}";
+    public static final String EVENT_UNIQUE_DATE_RESTRICTION = "{greenCity.validation.event.uniqueDayRestriction}";
+    public static final String EVENT_URL_RESTRICTION = "{greenCity.validation.event.urlRestriction}";
+
 
     private ServiceValidationConstants() {
     }

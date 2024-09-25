@@ -16,6 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -598,6 +599,7 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
 
     /**
      * Customize the response for WrongIdException.
+     * Customize the response for EventNotFoundException.
      *
      * @param ex      the exception
      * @param request the current request
@@ -606,6 +608,24 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(FriendAlreadyAddedException.class)
     public final ResponseEntity<Object> handleFriendAlreadyAddedException(
             FriendAlreadyAddedException ex, WebRequest request) {
+    @ExceptionHandler(EventNotFoundException.class)
+    public final ResponseEntity<Object> handleEventNotFoundException(
+            EventNotFoundException ex, WebRequest request) {
+        ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
+        log.trace(ex.getMessage(), ex);
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(exceptionResponse);
+    }
+
+    /**
+     * Customize the response for EventEditDtoException.
+     *
+     * @param ex      the exception
+     * @param request the current request
+     * @return a {@code ResponseEntity} message
+     */
+    @ExceptionHandler(EventEditDtoException.class)
+    public final ResponseEntity<Object> handleEventEditDtoException(
+            EventNotFoundException ex, WebRequest request) {
         ExceptionResponse exceptionResponse = new ExceptionResponse(getErrorAttributes(request));
         log.trace(ex.getMessage(), ex);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
