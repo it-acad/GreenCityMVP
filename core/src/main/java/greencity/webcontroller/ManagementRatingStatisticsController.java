@@ -6,7 +6,7 @@ import greencity.dto.ratingstatistics.RatingStatisticsDto;
 import greencity.dto.ratingstatistics.RatingStatisticsDtoForTables;
 import greencity.dto.ratingstatistics.RatingStatisticsVO;
 import greencity.dto.ratingstatistics.RatingStatisticsViewDto;
-import greencity.exporter.RatingExcelExporter;
+import greencity.controller.exporter.RatingExcelExporter;
 import greencity.service.RatingStatisticsService;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;

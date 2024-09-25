@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.25.xsd"
+        objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
+    <changeSet id="Chernenko-1" author="Chernenko Vitaliy">
+        <createTable tableName="users_friends">
+            <column name="user_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="friend_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addUniqueConstraint tableName="users_friends" columnNames="user_id, friend_id" constraintName="users_friends_pk"/>
+        <addUniqueConstraint tableName="users_friends" columnNames="friend_id, user_id" constraintName="users_friends_pk_2"/>
+        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="users_friends"
+                                 constraintName="fk_users_friends_user_id_users" referencedColumnNames="id"
+                                 referencedTableName="users"/>
+        <addForeignKeyConstraint baseColumnNames="friend_id" baseTableName="users_friends"
+                                 constraintName="fk_users_friends_friend_id_users" referencedColumnNames="id"
+                                 referencedTableName="users"/>
+    </changeSet>
+
+    <changeSet id="Chernenko-2" author="Chernenko Vitaliy">
+        <createTable tableName="friendship_requests">
+            <column name="user_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="friend_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addUniqueConstraint tableName="friendship_requests" columnNames="user_id, friend_id" constraintName="friendship_requests_pk"/>
+        <addUniqueConstraint tableName="friendship_requests" columnNames="friend_id, user_id" constraintName="friendship_requests_pk_2"/>
+        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="friendship_requests"
+                                 constraintName="fk_friendship_requests_user_id_users" referencedColumnNames="id"
+                                 referencedTableName="users"/>
+        <addForeignKeyConstraint baseColumnNames="friend_id" baseTableName="friendship_requests"
+                                 constraintName="fk_friendship_requests_friend_id_users" referencedColumnNames="id"
+                                 referencedTableName="users"/>
+    </changeSet>
+</databaseChangeLog>

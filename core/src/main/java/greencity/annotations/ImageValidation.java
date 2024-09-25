@@ -10,7 +10,7 @@ import java.lang.annotation.Target;
 
 @Constraint(validatedBy = ImageValidator.class)
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.PARAMETER)
+@Target({ElementType.TYPE_USE, ElementType.PARAMETER})
 public @interface ImageValidation {
     /**
      * Defines the message that will be showed when the input data is not valid.

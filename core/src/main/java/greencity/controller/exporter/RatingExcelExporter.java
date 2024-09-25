@@ -1,4 +1,4 @@
-package greencity.exporter;
+package greencity.controller.exporter;
 
 import greencity.dto.ratingstatistics.RatingStatisticsDto;
 import lombok.extern.slf4j.Slf4j;
